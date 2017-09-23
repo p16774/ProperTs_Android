@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/home"
+        android:title="@string/title_home" />
+
+    <item
+        android:id="@+id/navigation_tenant"
+        android:icon="@drawable/tenants"
+        android:title="Tenants" />
+
+    <item
+        android:id="@+id/navigation_maintenance"
+        android:icon="@drawable/maintenance"
+        android:title="Maintenance" />
+
+    <item
+        android:id="@+id/navigation_message"
+        android:icon="@drawable/message"
+        android:title="Messaging" />
+
+    <item
+        android:id="@+id/navigation_complaint"
+        android:icon="@drawable/complaint"
+        android:title="Complaints" />
+
+</menu>
