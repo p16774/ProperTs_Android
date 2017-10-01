@@ -1,5 +1,6 @@
 package com.project3w.properts;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,9 +8,12 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.project3w.properts.Fragments.AddTenantFragment;
 import com.project3w.properts.Fragments.ManagerHome;
 
 public class MainActivity extends AppCompatActivity {
@@ -68,6 +72,40 @@ public class MainActivity extends AppCompatActivity {
         ManagerHome mf = new ManagerHome();
         fragmentTransaction.replace(R.id.content, mf);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.manager_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_add_tenant) {
+            // create intent to send the user to the AddTripActivity
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            AddTenantFragment at = new AddTenantFragment();
+            fragmentTransaction.replace(R.id.content, at);
+            fragmentTransaction.commit();
+
+        } else if (id == R.id.action_change_settings) {
+            //TODO: change settings fragment for user
+
+        } else if (id == R.id.action_logout) {
+            FirebaseAuth.getInstance().signOut();
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

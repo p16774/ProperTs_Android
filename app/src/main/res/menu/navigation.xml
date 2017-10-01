@@ -9,21 +9,21 @@
     <item
         android:id="@+id/navigation_tenant"
         android:icon="@drawable/tenants"
-        android:title="Tenants" />
+        android:title="@string/tenants" />
 
     <item
         android:id="@+id/navigation_maintenance"
         android:icon="@drawable/maintenance"
-        android:title="Maintenance" />
+        android:title="@string/maintenance" />
 
     <item
         android:id="@+id/navigation_message"
         android:icon="@drawable/message"
-        android:title="Messaging" />
+        android:title="@string/messaging" />
 
     <item
         android:id="@+id/navigation_complaint"
         android:icon="@drawable/complaint"
-        android:title="Complaints" />
+        android:title="@string/complaints" />
 
 </menu>

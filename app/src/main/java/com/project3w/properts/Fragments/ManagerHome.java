@@ -2,8 +2,10 @@ package com.project3w.properts.Fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +17,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.project3w.properts.MainActivity;
 import com.project3w.properts.R;
 
 import java.util.ArrayList;
+
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * Created by Nate on 9/20/17.
@@ -29,6 +41,8 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
     TextView detailMessage;
     Boolean landscapeView;
     Spinner tenantSpinner, unitSpinner;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
 
     public ManagerHome() {
         // empty constructor
@@ -37,6 +51,24 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInAnonymously:success");
+                            mUser = mAuth.getCurrentUser();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInAnonymously:failure", task.getException());
+                            Toast.makeText(getActivity(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
         return inflater.inflate(R.layout.manager_home, container, false);
 
     }
@@ -44,6 +76,11 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference siteData = firebaseDatabase.getReference();
+
+
 
         apartmentView = (WebView) getActivity().findViewById(R.id.apartment_view);
         landscapeView = apartmentView != null;

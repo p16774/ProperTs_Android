@@ -3,4 +3,11 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="tenants">Tenants</string>
+    <string name="maintenance">Maintenance</string>
+    <string name="messaging">Messaging</string>
+    <string name="complaints">Complaints</string>
+    <string name="add_new_tenant">Add New Tenant</string>
+    <string name="logout_user">Logout</string>
+    <string name="change_user_settings">Change User Settings</string>
 </resources>
