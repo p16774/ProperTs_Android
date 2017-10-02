@@ -1,24 +1,18 @@
 package com.project3w.properts.Helpers;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.Toast;
+import android.support.design.widget.Snackbar;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.project3w.properts.Objects.AccountVerification;
 import com.project3w.properts.Objects.Tenant;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 public class FirebaseDataHelper {
 
-    Activity mActivity;
+    private Activity mActivity;
 
     public FirebaseDataHelper(Activity activity) {
         mActivity = activity;
@@ -27,32 +21,37 @@ public class FirebaseDataHelper {
 
     public void saveTenant(Tenant tenant) {
 
-        // generate random number for tenant association and user creation
-        // generate unique id for tripId and database reference
-        long genericLong = UUID.randomUUID().getLeastSignificantBits();
-        String significantLong = genericLong + "";
-        String tenantID = significantLong.substring(1);
+        // assign phone number to the tenantID of tenant object
+        String tenantID = tenant.getTenantPhone();
+        tenant.setTenantID(tenantID);
 
-
+        // create AccountVerification object
+        AccountVerification accountVerification = new AccountVerification(tenant.getTenantName(), tenant.getTenantAddress());
 
         // get Firebase Database instances
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference tenantDataRef = database.getReference("tenants");
+        DatabaseReference needAccountRef = database.getReference("needAccount");
 
-        // create HashMap for updating trips
+        // create the account verification map
+        HashMap<String, Object> needAccount = new HashMap<>();
+        needAccount.put(tenantID, accountVerification);
+
+        // update database with account creation needs
+        needAccountRef.updateChildren(needAccount);
+
+        // create HashMap for updating tenants
         HashMap<String, Object> newTenant = new HashMap<>();
         newTenant.put(tenant.getTenantID(), tenant);
 
-        // save the trip
+        // save the tenant
         tenantDataRef.updateChildren(newTenant);
 
-        // create HashMap for updating user with trip
-        HashMap<String, Object> updateUser = new HashMap<>();
-        updateUser.put(trip.getTripId(), true);
+        // concatenate tenant message
+        String tenantMessage = "Tenant: " + tenant.getTenantName() + " created successfully!";
 
-        // update the user
-        userDataRef.updateChildren(updateUser);
-
+        // show success message
+        Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_LONG).show();
     }
 
     /*public void saveTripItem(String tripId, TripItem tripItem) {

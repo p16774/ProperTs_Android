@@ -9,18 +9,24 @@ import java.util.Map;
 public class Tenant {
 
     // class variables
-    private String tenantID, userID, tenantName, tenantAddress, tenantEmail;
-    private long tenantPhone;
+    private String tenantID, userID, tenantName, tenantAddress, tenantEmail, tenantPhone, tenantMoveInDate, tenantDeposit, tenantKeys, tenantOccupants;
     private Map<String,Boolean> tenantMessageIds;
 
     private Tenant() {
         // used for firebase
     }
 
-    Tenant(String tenantName, String tenantAddress, String tenantEmail, long tenantPhone) {
+    public Tenant(String tenantName, String tenantAddress, String tenantEmail, String tenantPhone, String tenantMoveInDate, String tenantDeposit, String tenantKeys, String tenantOccupants) {
+        this.tenantID = "";
+        this.userID = "";
+        this.tenantMessageIds = null;
         this.tenantName = tenantName;
         this.tenantAddress = tenantAddress;
         this.tenantEmail = tenantEmail;
+        this.tenantMoveInDate = tenantMoveInDate;
+        this.tenantDeposit = tenantDeposit;
+        this.tenantKeys = tenantKeys;
+        this.tenantOccupants = tenantOccupants;
         this.tenantPhone = tenantPhone;
     }
 
@@ -64,12 +70,44 @@ public class Tenant {
         this.tenantEmail = tenantEmail;
     }
 
-    public long getTenantPhone() {
+    public String getTenantPhone() {
         return tenantPhone;
     }
 
-    public void setTenantPhone(long tenantPhone) {
+    public void setTenantPhone(String tenantPhone) {
         this.tenantPhone = tenantPhone;
+    }
+
+    public String getTenantMoveInDate() {
+        return tenantMoveInDate;
+    }
+
+    public void setTenantMoveInDate(String tenantMoveInDate) {
+        this.tenantMoveInDate = tenantMoveInDate;
+    }
+
+    public String getTenantDeposit() {
+        return tenantDeposit;
+    }
+
+    public void setTenantDeposit(String tenantDeposit) {
+        this.tenantDeposit = tenantDeposit;
+    }
+
+    public String getTenantKeys() {
+        return tenantKeys;
+    }
+
+    public void setTenantKeys(String tenantKeys) {
+        this.tenantKeys = tenantKeys;
+    }
+
+    public String getTenantOccupants() {
+        return tenantOccupants;
+    }
+
+    public void setTenantOccupants(String tenantOccupants) {
+        this.tenantOccupants = tenantOccupants;
     }
 
     public Map<String, Boolean> getTenantMessageIds() {

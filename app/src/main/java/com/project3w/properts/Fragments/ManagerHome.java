@@ -1,5 +1,6 @@
 package com.project3w.properts.Fragments;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,12 +23,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.project3w.properts.MainActivity;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.project3w.properts.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
@@ -41,6 +47,8 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
     TextView detailMessage;
     Boolean landscapeView;
     Spinner tenantSpinner, unitSpinner;
+    Activity mActivity;
+    private FirebaseDatabase firebaseDatabase;
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
 
@@ -51,6 +59,7 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mActivity = getActivity();
         mAuth = FirebaseAuth.getInstance();
         mAuth.signInAnonymously()
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -63,8 +72,6 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInAnonymously:failure", task.getException());
-                            Toast.makeText(getActivity(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -77,14 +84,13 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference siteData = firebaseDatabase.getReference();
 
 
 
         apartmentView = (WebView) getActivity().findViewById(R.id.apartment_view);
         landscapeView = apartmentView != null;
-        detailMessage = (TextView) getActivity().findViewById(R.id.detail_test);
         tenantSpinner = (Spinner) getActivity().findViewById(R.id.tenant_spinner);
         unitSpinner = (Spinner) getActivity().findViewById(R.id.unit_spinner);
 
@@ -106,8 +112,6 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
                     if (parsedUri.getScheme().equals("properts")) {
                         String action = parsedUri.getHost();
 
-                        detailMessage.setText(action);
-
                         return true;
 
                     } else {
@@ -119,28 +123,49 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
 
             // setup the lower spinner to select tenant instead of from the picture
             // Data used for prototype
-            ArrayList<String> tenantNames = new ArrayList<>();
             ArrayList<String> unitNumbers = new ArrayList<>();
 
-            tenantNames.add("Tony Stark"); // apt1
-            tenantNames.add("Natasha Romanoff"); // apt2
-            tenantNames.add("Thor Odinson [Archive]"); // apt3 empty
-            tenantNames.add("Bruce Banner [Archive]"); // apt4 empty
-            tenantNames.add("Peter Parker"); // apt5
-            tenantNames.add("Steve Rogers"); // apt6
+            unitNumbers.add("Unit 1");
+            unitNumbers.add("Unit 2");
+            unitNumbers.add("Unit 3");
+            unitNumbers.add("Unit 4");
+            unitNumbers.add("Unit 5");
+            unitNumbers.add("Unit 6");
 
-            unitNumbers.add("Super Unit 1");
-            unitNumbers.add("Super Unit 2");
-            unitNumbers.add("Super Unit 3");
-            unitNumbers.add("Super Unit 4");
-            unitNumbers.add("Super Unit 5");
-            unitNumbers.add("Super Unit 6");
-
-
-            getSpinnerData(tenantSpinner, tenantNames);
+            getCurrentTenants();
             getSpinnerData(unitSpinner, unitNumbers);
 
         }
+    }
+
+    private void getCurrentTenants() {
+
+        // get our database reference
+        DatabaseReference currentTenantRef = firebaseDatabase.getReference("currentTenants");
+        currentTenantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<ArrayList<String>> t = new GenericTypeIndicator<ArrayList<String>>() {};
+                ArrayList<String> trial = dataSnapshot.getValue(t);
+
+                // remove any vacants from the list
+                try {
+                    trial.removeAll(Collections.singleton("vacant"));
+
+                    // if we still have a list display it
+                    if (trial.size() > 0) {
+                        getSpinnerData(tenantSpinner, trial);
+                    }
+                } catch (NullPointerException e) {
+                    Log.d("NULL EXCEPTION", "No Vacant Units");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void getSpinnerData(Spinner spinner, ArrayList<String> list) {
@@ -151,7 +176,7 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
         // assign the listener
         spinner.setOnItemSelectedListener(this);
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, list);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(mActivity, android.R.layout.simple_spinner_item, list);
 
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
