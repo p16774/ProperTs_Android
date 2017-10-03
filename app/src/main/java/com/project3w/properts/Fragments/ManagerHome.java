@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +31,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.properts.Objects.Tenant;
 import com.project3w.properts.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
@@ -87,8 +91,6 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
         firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference siteData = firebaseDatabase.getReference();
 
-
-
         apartmentView = (WebView) getActivity().findViewById(R.id.apartment_view);
         landscapeView = apartmentView != null;
         tenantSpinner = (Spinner) getActivity().findViewById(R.id.tenant_spinner);
@@ -111,6 +113,13 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
                     Uri parsedUri = Uri.parse(url);
                     if (parsedUri.getScheme().equals("properts")) {
                         String action = parsedUri.getHost();
+
+                        // add our fragment with our selected action
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        ManagerContent mc = ManagerContent.newInstance(action);
+                        fragmentTransaction.replace(R.id.manager_content, mc);
+                        fragmentTransaction.commit();
 
                         return true;
 
@@ -142,22 +151,43 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
 
         // get our database reference
         DatabaseReference currentTenantRef = firebaseDatabase.getReference("currentTenants");
-        currentTenantRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        currentTenantRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                GenericTypeIndicator<ArrayList<String>> t = new GenericTypeIndicator<ArrayList<String>>() {};
-                ArrayList<String> trial = dataSnapshot.getValue(t);
+                GenericTypeIndicator<HashMap<String,String>> t = new GenericTypeIndicator<HashMap<String, String>>() {};
+                HashMap<String,String> tenantsMap = dataSnapshot.getValue(t);
+
+                // create new arraylist
+                final ArrayList<String> tenantList = new ArrayList<>();
 
                 // remove any vacants from the list
                 try {
-                    trial.removeAll(Collections.singleton("vacant"));
+                    // convert hashmap to arraylist to iterate over
+                    tenantList.addAll(tenantsMap.values());
+                    tenantList.removeAll(Collections.singleton("vacant"));
 
                     // if we still have a list display it
-                    if (trial.size() > 0) {
-                        getSpinnerData(tenantSpinner, trial);
+                    if (tenantList.size() > 0) {
+                        final ArrayList<String> tenantNames = new ArrayList<>();
+                        for (String tenantID : tenantList) {
+                            DatabaseReference tenantData = firebaseDatabase.getReference("tenants").child(tenantID);
+                            tenantData.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Tenant tenant = dataSnapshot.getValue(Tenant.class);
+                                    tenantNames.add(tenant.getTenantName());
+                                    getSpinnerData(tenantSpinner, tenantNames);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
                     }
                 } catch (NullPointerException e) {
-                    Log.d("NULL EXCEPTION", "No Vacant Units");
+                    Log.d("NULL EXCEPTION", "Database Reference Error in HashMap");
                 }
             }
 
@@ -198,14 +228,14 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
                 String item = parent.getItemAtPosition(position).toString();
 
                 // Showing selected spinner item
-                Toast.makeText(parent.getContext(), "Tenant Selected: " + item, Toast.LENGTH_LONG).show();
+                //Toast.makeText(parent.getContext(), "Tenant Selected: " + item, Toast.LENGTH_LONG).show();
                 break;
             case R.id.unit_spinner:
                 // On selecting a spinner item
                 String unit = parent.getItemAtPosition(position).toString();
 
                 // Showing selected spinner item
-                Toast.makeText(parent.getContext(), "Unit Selected: " + unit, Toast.LENGTH_LONG).show();
+                //Toast.makeText(parent.getContext(), "Unit Selected: " + unit, Toast.LENGTH_LONG).show();
                 break;
             default:
                 break;

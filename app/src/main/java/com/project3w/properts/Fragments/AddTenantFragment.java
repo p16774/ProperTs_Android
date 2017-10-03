@@ -11,14 +11,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.project3w.properts.Helpers.FirebaseDataHelper;
 import com.project3w.properts.Objects.Tenant;
 import com.project3w.properts.R;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -30,7 +34,8 @@ public class AddTenantFragment extends Fragment {
     // class variables
     Activity mActivity;
     FirebaseDataHelper firebaseDataHelper;
-    EditText tenantNameView, tenantAddressView, tenantEmailView, tenantPhoneView, tenantMoveInDate, tenantDepositView, tenantKeysView, tenantOccupantsView;
+    EditText tenantNameView, tenantEmailView, tenantPhoneView, tenantMoveInDate, tenantDepositView, tenantKeysView, tenantOccupantsView;
+    Spinner tenantAddressSpinner;
 
     public interface DismissFragmentListener {
         void dismissFragment();
@@ -66,7 +71,7 @@ public class AddTenantFragment extends Fragment {
 
         // create our view data points
         tenantNameView = (EditText) getActivity().findViewById(R.id.tenant_name);
-        tenantAddressView = (EditText) getActivity().findViewById(R.id.tenant_address);
+        tenantAddressSpinner = (Spinner) getActivity().findViewById(R.id.tenant_address_spinner);
         tenantEmailView = (EditText) getActivity().findViewById(R.id.tenant_email);
         tenantPhoneView = (EditText) getActivity().findViewById(R.id.tenant_phone);
         tenantMoveInDate = (EditText) getActivity().findViewById(R.id.tenant_moveindate);
@@ -74,8 +79,21 @@ public class AddTenantFragment extends Fragment {
         tenantKeysView = (EditText) getActivity().findViewById(R.id.tenant_keys);
         tenantOccupantsView = (EditText) getActivity().findViewById(R.id.tenant_occupants);
 
+        // set up our spinner
+        ArrayList<String> unitSelection = new ArrayList<>();
+        unitSelection.add("Select Unit...");
+        unitSelection.add("Unit 1");
+        unitSelection.add("Unit 2");
+        unitSelection.add("Unit 3");
+        unitSelection.add("Unit 4");
+        unitSelection.add("Unit 5");
+        unitSelection.add("Unit 6");
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, unitSelection);
+        tenantAddressSpinner.setAdapter(arrayAdapter);
+
         // get our button and set our click listener
         Button addTenantBtn = (Button) getActivity().findViewById(R.id.tenant_add_btn);
+        addTenantBtn.setText("Add Tenant");
         addTenantBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,7 +120,7 @@ public class AddTenantFragment extends Fragment {
     public Tenant validateTenant() {
         // get our text about the tenant
         String tenantName = tenantNameView.getText().toString().trim();
-        String tenantAddress = tenantAddressView.getText().toString().trim();
+        String tenantAddress = tenantAddressSpinner.getSelectedItem().toString();
         String tenantEmail = tenantEmailView.getText().toString().trim();
         String tenantPhone = tenantPhoneView.getText().toString().trim();
         String tenantDate = tenantMoveInDate.getText().toString().trim();
@@ -116,9 +134,9 @@ public class AddTenantFragment extends Fragment {
                     "You must enter a name to create a tenant", Snackbar.LENGTH_LONG).show();
             return null;
         }
-        if (tenantAddress.isEmpty()) {
+        if (tenantAddress.equals("Select Unit...")) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must select the address to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must select a unit to create a tenant", Snackbar.LENGTH_LONG).show();
             return null;
         }
         if (tenantEmail.isEmpty()) {

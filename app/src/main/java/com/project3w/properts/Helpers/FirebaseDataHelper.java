@@ -32,10 +32,14 @@ public class FirebaseDataHelper {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference tenantDataRef = database.getReference("tenants");
         DatabaseReference needAccountRef = database.getReference("needAccount");
+        DatabaseReference unitTenantRef = database.getReference("currentTenants").child(tenant.getTenantAddress());
 
         // create the account verification map
         HashMap<String, Object> needAccount = new HashMap<>();
         needAccount.put(tenantID, accountVerification);
+
+        // create the currentTenant value
+        unitTenantRef.setValue(tenantID);
 
         // update database with account creation needs
         needAccountRef.updateChildren(needAccount);

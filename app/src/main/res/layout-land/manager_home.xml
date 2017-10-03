@@ -25,8 +25,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/apartment_view"
                 android:paddingTop="20dp"
-                android:paddingLeft="20dp"
-                android:textSize="16dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textSize="16sp"
                 android:text="Tenant: "
                 android:textColor="@color/colorBlack"/>
 
@@ -44,8 +45,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/spinner_name"
                 android:paddingTop="20dp"
-                android:paddingLeft="20dp"
-                android:textSize="16dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textSize="16sp"
                 android:text="Unit#: "
                 android:textColor="@color/colorBlack"/>
 

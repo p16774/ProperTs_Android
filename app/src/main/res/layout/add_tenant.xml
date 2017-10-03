@@ -2,13 +2,19 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:layout_margin="50dp">
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:baselineAligned="false">
+
+    <Spinner
+        android:id="@+id/tenant_address_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <EditText
         android:id="@+id/tenant_name"
@@ -17,14 +23,6 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:hint="Enter Full Name" />
-
-    <EditText
-        android:id="@+id/tenant_address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPostalAddress"
-        android:hint="Enter Address"/>
 
     <EditText
         android:id="@+id/tenant_email"
@@ -79,7 +77,9 @@
         android:id="@+id/tenant_add_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Tenant" />
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"/>
 
 
 </LinearLayout>

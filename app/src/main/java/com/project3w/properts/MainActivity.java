@@ -12,9 +12,10 @@ import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.project3w.properts.Fragments.AddTenantFragment;
+import com.project3w.properts.Fragments.ManagerContent;
 import com.project3w.properts.Fragments.ManagerHome;
 
-public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener {
+public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener, ManagerContent.DismissFragmentListener, ManagerContent.AddNewTenantListener {
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -88,11 +89,11 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add_tenant) {
-            // create intent to send the user to the AddTripActivity
+            // create intent to send the user to the Add Tenant Fragment
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             AddTenantFragment at = new AddTenantFragment();
-            fragmentTransaction.replace(R.id.content, at);
+            fragmentTransaction.replace(R.id.manager_content, at);
             fragmentTransaction.commit();
 
         } else if (id == R.id.action_change_settings) {
@@ -109,5 +110,18 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
     @Override
     public void dismissFragment() {
         callHome();
+    }
+
+    @Override
+    public void addTenantInstead(String unit) {
+        //TODO: add tenant fragment with unit
+
+        // create intent to send the user to the Add Tenant Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        AddTenantFragment at = new AddTenantFragment();
+        fragmentTransaction.replace(R.id.manager_content, at);
+        fragmentTransaction.commit();
+
     }
 }
