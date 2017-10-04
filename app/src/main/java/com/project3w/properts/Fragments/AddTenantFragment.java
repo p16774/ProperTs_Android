@@ -101,7 +101,7 @@ public class AddTenantFragment extends Fragment {
                 Tenant newTenant = validateTenant();
 
                 if (newTenant != null) {
-                    firebaseDataHelper.saveTenant(newTenant);
+                    firebaseDataHelper.saveTenant(newTenant, true);
                     onDismissFragmentListener.dismissFragment();
                 }
             }
