@@ -1,38 +1,20 @@
 package com.project3w.properts.Helpers;
 
 import android.app.Activity;
-import android.content.DialogInterface;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project3w.properts.Objects.AccountVerification;
 import com.project3w.properts.Objects.Tenant;
-import com.project3w.properts.R;
 
 import java.util.HashMap;
-
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 public class FirebaseDataHelper {
 
     // class variables
-    Activity mActivity;
-    FirebaseUser mUser;
-    FirebaseAuth mAuth;
+    private Activity mActivity;
 
     public FirebaseDataHelper(Activity activity) {
         mActivity = activity;
@@ -55,6 +37,7 @@ public class FirebaseDataHelper {
             // assign phone number to the tenantID of tenant object
             String tenantID = tenant.getTenantPhone();
             tenant.setTenantID(tenantID);
+            tenant.setUserID(""); // added to prevent iOS code from crashing
 
             // create AccountVerification object
             AccountVerification accountVerification = new AccountVerification(tenant.getTenantName(), tenant.getTenantAddress());
@@ -84,73 +67,31 @@ public class FirebaseDataHelper {
         Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_LONG).show();
     }
 
-    public boolean verifyAccount(final String tenantID) {
+    public boolean updateNewTenantAccount(String tenantID, String userID) {
 
-        //TODO: add a progress indication to show the user we are verifying their account
+        // method variables
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference("needAccount").child(tenantID);
+        DatabaseReference linkTenantAccountRef = firebaseDatabase.getReference("tenants").child(tenantID).child("userID");
+        DatabaseReference userRoleAccessRef = firebaseDatabase.getReference("users").child(userID);
 
-        // sign in user anonymously
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInAnonymously:success");
-                            mUser = mAuth.getCurrentUser();
+        // try catch block to test that the calls are completing correctly
+        try {
+            // remove the needAccount reference
+            removedNeedAccountRef.removeValue();
 
-                            // pull data and verify id
-                            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                            DatabaseReference tenantVerifyRef = firebaseDatabase.getReference("needAccount").child(tenantID);
+            // update tenant with current userID
+            linkTenantAccountRef.setValue(userID);
 
-                            // verify the tenantID and display information
-                            tenantVerifyRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    // assign data from database pull
-                                    AccountVerification av = dataSnapshot.getValue(AccountVerification.class);
-                                    //TODO: validate for null
-                                    final String tenantName = av.getTenantName();
-                                    String tenantAddress = av.getTenantAddress();
+            // set their access role and tenant data ID
+            userRoleAccessRef.child("role").setValue("tenant");
+            userRoleAccessRef.child("tenantID").setValue(tenantID);
 
-                                    // Use the Builder class for convenient dialog construction
-                                    new MaterialDialog.Builder(mActivity)
-                                            .title("Confirm Account")
-                                            .content("Please confirm that you are " + tenantName + "\nand you are moving into " + tenantAddress + ".")
-                                            .positiveText("Confirm")
-                                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                                @Override
-                                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                    Snackbar.make(mActivity.findViewById(android.R.id.content), tenantName, Snackbar.LENGTH_LONG).show();
-                                                }
-                                            })
-                                            .positiveColorRes(R.color.colorBlack)
-                                            .negativeText("Deny")
-                                            .onNegative(new MaterialDialog.SingleButtonCallback() {
-                                                @Override
-                                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                    dialog.dismiss();
-                                                }
-                                            })
-                                            .negativeColorRes(R.color.colorGrey)
-                                            .cancelable(false)
-                                            .build()
-                                            .show();
-                                }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInAnonymously:failure", task.getException());
-                        }
-                    }
-                });
-
-        return true;
     }
 }

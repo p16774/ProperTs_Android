@@ -1,5 +1,6 @@
 package com.project3w.properts;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,11 +12,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.project3w.properts.Fragments.AddTenantFragment;
 import com.project3w.properts.Fragments.ManagerContent;
 import com.project3w.properts.Fragments.ManagerHome;
+import com.project3w.properts.Fragments.TenantHome;
+import com.project3w.properts.Helpers.FirebaseDataHelper;
 
 public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener, ManagerContent.DismissFragmentListener, ManagerContent.AddNewTenantListener {
+
+    // class variables
+    FirebaseUser mUser;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -44,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
 
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,21 +70,75 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
 
-        // grab and set listener on bottom navigation view
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        navigation.setSelectedItemId(R.id.navigation_home);
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (mUser == null) {
+            Intent loginScreen = new Intent(this, LoginActivity.class);
+            startActivity(loginScreen);
+            finish();
+        } else {
 
-        // call home fragment on initial start up
-        callHome();
+            // grab and set listener on bottom navigation view
+            BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+            navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+            navigation.setSelectedItemId(R.id.navigation_home);
+
+            // call home fragment on initial start up
+            callHome();
+
+        }
     }
 
     protected void callHome() {
+
+        // pull in the user data and send the appropriate home page flow
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference userDataRef = firebaseDatabase.getReference("users").child(mUser.getUid()).child("role");
+
+        // start our Fragment Manager
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        ManagerHome mf = new ManagerHome();
-        fragmentTransaction.replace(R.id.content, mf);
-        fragmentTransaction.commit();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // add our event listen for the one piece of info we need
+        // (stupid firebase not allowing me to read directly one simple string)
+        userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    String userType = dataSnapshot.getValue().toString();
+
+                    switch (userType) {
+                        case "manager":
+
+                            // add the ManagerHome fragment
+                            ManagerHome mf = new ManagerHome();
+                            fragmentTransaction.replace(R.id.content, mf);
+                            fragmentTransaction.commit();
+
+                            break;
+                        case "tenant":
+
+                            // add the TenantHome fragment
+                            TenantHome th = new TenantHome();
+                            fragmentTransaction.replace(R.id.content, th);
+                            fragmentTransaction.commit();
+
+                            break;
+                        case "maintenance":
+
+                            // add the MaintenanceHome Fragment
+                            //TODO: create the maintenance home fragment
+                            break;
+
+                        //TODO: create default display showing error - no access assigned and prevent usage
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

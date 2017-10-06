@@ -6,13 +6,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import com.project3w.properts.Fragments.SignUpFragment;
 import com.project3w.properts.Fragments.VerifyFragment;
 
 /**
  * Created by Nate on 10/3/17.
  */
 
-public class VerifyActivity extends AppCompatActivity {
+public class VerifyActivity extends AppCompatActivity implements VerifyFragment.SignUpUserListener {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,4 +29,12 @@ public class VerifyActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void signUpUser(String tenantID) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        SignUpFragment sf = SignUpFragment.newInstance(tenantID);
+        fragmentTransaction.replace(R.id.signup_container, sf);
+        fragmentTransaction.commit();
+    }
 }
