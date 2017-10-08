@@ -27,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.project3w.properts.Objects.AccountVerification;
 import com.project3w.properts.R;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Nate on 10/3/17.

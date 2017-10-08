@@ -10,4 +10,9 @@
     <string name="add_new_tenant">Add New Tenant</string>
     <string name="logout_user">Logout</string>
     <string name="change_user_settings">Change User Settings</string>
+    <string name="navigation_home">Home</string>
+    <string name="navigation_tenants">Tenants</string>
+    <string name="navigation_messaging">Messaging</string>
+    <string name="navigation_maintenance">Maintenance</string>
+    <string name="navigation_complaints">Complaints</string>
 </resources>

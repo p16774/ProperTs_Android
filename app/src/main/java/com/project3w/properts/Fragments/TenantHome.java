@@ -64,10 +64,10 @@ public class TenantHome extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         // pull in our view references
-        tenantNameView = (TextView) mActivity.findViewById(R.id.disp_tenant_name);
-        tenantAddressView = (TextView) mActivity.findViewById(R.id.disp_tenant_address);
-        tenantPhoneView = (TextView) mActivity.findViewById(R.id.disp_tenant_phone);
-        tenantEmailView = (TextView) mActivity.findViewById(R.id.disp_tenant_email);
+        tenantNameView = mActivity.findViewById(R.id.disp_tenant_name);
+        tenantAddressView = mActivity.findViewById(R.id.disp_tenant_address);
+        tenantPhoneView = mActivity.findViewById(R.id.disp_tenant_phone);
+        tenantEmailView = mActivity.findViewById(R.id.disp_tenant_email);
 
 
         // call user data
