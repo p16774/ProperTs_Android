@@ -77,8 +77,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //move to signup screen
-                Intent toSignupScreenIntent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivityForResult(toSignupScreenIntent, 0);
+                Intent toVerifyScreen = new Intent(getApplicationContext(), VerifyActivity.class);
+                startActivityForResult(toVerifyScreen, 0);
             }
         });
 

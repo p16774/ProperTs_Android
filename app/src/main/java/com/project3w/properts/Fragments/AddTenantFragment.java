@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -51,6 +53,9 @@ public class AddTenantFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        // set options menu
+        setHasOptionsMenu(true);
+
         // attach the interface listener
         mActivity = getActivity();
         try {
@@ -60,6 +65,13 @@ public class AddTenantFragment extends Fragment {
         }
 
         return inflater.inflate(R.layout.add_tenant, container, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.tenant_menu, menu);
     }
 
     @Override
@@ -101,7 +113,7 @@ public class AddTenantFragment extends Fragment {
                 Tenant newTenant = validateTenant();
 
                 if (newTenant != null) {
-                    firebaseDataHelper.saveTenant(newTenant);
+                    firebaseDataHelper.saveTenant(newTenant, true);
                     onDismissFragmentListener.dismissFragment();
                 }
             }

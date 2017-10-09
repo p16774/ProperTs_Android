@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,7 +30,6 @@ import com.project3w.properts.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -43,6 +41,7 @@ public class ManagerContent extends Fragment {
     // class variables
     public static final String UNIT_NUMBER = "com.project3w.properts.UNIT_NUMBER";
     String chosenUnit;
+    Tenant selectedTenant;
 
     public static ManagerContent newInstance(String unit) {
 
@@ -148,7 +147,7 @@ public class ManagerContent extends Fragment {
                 Tenant newTenant = validateTenant();
 
                 if (newTenant != null) {
-                    //firebaseDataHelper.saveTenant(newTenant);
+                    firebaseDataHelper.saveTenant(newTenant, false);
                     onDismissFragmentListener.dismissFragment();
                 }
             }
@@ -217,8 +216,16 @@ public class ManagerContent extends Fragment {
             return null;
         }
 
-        return new Tenant(tenantName, tenantAddress, tenantEmail, tenantPhone, tenantDate, tenantDeposit,
-                tenantKeys, tenantOccupants);
+        selectedTenant.setTenantName(tenantName);
+        selectedTenant.setTenantAddress(tenantAddress);
+        selectedTenant.setTenantEmail(tenantEmail);
+        selectedTenant.setTenantPhone(tenantPhone);
+        selectedTenant.setTenantMoveInDate(tenantDate);
+        selectedTenant.setTenantDeposit(tenantDeposit);
+        selectedTenant.setTenantKeys(tenantKeys);
+        selectedTenant.setTenantOccupants(tenantOccupants);
+
+        return selectedTenant;
 
     }
 
@@ -322,7 +329,7 @@ public class ManagerContent extends Fragment {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     // assign our data to a Tenant object
-                                    Tenant selectedTenant = dataSnapshot.getValue(Tenant.class);
+                                    selectedTenant = dataSnapshot.getValue(Tenant.class);
 
                                     // try to pull our data out and update our EditText Fields
                                     try {

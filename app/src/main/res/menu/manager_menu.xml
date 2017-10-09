@@ -8,7 +8,7 @@
         android:orderInCategory="100"
         android:title="@string/add_new_tenant"
         android:icon="@android:drawable/ic_menu_add"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_logout"

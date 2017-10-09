@@ -17,9 +17,6 @@ public class Tenant {
     }
 
     public Tenant(String tenantName, String tenantAddress, String tenantEmail, String tenantPhone, String tenantMoveInDate, String tenantDeposit, String tenantKeys, String tenantOccupants) {
-        this.tenantID = "";
-        this.userID = "";
-        this.tenantMessageIds = null;
         this.tenantName = tenantName;
         this.tenantAddress = tenantAddress;
         this.tenantEmail = tenantEmail;

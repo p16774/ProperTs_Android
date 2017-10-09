@@ -3,6 +3,7 @@ package com.project3w.properts.Helpers;
 import android.app.Activity;
 import android.support.design.widget.Snackbar;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project3w.properts.Objects.AccountVerification;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 
 public class FirebaseDataHelper {
 
+    // class variables
     private Activity mActivity;
 
     public FirebaseDataHelper(Activity activity) {
@@ -19,14 +21,7 @@ public class FirebaseDataHelper {
     }
 
 
-    public void saveTenant(Tenant tenant) {
-
-        // assign phone number to the tenantID of tenant object
-        String tenantID = tenant.getTenantPhone();
-        tenant.setTenantID(tenantID);
-
-        // create AccountVerification object
-        AccountVerification accountVerification = new AccountVerification(tenant.getTenantName(), tenant.getTenantAddress());
+    public void saveTenant(Tenant tenant, boolean newAccount ) {
 
         // get Firebase Database instances
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -34,15 +29,32 @@ public class FirebaseDataHelper {
         DatabaseReference needAccountRef = database.getReference("needAccount");
         DatabaseReference unitTenantRef = database.getReference("currentTenants").child(tenant.getTenantAddress());
 
-        // create the account verification map
-        HashMap<String, Object> needAccount = new HashMap<>();
-        needAccount.put(tenantID, accountVerification);
+        // concatenate tenant message
+        String tenantMessage = "Tenant: " + tenant.getTenantName() + " updated successfully!";
+
+        // check for new account and run steps necessary for new tenant creation
+        if (newAccount) {
+            // assign phone number to the tenantID of tenant object
+            String tenantID = tenant.getTenantPhone();
+            tenant.setTenantID(tenantID);
+            tenant.setUserID(""); // added to prevent iOS code from crashing
+
+            // create AccountVerification object
+            AccountVerification accountVerification = new AccountVerification(tenant.getTenantName(), tenant.getTenantAddress());
+
+            // create the account verification map
+            HashMap<String, Object> needAccount = new HashMap<>();
+            needAccount.put(tenantID, accountVerification);
+
+            // update database with account creation needs
+            needAccountRef.updateChildren(needAccount);
+
+            // concatenate tenant message
+            tenantMessage = "Tenant: " + tenant.getTenantName() + " created successfully!";
+        }
 
         // create the currentTenant value
-        unitTenantRef.setValue(tenantID);
-
-        // update database with account creation needs
-        needAccountRef.updateChildren(needAccount);
+        unitTenantRef.setValue(tenant.getTenantID());
 
         // create HashMap for updating tenants
         HashMap<String, Object> newTenant = new HashMap<>();
@@ -51,55 +63,35 @@ public class FirebaseDataHelper {
         // save the tenant
         tenantDataRef.updateChildren(newTenant);
 
-        // concatenate tenant message
-        String tenantMessage = "Tenant: " + tenant.getTenantName() + " created successfully!";
-
         // show success message
         Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_LONG).show();
     }
 
-    /*public void saveTripItem(String tripId, TripItem tripItem) {
+    public boolean updateNewTenantAccount(String tenantID, String userID) {
 
-        // get our firebase reference
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference tripItemsRef = database.getReference("tripitems/" + tripId);
+        // method variables
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference("needAccount").child(tenantID);
+        DatabaseReference linkTenantAccountRef = firebaseDatabase.getReference("tenants").child(tenantID).child("userID");
+        DatabaseReference userRoleAccessRef = firebaseDatabase.getReference("users").child(userID);
 
-        // grab our StorageReference
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://wharrynathantripjournal.appspot.com");
-        StorageReference saveLocationRef = storageRef.child("tripimages/" + tripId);
+        // try catch block to test that the calls are completing correctly
+        try {
+            // remove the needAccount reference
+            removedNeedAccountRef.removeValue();
 
-        // get our Uri File reference
-        Uri imageUri = Uri.fromFile(new File(tripItem.getItemImageUri()));
+            // update tenant with current userID
+            linkTenantAccountRef.setValue(userID);
 
-        // set our image name and tripId
-        tripItem.setImageName(imageUri.getLastPathSegment());
-        tripItem.setTripId(tripId);
+            // set their access role and tenant data ID
+            userRoleAccessRef.child("role").setValue("tenant");
+            userRoleAccessRef.child("tenantID").setValue(tenantID);
 
-        // push in our trip item
-        tripItemsRef.push().setValue(tripItem);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
 
-        // grab our image reference and Uri for File
-        StorageReference imageRef = saveLocationRef.child(imageUri.getLastPathSegment());
-
-        // register UploadTask and putFile
-        UploadTask uploadTask = imageRef.putFile(imageUri);
-
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_LONG).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                // Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_LONG).show();
-            }
-        });
-
-
-    }*/
+    }
 }

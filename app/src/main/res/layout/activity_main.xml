@@ -9,19 +9,14 @@
     tools:context="com.project3w.properts.MainActivity">
 
     <FrameLayout
-        android:id="@+id/content"
+        android:id="@+id/main_view_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="?android:attr/windowBackground"
-        app:itemIconTint="@color/btn_nav_color"
-        app:itemTextColor="@color/btn_nav_color"
-        app:menu="@menu/navigation" />
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
