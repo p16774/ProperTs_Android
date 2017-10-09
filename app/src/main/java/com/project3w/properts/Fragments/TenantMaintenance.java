@@ -1,12 +1,15 @@
 package com.project3w.properts.Fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,8 +33,15 @@ public class TenantMaintenance extends Fragment {
     // class variables
     FirebaseAuth mAuth;
     FirebaseUser mUser;
+    Activity mActivity;
     RecyclerView requestView;
     FirebaseRecyclerAdapter requestAdapter;
+
+    public interface AddNewRequestListener {
+        void addNewRequest();
+    }
+
+    AddNewRequestListener onAddRequestListener;
 
     public TenantMaintenance() {
     }
@@ -41,30 +51,59 @@ public class TenantMaintenance extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
+        mActivity = getActivity();
+
+        // set our options menus
+        setHasOptionsMenu(true);
 
         if (mUser == null) {
             // send the user back to the login screen
             Intent loginScreen = new Intent(getActivity(), LoginActivity.class);
             startActivity(loginScreen);
             getActivity().finish();
+        } else {
+            // attach our listener
+            try {
+                onAddRequestListener = (AddNewRequestListener) mActivity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(mActivity.toString() + " must implement AddNewRequestListener");
+            }
         }
 
         return inflater.inflate(R.layout.tenant_maintenance, container, false);
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.tenant_menu, menu);
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // setup our fab to add new requests
+        FloatingActionButton fab = getActivity().findViewById(R.id.maintenance_fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onAddRequestListener.addNewRequest();
+            }
+        });
 
         // grab the reference to our RecyclerView
         requestView = getActivity().findViewById(R.id.request_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
 
         // setup our database references
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         Query tenantRequestsQuery = firebaseDatabase.getReference("requests")
                 .child(mUser.getUid())
-                .orderByChild("maintenanceDate");
+                .orderByChild("requestDate");
 
         // setup our RecyclerView to display content
         FirebaseRecyclerOptions<MaintenanceRequest> maintenanceOptions =

@@ -3,15 +3,17 @@ package com.project3w.properts;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
@@ -22,20 +24,27 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.properts.Fragments.AddRequestFragment;
 import com.project3w.properts.Fragments.AddTenantFragment;
 import com.project3w.properts.Fragments.ManagerContent;
 import com.project3w.properts.Fragments.ManagerHome;
 import com.project3w.properts.Fragments.TenantHome;
 import com.project3w.properts.Fragments.TenantMaintenance;
-import com.project3w.properts.Helpers.FirebaseDataHelper;
 
-public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener, ManagerContent.DismissFragmentListener, ManagerContent.AddNewTenantListener {
+import java.io.File;
+import java.io.IOException;
+
+public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener,
+        ManagerContent.DismissFragmentListener,
+        ManagerContent.AddNewTenantListener,
+        TenantMaintenance.AddNewRequestListener {
 
     // class variables
     FirebaseUser mUser;
     AHBottomNavigation bottomNavigation;
     Boolean tenantMenu = false;
-    String userType = "";
+    String userType = "", mCurrentPhotoPath;
+    public static final int REQUEST_IMAGE_CAPTURE = 0x01001;
 
 
     @Override
@@ -148,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
 
                 // add the ManagerHome fragment
                 ManagerHome mf = new ManagerHome();
-                fragmentTransaction.replace(R.id.content, mf);
+                fragmentTransaction.replace(R.id.main_view_container, mf);
                 fragmentTransaction.commit();
 
                 break;
@@ -191,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
 
                 // add the TenantHome fragment
                 TenantHome th = new TenantHome();
-                fragmentTransaction.replace(R.id.content, th);
+                fragmentTransaction.replace(R.id.main_view_container, th);
                 fragmentTransaction.commit();
 
                 break;
@@ -229,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
 
                 // add the TenantHome fragment
                 TenantMaintenance tm = new TenantMaintenance();
-                fragmentTransaction.replace(R.id.content, tm);
+                fragmentTransaction.replace(R.id.main_view_container, tm);
                 fragmentTransaction.commit();
 
                 break;
@@ -244,41 +253,30 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        if (tenantMenu) {
-            menu.clear();
-            getMenuInflater().inflate(R.menu.tenant_menu, menu);
-            return true;
-        } else {
-            menu.clear();
-            getMenuInflater().inflate(R.menu.manager_menu, menu);
-            return true;
-        }
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_add_tenant) {
-            // create intent to send the user to the Add Tenant Fragment
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            AddTenantFragment at = new AddTenantFragment();
-            fragmentTransaction.replace(R.id.manager_content, at);
-            fragmentTransaction.commit();
-
-        } else if (id == R.id.action_change_settings) {
-            //TODO: change settings fragment for user
-
-        } else if (id == R.id.action_logout) {
-            FirebaseAuth.getInstance().signOut();
-            finish();
+        switch (id) {
+            case R.id.action_add_tenant:
+                // create intent to send the user to the Add Tenant Fragment
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                AddTenantFragment at = new AddTenantFragment();
+                fragmentTransaction.replace(R.id.manager_content, at);
+                fragmentTransaction.commit();
+                break;
+            case R.id.action_change_settings:
+                break;
+            case R.id.action_take_picture:
+                dispatchTakePictureIntent();
+                break;
+            case R.id.action_logout:
+                FirebaseAuth.getInstance().signOut();
+                finish();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -300,5 +298,80 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         fragmentTransaction.replace(R.id.manager_content, at);
         fragmentTransaction.commit();
 
+    }
+
+    @Override
+    public void addNewRequest() {
+        // create intent to send the user to the Add Request Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        AddRequestFragment ar = new AddRequestFragment();
+        fragmentTransaction.replace(R.id.main_view_container, ar);
+        fragmentTransaction.commit();
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                System.out.println("ERROR IN CREATING FILE");
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.project3w.properts.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            galleryAddPic(); // add picture to the gallery
+            File image = new File(mCurrentPhotoPath); // grab reference to our image
+            Uri imageUri = Uri.fromFile(image); // pull the URI to set our image
+            ImageView itemPhoto = findViewById(R.id.new_request_picture);
+            itemPhoto.setImageURI(imageUri); // set our image
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = System.currentTimeMillis() + "";
+        String imageFileName = "ITEM_" + timeStamp;
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "ProperTs_Images");
+
+        if (!storageDir.exists()) {
+            storageDir.mkdirs();
+            System.out.println("Directory doesn't exist");
+        }
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 }

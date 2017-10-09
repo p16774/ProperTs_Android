@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -59,6 +61,9 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
+        // set our options menu
+        setHasOptionsMenu(true);
+
         // send user to the login screen if they aren't logged in
         if (mUser == null) {
             Intent loginScreen = new Intent(getActivity(), LoginActivity.class);
@@ -68,6 +73,13 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
 
         return inflater.inflate(R.layout.manager_home, container, false);
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.manager_menu, menu);
     }
 
     @Override

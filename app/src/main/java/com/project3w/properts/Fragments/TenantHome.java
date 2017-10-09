@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -46,6 +48,9 @@ public class TenantHome extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
 
+        // set options menu
+        setHasOptionsMenu(true);
+
         // send user to the login screen if they aren't logged in
         if (mUser == null) {
             Intent loginScreen = new Intent(getActivity(), LoginActivity.class);
@@ -55,6 +60,13 @@ public class TenantHome extends Fragment {
 
         return inflater.inflate(R.layout.tenant_home, container, false);
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.tenant_menu, menu);
     }
 
     @Override
