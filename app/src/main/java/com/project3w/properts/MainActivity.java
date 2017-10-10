@@ -225,10 +225,10 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
                 // validate menu
                 tenantMenu = false;
 
-                /*// add the ManagerHome fragment
+                // add the ManagerHome fragment
                 ManagerHome mf = new ManagerHome();
-                fragmentTransaction.replace(R.id.content, mf);
-                fragmentTransaction.commit();*/
+                fragmentTransaction.replace(R.id.main_view_container, mf);
+                fragmentTransaction.commit();
 
                 break;
             case "tenant":
@@ -270,9 +270,6 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
                 break;
             case R.id.action_change_settings:
                 break;
-            case R.id.action_take_picture:
-                dispatchTakePictureIntent();
-                break;
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 finish();
@@ -308,70 +305,5 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         AddRequestFragment ar = new AddRequestFragment();
         fragmentTransaction.replace(R.id.main_view_container, ar);
         fragmentTransaction.commit();
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                System.out.println("ERROR IN CREATING FILE");
-                ex.printStackTrace();
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.project3w.properts.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
-    }
-
-    private void galleryAddPic() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            galleryAddPic(); // add picture to the gallery
-            File image = new File(mCurrentPhotoPath); // grab reference to our image
-            Uri imageUri = Uri.fromFile(image); // pull the URI to set our image
-            ImageView itemPhoto = findViewById(R.id.new_request_picture);
-            itemPhoto.setImageURI(imageUri); // set our image
-        }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = System.currentTimeMillis() + "";
-        String imageFileName = "ITEM_" + timeStamp;
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "ProperTs_Images");
-
-        if (!storageDir.exists()) {
-            storageDir.mkdirs();
-            System.out.println("Directory doesn't exist");
-        }
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
     }
 }

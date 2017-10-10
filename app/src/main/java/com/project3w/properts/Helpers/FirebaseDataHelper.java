@@ -1,15 +1,26 @@
 package com.project3w.properts.Helpers;
 
 import android.app.Activity;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.project3w.properts.Objects.AccountVerification;
+import com.project3w.properts.Objects.Request;
 import com.project3w.properts.Objects.Tenant;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FirebaseDataHelper {
 
@@ -93,5 +104,64 @@ public class FirebaseDataHelper {
             return false;
         }
 
+    }
+
+    public boolean submitMaintenanceRequest(Request request) {
+
+        // get firebase database instance and reference
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+
+        if (currentUser != null) {
+
+            // get our location reference
+            DatabaseReference newRequestRef = firebaseDatabase.getReference("requests").child(currentUser.getUid());
+
+            // create our key to update
+            String requestKey = newRequestRef.push().getKey();
+
+            // grab our StorageReference
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-e2eaf.appspot.com");
+            StorageReference saveLocationRef = storageRef.child("requestImages/" + currentUser.getUid() + "/" + requestKey);
+
+            // get our Uri File reference
+            Uri imageUri = Uri.fromFile(new File(request.getRequestOpenImagePath()));
+
+            // grab our image reference and Uri for File
+            StorageReference imageRef = saveLocationRef.child(imageUri.getLastPathSegment());
+
+            // register UploadTask and putFile
+            UploadTask uploadTask = imageRef.putFile(imageUri);
+
+            // Register observers to listen for when the download is done or if it fails
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_LONG).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    // Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_LONG).show();
+                }
+            });
+
+            // add in our key and empty closed image path and update our image path to Firebase Storage location
+            request.setRequestID(requestKey);
+            request.setRequestClosedImagePath("");
+            request.setRequestOpenImagePath(imageUri.getLastPathSegment());
+
+            // create our map to updateChildren
+            Map<String, Object> requestData = request.toMap();
+            requestData.put(requestKey, request);
+            // update data
+            newRequestRef.child(requestKey).setValue(requestData);
+            return true;
+        }
+
+        return false;
     }
 }

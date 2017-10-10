@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.project3w.properts.Objects.MaintenanceRequest;
 import com.project3w.properts.R;
 
 /**
@@ -15,7 +14,7 @@ public class RequestViewHolder extends RecyclerView.ViewHolder {
 
     // class variables
     public TextView requestTitle, requestStatus, requestDate;
-    //public MaintenanceRequest requestItem;
+    //public Request requestItem;
 
     public RequestViewHolder(View itemView) {
         super(itemView);

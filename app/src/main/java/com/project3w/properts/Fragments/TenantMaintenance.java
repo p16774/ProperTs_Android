@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.project3w.properts.Helpers.RequestViewHolder;
 import com.project3w.properts.LoginActivity;
-import com.project3w.properts.Objects.MaintenanceRequest;
+import com.project3w.properts.Objects.Request;
 import com.project3w.properts.R;
 
 /**
@@ -106,12 +106,12 @@ public class TenantMaintenance extends Fragment {
                 .orderByChild("requestDate");
 
         // setup our RecyclerView to display content
-        FirebaseRecyclerOptions<MaintenanceRequest> maintenanceOptions =
-                new FirebaseRecyclerOptions.Builder<MaintenanceRequest>()
-                .setQuery(tenantRequestsQuery, MaintenanceRequest.class)
+        FirebaseRecyclerOptions<Request> maintenanceOptions =
+                new FirebaseRecyclerOptions.Builder<Request>()
+                .setQuery(tenantRequestsQuery, Request.class)
                 .build();
 
-        requestAdapter = new FirebaseRecyclerAdapter<MaintenanceRequest, RequestViewHolder>(maintenanceOptions) {
+        requestAdapter = new FirebaseRecyclerAdapter<Request, RequestViewHolder>(maintenanceOptions) {
             @Override
             public RequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 // Create a new instance of the ViewHolder, in this case we are using a custom
@@ -122,7 +122,7 @@ public class TenantMaintenance extends Fragment {
             }
 
             @Override
-            protected void onBindViewHolder(RequestViewHolder holder, int position, MaintenanceRequest model) {
+            protected void onBindViewHolder(RequestViewHolder holder, int position, Request model) {
 
                 try {
                     holder.requestTitle.setText(model.getRequestTitle());

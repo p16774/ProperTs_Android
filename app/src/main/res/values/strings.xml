@@ -15,4 +15,14 @@
     <string name="navigation_messaging">Messaging</string>
     <string name="navigation_maintenance">Maintenance</string>
     <string name="navigation_complaints">Complaints</string>
+    <string name="spinner_prompt">Select Request Urgency</string>
+
+
+    <string-array name="urgencyValues">
+        <item>Normal</item>
+        <item>Urgent</item>
+        <item>Critical</item>
+    </string-array>
+
+
 </resources>
