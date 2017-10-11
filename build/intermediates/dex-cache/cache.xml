@@ -12,147 +12,21 @@
     </item>
     <item
         is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/6366101e43f338d8657acbe7a486eec8efcd163b/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="2d45b277afdf55bcfdc005c03c0c2f1733aaa1b0">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_9373231a4a8937719d24ff5b41a34a53eaf82c1f/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/950d73e6db53fad2b70e582a7065b59d6ce796c5/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="52339832d252da4328c5ffcacbc205268346362a">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_03402d582c349e6bafcdb27958f112f40879cd42/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/50004c5969de581b0a0907108a4fb98ab0469b46/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="757d7e742ee90d50242abdc8616bfcfd04ad0575">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_93e635e00760d082f35b901a2ee6e05d506b1c88/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.gradle/caches/modules-2/files-2.1/android.arch.core/common/1.0.0/a2d487452376193fc8c103dd2b9bd5f2b1b44563/common-1.0.0.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="a2d487452376193fc8c103dd2b9bd5f2b1b44563">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/common-1.0.0_ae899f26767c79b7865855f24ef3ded82fa94de7/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/9ce9aa13c58ec8bd38b943b6065bda9cc6c5cad1/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="b614956bf77eb8201754ac10109e52c36691cb3f">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_c5db6e6cc4177904bc29dbf975288835bb21b1f1/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/b2b73326c4cc32edbef03c7617ec95f0a903b339/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="6679c7d77ad34dbdf04342adb254dc5892aa04ac">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_2dd2d47da0e24e048ed3d433605056f5349faf2d/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/0b41eb201400f4541439d75fb3ddc8ef33c47cd3/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="20d6aa9a18ea9833cd2bee95dff7cd303cdb80e4">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_3a82db3f0555a7d6dddf1b0467969b3454df19b3/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/35e2d59d0e183334c31d65fd8a56bfb57919bce2/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="5f519b8c692038a47ee404b6ea6b847f6402000c">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_470694afeff69a40bbd7071f3e45f29c3313a506/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/fea0ad48625855e2346faf64e6eb4a01ef7be1a3/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="8040d53ecd4bd895360eafdc25e1c1cc9479e6aa">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_e88fadcbad3a74c1620b55a206769138661776db/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/1a7fc03e7938402391c55d3346e5c22d00b8a1d3/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="6e6b94b72d7912a627fb1629c310b2bca9261f06">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_fe3087c9f4eb947a6499dd8a18758f8666ff300a/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/40c8aebe35baff42182d6cd510f9fd678c26734a/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="bed98ea7af8c5c4202820875e856dd3eb296e22d">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_ab99cfc0e020bd3a1ba2923aba6464b53a715b83/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/b88c8c994e383eed3c49a31c9798a9182b253a31/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="241bafb36b47aee8c8c34acd08a1e7d735a66ff0">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_1aa9bc6e3ccf7c473ef09c62122cdf716e5a90ea/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/bd32c97b64820785d6cdf0b9c312ec174999585d/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="9176f96bb623ac8bbd2b79942d9e419f72f95301">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_a4e0706e94e45e571c16c0a1406d1a7d07065ba6/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/b57eb90edf859eb2b02633f2f442761d87e5ec34/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="b62fdc4cfef174c1e456014195c83fa7de7dc041">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_806c021f35d4fe6ca08e2b5ea3f4faf0d7df2939/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/Nate/.android/build-cache/a0042b21dd695780362c30c541970571d746742a/output/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="26.0.2"
-        sha1="58b12bdb21a84f22e0dc3b047aeceb0a546b1b44">
-        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_749b6639eede8920fdee56b3509b431d5abe0f26/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
         jar="/Users/Nate/.android/build-cache/391e5ccfe2bdec4681a73ca1866b17dc0a08dbe5/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="26.0.2"
         sha1="2442771a5590dd4eb4bce00c2e9dca9e22e4c963">
         <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_675802b5bf3b024bb3f88af017eb65682b4c8318/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/6366101e43f338d8657acbe7a486eec8efcd163b/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="2d45b277afdf55bcfdc005c03c0c2f1733aaa1b0">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_9373231a4a8937719d24ff5b41a34a53eaf82c1f/classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -183,12 +57,93 @@
     </item>
     <item
         is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/950d73e6db53fad2b70e582a7065b59d6ce796c5/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="52339832d252da4328c5ffcacbc205268346362a">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_03402d582c349e6bafcdb27958f112f40879cd42/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/50004c5969de581b0a0907108a4fb98ab0469b46/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="757d7e742ee90d50242abdc8616bfcfd04ad0575">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_93e635e00760d082f35b901a2ee6e05d506b1c88/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="/Users/Nate/.android/build-cache/88bf8a42cfc38af1f71244739cb3044c4d026f18/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="26.0.2"
         sha1="b74e6684048d5e4a6db0f2552241966f85c78993">
         <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_14e3dd1cba7bcd93e1880ecf006e16835de38fae/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.gradle/caches/modules-2/files-2.1/android.arch.core/common/1.0.0/a2d487452376193fc8c103dd2b9bd5f2b1b44563/common-1.0.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="a2d487452376193fc8c103dd2b9bd5f2b1b44563">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/common-1.0.0_ae899f26767c79b7865855f24ef3ded82fa94de7/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.gradle/caches/modules-2/files-2.1/com.github.bumptech.glide/gifdecoder/4.2.0/f196283dab426e09559bfe7385f162b2b254cf72/gifdecoder-4.2.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="f196283dab426e09559bfe7385f162b2b254cf72">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/gifdecoder-4.2.0_91b6dabaf0fb355006dc65d4f6d56479a0fc1272/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.gradle/caches/modules-2/files-2.1/com.github.bumptech.glide/disklrucache/4.2.0/fd3a444cc7987b5fa2a60fabb116395ca2a4da1c/disklrucache-4.2.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="fd3a444cc7987b5fa2a60fabb116395ca2a4da1c">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/disklrucache-4.2.0_6ccf074418fb3ea350eb83c8f2604793057f767e/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.gradle/caches/modules-2/files-2.1/com.github.bumptech.glide/glide/4.2.0/b76d4269b06b8bda96aac32342a05843b4c0be41/glide-4.2.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="b76d4269b06b8bda96aac32342a05843b4c0be41">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/glide-4.2.0_00d4a94d4e0c29e37c45af26dc6320f7aa67f909/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/9ce9aa13c58ec8bd38b943b6065bda9cc6c5cad1/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="b614956bf77eb8201754ac10109e52c36691cb3f">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_c5db6e6cc4177904bc29dbf975288835bb21b1f1/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/b2b73326c4cc32edbef03c7617ec95f0a903b339/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="6679c7d77ad34dbdf04342adb254dc5892aa04ac">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_2dd2d47da0e24e048ed3d433605056f5349faf2d/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/0b41eb201400f4541439d75fb3ddc8ef33c47cd3/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="20d6aa9a18ea9833cd2bee95dff7cd303cdb80e4">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_3a82db3f0555a7d6dddf1b0467969b3454df19b3/classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -201,12 +156,30 @@
     </item>
     <item
         is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/35e2d59d0e183334c31d65fd8a56bfb57919bce2/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="5f519b8c692038a47ee404b6ea6b847f6402000c">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_470694afeff69a40bbd7071f3e45f29c3313a506/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="/Users/Nate/.android/build-cache/4f641be089612899789d4e984f8cc27078e1dd43/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="26.0.2"
         sha1="73c80b05a390e8319d1ef7a236739cd610c8f774">
         <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_c662d7e3968bfd44e250bba0b29f37ff368c335c/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/fea0ad48625855e2346faf64e6eb4a01ef7be1a3/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="8040d53ecd4bd895360eafdc25e1c1cc9479e6aa">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_e88fadcbad3a74c1620b55a206769138661776db/classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -228,6 +201,15 @@
     </item>
     <item
         is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/1a7fc03e7938402391c55d3346e5c22d00b8a1d3/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="6e6b94b72d7912a627fb1629c310b2bca9261f06">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_fe3087c9f4eb947a6499dd8a18758f8666ff300a/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="/Users/Nate/.android/build-cache/2a49ba29b0b2caa2f4ed968eb1af612f911ec877/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
@@ -246,12 +228,39 @@
     </item>
     <item
         is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/40c8aebe35baff42182d6cd510f9fd678c26734a/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="bed98ea7af8c5c4202820875e856dd3eb296e22d">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_ab99cfc0e020bd3a1ba2923aba6464b53a715b83/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="/Users/Nate/.android/build-cache/d201e423606340482b789e86f036e6dd644f44b8/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="26.0.2"
         sha1="ba98864d70e8e27b3109c76c5418d41962eb952d">
         <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_9c8873315fde85f578669b62b9cf30c89297a141/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/b88c8c994e383eed3c49a31c9798a9182b253a31/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="241bafb36b47aee8c8c34acd08a1e7d735a66ff0">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_1aa9bc6e3ccf7c473ef09c62122cdf716e5a90ea/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/bd32c97b64820785d6cdf0b9c312ec174999585d/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="9176f96bb623ac8bbd2b79942d9e419f72f95301">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_a4e0706e94e45e571c16c0a1406d1a7d07065ba6/classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -291,6 +300,15 @@
     </item>
     <item
         is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/b57eb90edf859eb2b02633f2f442761d87e5ec34/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="b62fdc4cfef174c1e456014195c83fa7de7dc041">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_806c021f35d4fe6ca08e2b5ea3f4faf0d7df2939/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="/Users/Nate/.android/build-cache/2b4af0d94b8df18d9827927eac0a8154f85575d3/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
@@ -318,6 +336,15 @@
     </item>
     <item
         is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/a0042b21dd695780362c30c541970571d746742a/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="58b12bdb21a84f22e0dc3b047aeceb0a546b1b44">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_749b6639eede8920fdee56b3509b431d5abe0f26/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="/Users/Nate/.android/build-cache/773a1e7aa4c89e82cd83e5302521a5321a1ff0d8/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
@@ -333,6 +360,15 @@
         revision="26.0.2"
         sha1="a37fc31c5ceeaa4532a37358add1b189d8db4af1">
         <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_04b8f33029f11905cc7aac1979cd9b77e1f8ee66/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/.gradle/caches/modules-2/files-2.1/com.github.bumptech.glide/annotations/4.2.0/1d6fc29f2af61d8fdc31018416040c560423c4b3/annotations-4.2.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="1d6fc29f2af61d8fdc31018416040c560423c4b3">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/annotations-4.2.0_7eb11d3fbae4f498fab5d94dc35733d789327374/classes.dex" />
     </item>
     <item
         is-multidex="true"

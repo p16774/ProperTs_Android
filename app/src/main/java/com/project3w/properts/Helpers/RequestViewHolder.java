@@ -23,5 +23,33 @@ public class RequestViewHolder extends RecyclerView.ViewHolder {
         requestStatus = itemView.findViewById(R.id.request_status);
         requestDate = itemView.findViewById(R.id.request_date);
 
+        //listener set on ENTIRE ROW
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClickListener.onItemClick(v, getAdapterPosition());
+
+            }
+        });
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mClickListener.onItemLongClick(v, getAdapterPosition());
+                return true;
+            }
+        });
+
+    }
+
+    private RequestViewHolder.ClickListener mClickListener;
+
+    //Interface to send callbacks...
+    public interface ClickListener{
+        void onItemClick(View view, int position);
+        void onItemLongClick(View view, int position);
+    }
+
+    public void setOnClickListener(RequestViewHolder.ClickListener clickListener){
+        mClickListener = clickListener;
     }
 }

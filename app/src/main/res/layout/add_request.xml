@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textMultiLine"
-            android:hint=""/>
+            android:hint="Enter the details of your request"/>
 
     </LinearLayout>
 </ScrollView>

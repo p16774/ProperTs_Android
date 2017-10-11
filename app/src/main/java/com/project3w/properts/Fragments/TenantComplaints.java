@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -24,36 +22,31 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.project3w.properts.Helpers.RequestViewHolder;
+import com.project3w.properts.Helpers.ComplaintViewHolder;
 import com.project3w.properts.LoginActivity;
-import com.project3w.properts.Objects.Request;
+import com.project3w.properts.Objects.Complaint;
 import com.project3w.properts.R;
 
 /**
- * Created by Nate on 10/7/17.
+ * Created by Nate on 10/11/17.
  */
 
-public class TenantMaintenance extends Fragment {
+public class TenantComplaints extends Fragment {
 
     // class variables
     FirebaseAuth mAuth;
     FirebaseUser mUser;
     Activity mActivity;
-    RecyclerView requestView;
-    FirebaseRecyclerAdapter requestAdapter;
+    RecyclerView complaintView;
+    FirebaseRecyclerAdapter complaintAdapter;
 
-    public interface AddNewRequestListener {
-        void addNewRequest();
+    public interface AddNewComplaintListener {
+        void addNewComplaint();
     }
 
-    public interface DisplayRequestListener {
-        void displayRequest(Request request);
-    }
+    AddNewComplaintListener onAddNewComplaintListener;
 
-    AddNewRequestListener onAddRequestListener;
-    DisplayRequestListener onDisplayRequestListener;
-
-    public TenantMaintenance() {
+    public TenantComplaints() {
     }
 
     @Override
@@ -74,14 +67,13 @@ public class TenantMaintenance extends Fragment {
         } else {
             // attach our listener
             try {
-                onAddRequestListener = (AddNewRequestListener) mActivity;
-                onDisplayRequestListener = (DisplayRequestListener) mActivity;
+                onAddNewComplaintListener = (AddNewComplaintListener) mActivity;
             } catch (ClassCastException e) {
                 throw new ClassCastException(mActivity.toString() + " must implement AddNewRequestListener");
             }
         }
 
-        return inflater.inflate(R.layout.tenant_maintenance, container, false);
+        return inflater.inflate(R.layout.tenant_complaints, container, false);
     }
 
     @Override
@@ -96,59 +88,69 @@ public class TenantMaintenance extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // setup our fab to add new requests
-        FloatingActionButton fab = getActivity().findViewById(R.id.maintenance_fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.complaint_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onAddRequestListener.addNewRequest();
+                onAddNewComplaintListener.addNewComplaint();
             }
         });
 
         // grab the reference to our RecyclerView
-        requestView = getActivity().findViewById(R.id.request_list);
+        complaintView = getActivity().findViewById(R.id.complaint_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
 
         // setup our database references
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        Query tenantRequestsQuery = firebaseDatabase.getReference("requests")
+        Query tenantComplaintQuery = firebaseDatabase.getReference("complaints")
                 .child(mUser.getUid())
                 .orderByChild("complaintDate");
 
         // setup our RecyclerView to display content
-        FirebaseRecyclerOptions<Request> maintenanceOptions =
-                new FirebaseRecyclerOptions.Builder<Request>()
-                .setQuery(tenantRequestsQuery, Request.class)
-                .build();
+        FirebaseRecyclerOptions<Complaint> complaintOptions =
+                new FirebaseRecyclerOptions.Builder<Complaint>()
+                        .setQuery(tenantComplaintQuery, Complaint.class)
+                        .build();
 
-        requestAdapter = new FirebaseRecyclerAdapter<Request, RequestViewHolder>(maintenanceOptions) {
+        complaintAdapter = new FirebaseRecyclerAdapter<Complaint, ComplaintViewHolder>(complaintOptions) {
             @Override
-            public RequestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public ComplaintViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 // Create a new instance of the ViewHolder, in this case we are using a custom
                 // layout called R.layout.message for each item
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.viewholder_request, parent, false);
-                return new RequestViewHolder(view);
+                        .inflate(R.layout.viewholder_complaint, parent, false);
+                return new ComplaintViewHolder(view);
             }
 
             @Override
-            protected void onBindViewHolder(RequestViewHolder holder, int position, final Request model) {
+            protected void onBindViewHolder(ComplaintViewHolder holder, int position, final Complaint complaint) {
 
                 try {
-                    holder.requestTitle.setText(model.getRequestTitle());
-                    holder.requestStatus.setText(model.getRequestStatus());
-                    holder.requestDate.setText(model.getRequestDate());
+                    holder.complaintTitle.setText(complaint.getComplaintTitle());
+                    holder.complaintStatus.setText(complaint.getComplaintStatus());
+                    holder.complaintDate.setText(complaint.getComplaintDate());
 
-                    holder.setOnClickListener(new RequestViewHolder.ClickListener() {
+                    holder.setOnClickListener(new ComplaintViewHolder.ClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
-                            onDisplayRequestListener.displayRequest(model);
-                        }
-
-                        @Override
-                        public void onItemLongClick(View view, int position) {
-                            //TODO: option to cancel request???
+                            new MaterialDialog.Builder(getActivity())
+                                    .title("Complaint: " + complaint.getComplaintID())
+                                    .content("Submitted: " + complaint.getComplaintDate() +
+                                            "\nStatus: " + complaint.getComplaintStatus() +
+                                            "\n\n" + complaint.getComplaintContent())
+                                    .positiveText("OK")
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .positiveColorRes(R.color.colorBlack)
+                                    .cancelable(true)
+                                    .build()
+                                    .show();
                         }
                     });
                 } catch (Exception e) {
@@ -158,19 +160,20 @@ public class TenantMaintenance extends Fragment {
         };
 
         // call our recycler
-        requestView.setAdapter(requestAdapter);
-        requestView.setLayoutManager(layoutManager);
+        complaintView.setAdapter(complaintAdapter);
+        complaintView.setLayoutManager(layoutManager);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        requestAdapter.startListening();
+        complaintAdapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        requestAdapter.stopListening();
+        complaintAdapter.stopListening();
     }
+
 }

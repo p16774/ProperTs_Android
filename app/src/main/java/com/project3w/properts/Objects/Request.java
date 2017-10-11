@@ -2,6 +2,7 @@ package com.project3w.properts.Objects;
 
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import java.util.Map;
  * Created by Nate on 9/30/17.
  */
 
-public class Request {
+public class Request implements Serializable {
 
     // class variables
     private String requestID, requestTitle, requestContent, requestUrgency, requestDate,
@@ -100,11 +101,11 @@ public class Request {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("requestID", requestID);
-        result.put("requestTitle", requestTitle);
+        result.put("complaintTitle", requestTitle);
         result.put("requestContent", requestContent);
         result.put("requestUrgency", requestUrgency);
-        result.put("requestDate", requestDate);
-        result.put("requestStatus", requestStatus);
+        result.put("complaintDate", requestDate);
+        result.put("complaintStatus", requestStatus);
         result.put("requestOpenImagePath", requestOpenImagePath);
         result.put("requestClosedImagePath", requestClosedImagePath);
 

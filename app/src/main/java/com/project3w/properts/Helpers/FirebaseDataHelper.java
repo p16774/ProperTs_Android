@@ -15,6 +15,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.project3w.properts.Objects.AccountVerification;
+import com.project3w.properts.Objects.Complaint;
 import com.project3w.properts.Objects.Request;
 import com.project3w.properts.Objects.Tenant;
 
@@ -123,7 +124,7 @@ public class FirebaseDataHelper {
             // grab our StorageReference
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-e2eaf.appspot.com");
-            StorageReference saveLocationRef = storageRef.child("requestImages/" + currentUser.getUid() + "/" + requestKey);
+            StorageReference saveLocationRef = storageRef.child("requestImages/" + requestKey);
 
             // get our Uri File reference
             Uri imageUri = Uri.fromFile(new File(request.getRequestOpenImagePath()));
@@ -164,4 +165,33 @@ public class FirebaseDataHelper {
 
         return false;
     }
+
+    public boolean submitComplaint(Complaint complaint) {
+
+        // get firebase database instance and reference
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+
+        if (currentUser != null) {
+
+            // get our location reference
+            DatabaseReference newComplaintRef = firebaseDatabase.getReference("complaints").child(currentUser.getUid());
+
+            // create our key to update
+            String complaintKey = newComplaintRef.push().getKey();
+
+            // add in our key and empty closed image path and update our image path to Firebase Storage location
+            complaint.setComplaintID(complaintKey);
+
+            // create our map to updateChildren
+            Map<String, Object> complaintData = complaint.toMap();
+            complaintData.put(complaintKey, complaint);
+            // update data
+            newComplaintRef.child(complaintKey).setValue(complaintData);
+            return true;
+        }
+
+        return false;
+    }
+
 }

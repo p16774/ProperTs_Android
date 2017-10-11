@@ -3,17 +3,11 @@ package com.project3w.properts;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
@@ -24,27 +18,32 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.properts.Fragments.AddComplaintFragment;
 import com.project3w.properts.Fragments.AddRequestFragment;
 import com.project3w.properts.Fragments.AddTenantFragment;
 import com.project3w.properts.Fragments.ManagerContent;
 import com.project3w.properts.Fragments.ManagerHome;
+import com.project3w.properts.Fragments.TenantComplaints;
 import com.project3w.properts.Fragments.TenantHome;
 import com.project3w.properts.Fragments.TenantMaintenance;
-
-import java.io.File;
-import java.io.IOException;
+import com.project3w.properts.Fragments.ViewRequestFragment;
+import com.project3w.properts.Objects.Request;
 
 public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener,
         ManagerContent.DismissFragmentListener,
         ManagerContent.AddNewTenantListener,
-        TenantMaintenance.AddNewRequestListener {
+        TenantMaintenance.AddNewRequestListener,
+        TenantMaintenance.DisplayRequestListener,
+        AddRequestFragment.DismissFragmentListener,
+        ViewRequestFragment.DismissFragmentListener,
+        TenantComplaints.AddNewComplaintListener,
+        AddComplaintFragment.DismissFragmentListener {
 
     // class variables
     FirebaseUser mUser;
     AHBottomNavigation bottomNavigation;
     Boolean tenantMenu = false;
-    String userType = "", mCurrentPhotoPath;
-    public static final int REQUEST_IMAGE_CAPTURE = 0x01001;
+    String userType = "";
 
 
     @Override
@@ -142,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
                                     callMaintenance();
                                     break;
                                 case 4:
-                                    // TODO: add complaint functions
+                                    callComplaints();
                                     break;
 
                             }
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
                                     callMaintenance();
                                     break;
                                 case 3:
-                                    // TODO: add complaint functions
+                                    callComplaints();
                                     break;
                             }
 
@@ -239,6 +238,38 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
                 // add the TenantHome fragment
                 TenantMaintenance tm = new TenantMaintenance();
                 fragmentTransaction.replace(R.id.main_view_container, tm);
+                fragmentTransaction.commit();
+
+                break;
+            case "maintenance":
+
+                // add the MaintenanceHome Fragment
+                //TODO: create the maintenance home fragment
+                break;
+
+            //TODO: create default display showing error - no access assigned and prevent usage
+        }
+    }
+
+    protected void callComplaints() {
+        // start our Fragment Manager
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        switch (userType) {
+            case "manager":
+
+                // add the ManagerHome fragment
+                ManagerHome mf = new ManagerHome();
+                fragmentTransaction.replace(R.id.main_view_container, mf);
+                fragmentTransaction.commit();
+
+                break;
+            case "tenant":
+
+                // add the TenantHome fragment
+                TenantComplaints tc = new TenantComplaints();
+                fragmentTransaction.replace(R.id.main_view_container, tc);
                 fragmentTransaction.commit();
 
                 break;
@@ -306,4 +337,35 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         fragmentTransaction.replace(R.id.main_view_container, ar);
         fragmentTransaction.commit();
     }
+
+    @Override
+    public void displayRequest(Request request) {
+        // create intent to send the user to the View Request Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        ViewRequestFragment ar = new ViewRequestFragment().newInstance(request);
+        fragmentTransaction.replace(R.id.main_view_container, ar);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void dismissRequestFragment() {
+        callMaintenance();
+    }
+
+    @Override
+    public void addNewComplaint() {
+        // create intent to send the user to the Add Request Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        AddComplaintFragment ac = new AddComplaintFragment();
+        fragmentTransaction.replace(R.id.main_view_container, ac);
+        fragmentTransaction.commit();
+    }
+
+    //@Override
+    public void dismissComplaintFragment() {
+        callComplaints();
+    }
+
 }

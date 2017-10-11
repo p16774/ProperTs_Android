@@ -1,5 +1,6 @@
 package com.project3w.properts.Fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,8 +43,15 @@ public class AddRequestFragment extends Fragment {
     ImageView requestPictureView;
     Spinner requestUrgencySpinner;
     String mCurrentPhotoPath;
+    Activity mActivity;
     public static final int REQUEST_IMAGE_CAPTURE = 0x01001;
 
+    public interface DismissFragmentListener {
+        void dismissRequestFragment();
+    }
+
+
+    DismissFragmentListener onDismissFragmentListener;
 
     public AddRequestFragment() {
 
@@ -55,6 +63,15 @@ public class AddRequestFragment extends Fragment {
         // set to be able to replace menu for the fragment
         View view = inflater.inflate(R.layout.add_request, container, false);
         setHasOptionsMenu(true);
+
+        // attach the interface listener
+        mActivity = getActivity();
+        try {
+            onDismissFragmentListener = (DismissFragmentListener) mActivity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(mActivity.toString() + " must implement DismissFragmentListener");
+        }
+
         return view;
     }
 
@@ -88,6 +105,7 @@ public class AddRequestFragment extends Fragment {
             dispatchTakePictureIntent();
         } else if (id == R.id.action_save_request) {
             boolean success = submitNewRequest();
+            //TODO: display message that something didn't save correctly
         }
 
         return super.onOptionsItemSelected(item);
@@ -123,9 +141,11 @@ public class AddRequestFragment extends Fragment {
             Request newRequest = new Request(title,content,urgency,date,status,picture);
             boolean submitted = firebaseDataHelper.submitMaintenanceRequest(newRequest);
 
-            System.out.println("REQUEST WAS SUBMITTED AND RESULT WAS: " + submitted);
+            if(submitted) {
+                onDismissFragmentListener.dismissRequestFragment();
+            }
 
-            return true;
+            return false;
 
         }
 
