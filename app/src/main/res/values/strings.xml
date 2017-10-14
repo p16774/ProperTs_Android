@@ -18,6 +18,13 @@
     <string name="spinner_prompt">Select Request Urgency</string>
 
 
+
+    <string name="company_creation_welcome">We need just a few bits of information before you go live with your clients.
+        Enter the information below to create your Rental Company.
+        Don\'t worry if you don\'t have one right now, you can always change this name later from within the app."</string>
+    <string name="enter_company_name">Enter Company Name</string>
+
+
     <string-array name="urgencyValues">
         <item>Normal</item>
         <item>Urgent</item>
