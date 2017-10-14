@@ -1,6 +1,8 @@
 package com.project3w.newproperts.Helpers;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -9,8 +11,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -23,6 +28,8 @@ import com.project3w.newproperts.Objects.User;
 
 import java.io.File;
 import java.util.HashMap;
+
+import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
 
 public class FirebaseDataHelper {
 
@@ -220,6 +227,35 @@ public class FirebaseDataHelper {
 
         // create our manager user inside our new company/property
         createUserReference(companyCode, "", "manager");
+    }
+
+    public void setSharedCompanyCode() {
+        // get our user data
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // validate for null
+        if (mUser != null) {
+            // get firebase references
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            DatabaseReference companyCodeRef = firebaseDatabase.getReference().child("users").child(mUser.getUid());
+            companyCodeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User currentUser = dataSnapshot.getValue(User.class);
+                    if(currentUser != null) {
+                        SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+                        mPrefs.edit().putString(COMPANY_CODE, currentUser.getCompanyCode()).apply();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
     }
 
 

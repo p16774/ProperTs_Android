@@ -1,6 +1,7 @@
 package com.project3w.newproperts;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -21,20 +22,14 @@ import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
-    // string values for intents
-    public static final String EXTRA_USER_EMAIL = "com.project3w.properts.EXTRA_USER_EMAIL";
-    public static final String EXTRA_USER_PASSWORD = "com.project3w.properts.EXTRA_USER_PASSWORD";
-
     // Firebase Auth Variables
     public static FirebaseUser user;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     // class variables for UI functions
-    Button signupButton;
-    Button loginButton;
-    EditText emailEditText;
-    EditText passwordEditText;
+    Button signupButton, loginButton;
+    EditText emailEditText, passwordEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +61,10 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         //Link variables to XML
-        signupButton = (Button) findViewById(R.id.signUpScreenButton);
-        loginButton = (Button) findViewById(R.id.loginButton);
-        emailEditText = (EditText) findViewById(R.id.loginEmailEditText);
-        passwordEditText = (EditText) findViewById(R.id.loginPasswordEditText);
+        signupButton = findViewById(R.id.signUpScreenButton);
+        loginButton = findViewById(R.id.loginButton);
+        emailEditText = findViewById(R.id.loginEmailEditText);
+        passwordEditText = findViewById(R.id.loginPasswordEditText);
 
         //Setup signup button listener
         signupButton.setOnClickListener(new View.OnClickListener() {

@@ -3,15 +3,8 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Spinner
-        android:id="@+id/tenant_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
-    <Spinner
-        android:id="@+id/unit_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <include layout="@android:layout/list_content"/>
 
 
 </LinearLayout>

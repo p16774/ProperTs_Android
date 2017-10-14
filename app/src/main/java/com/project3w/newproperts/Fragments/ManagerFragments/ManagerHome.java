@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +20,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,15 +43,18 @@ import java.util.HashMap;
  * Created by Nate on 9/20/17.
  */
 
-public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedListener {
+public class ManagerHome extends ListFragment {
 
-    WebView apartmentView;
-    Boolean landscapeView;
-    Spinner tenantSpinner, unitSpinner;
+    // class variables
     Activity mActivity;
-    private FirebaseDatabase firebaseDatabase;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
+
+    public interface MenuOptionSelectedListener {
+        void openMenuOption(String menuOption);
+    }
+
+    MenuOptionSelectedListener onMenuOptionSelectedListener;
 
     public ManagerHome() {
         // empty constructor
@@ -69,9 +75,16 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
             Intent loginScreen = new Intent(getActivity(), LoginActivity.class);
             startActivity(loginScreen);
             getActivity().finish();
+        }else {
+            // attach our listener
+            try {
+                onMenuOptionSelectedListener = (MenuOptionSelectedListener) mActivity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(mActivity.toString() + " must implement MenuOptionSelectedListener");
+            }
         }
 
-        return inflater.inflate(R.layout.manager_home, container, false);
+        return super.onCreateView(inflater, container, savedInstanceState);
 
     }
 
@@ -83,28 +96,37 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        // assign the firebase data to the instance for later data calls
-        firebaseDatabase = FirebaseDatabase.getInstance();
+        ArrayList<String> displayItems = new ArrayList<>();
+        displayItems.add("Manage Rental Units");
+        displayItems.add("Update Company Info");
+        displayItems.add("Manage Staff Members");
+        displayItems.add("Add a New Tenant");
 
-        // assign our values for the view
-        tenantSpinner = getActivity().findViewById(R.id.tenant_spinner);
-        unitSpinner = getActivity().findViewById(R.id.unit_spinner);
+        // create our adapter and set it to our listview
+        ArrayAdapter<String> managerOptionsAdapter = new ArrayAdapter<>(getActivity(), R.layout.manager_items, displayItems);
+        setListAdapter(managerOptionsAdapter);
 
-        // setup the lower spinner to select tenant instead of from the picture
-        ArrayList<String> unitNumbers = new ArrayList<>();
-        unitNumbers.add("Not Working Yet");
-        unitNumbers.add("Implementing New");
-        unitNumbers.add("Home Page Tomorrow");
-
-        getCurrentTenants();
-        getSpinnerData(unitSpinner, unitNumbers);
+        // set a background to the page
+        getListView().setBackground(ContextCompat.getDrawable(mActivity, R.drawable.manager_bg));
 
     }
 
-    private void getCurrentTenants() {
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        // call the appropriate flag to transition to the right fragment
+        switch (position) {
+            case 0:
+                onMenuOptionSelectedListener.openMenuOption("units");
+                break;
+        }
+
+        super.onListItemClick(l, v, position, id);
+    }
+
+    /*private void getCurrentTenants() {
 
         // get our database reference
         DatabaseReference currentTenantRef = firebaseDatabase.getReference("currentTenants");
@@ -153,9 +175,9 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
 
             }
         });
-    }
+    }*/
 
-    private void getSpinnerData(Spinner spinner, ArrayList<String> list) {
+  /*private void getSpinnerData(Spinner spinner, ArrayList<String> list) {
 
         // setup our data selections
         // TODO: Firebase pull of all active tenants to populate spinner
@@ -169,38 +191,7 @@ public class ManagerHome extends Fragment implements AdapterView.OnItemSelectedL
 
         spinner.setAdapter(arrayAdapter);
 
-    }
+    }*/
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-        // get parent id for the spinner
-        int spinnerId = parent.getId();
-
-        // switch data based on the id of the spinner
-        switch (spinnerId) {
-
-            case R.id.tenant_spinner:
-                // On selecting a spinner item
-                String item = parent.getItemAtPosition(position).toString();
-
-                // Showing selected spinner item
-                //Toast.makeText(parent.getContext(), "Tenant Selected: " + item, Toast.LENGTH_LONG).show();
-                break;
-            case R.id.unit_spinner:
-                // On selecting a spinner item
-                String unit = parent.getItemAtPosition(position).toString();
-
-                // Showing selected spinner item
-                //Toast.makeText(parent.getContext(), "Unit Selected: " + unit, Toast.LENGTH_LONG).show();
-                break;
-            default:
-                break;
-
-        }
-    }
-
-    public void onNothingSelected(AdapterView<?> arg0) {
-        // TODO Auto-generated method stub
-    }
 }

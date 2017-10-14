@@ -9,6 +9,9 @@ public class User {
     // class variables
     String companyCode, propertyCode, tenantID, accessRole;
 
+    public User() {
+    }
+
     public User(String companyCode, String propertyCode, String tenantID, String accessRole) {
         this.companyCode = companyCode;
         this.propertyCode = propertyCode;

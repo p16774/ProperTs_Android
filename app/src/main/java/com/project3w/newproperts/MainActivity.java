@@ -1,6 +1,8 @@
 package com.project3w.newproperts;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
 import com.project3w.newproperts.Fragments.TenantFragments.AddComplaintFragment;
 import com.project3w.newproperts.Fragments.TenantFragments.AddRequestFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.AddTenantFragment;
@@ -27,6 +30,7 @@ import com.project3w.newproperts.Fragments.TenantFragments.TenantComplaints;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantHome;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantMaintenance;
 import com.project3w.newproperts.Fragments.TenantFragments.ViewRequestFragment;
+import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.Objects.Request;
 
 public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener,
@@ -37,13 +41,17 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         AddRequestFragment.DismissFragmentListener,
         ViewRequestFragment.DismissFragmentListener,
         TenantComplaints.AddNewComplaintListener,
-        AddComplaintFragment.DismissFragmentListener {
+        AddComplaintFragment.DismissFragmentListener,
+        ManagerHome.MenuOptionSelectedListener {
 
     // class variables
     FirebaseUser mUser;
     AHBottomNavigation bottomNavigation;
     Boolean tenantMenu = false;
     String userType = "";
+    FirebaseDataHelper mHelper;
+
+    public static final String COMPANY_CODE = "com.project3w.properts.COMPANY_CODE";
 
 
     @Override
@@ -58,12 +66,17 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
 
+        mHelper = new FirebaseDataHelper(this);
+
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         if (mUser == null) {
             Intent loginScreen = new Intent(this, LoginActivity.class);
             startActivity(loginScreen);
             finish();
         } else {
+
+            // set our sharedpreference of the company code
+            mHelper.setSharedCompanyCode();
 
             if (userType.equals("")) {
 
@@ -80,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
                             // call in our bottom navigation library
                             bottomNavigation = findViewById(R.id.bottom_navigation);
                             bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
-                            bottomNavigation.setAccentColor(Color.parseColor("#F63D2B"));
-                            bottomNavigation.setInactiveColor(Color.parseColor("#747474"));
+                            bottomNavigation.setAccentColor(Color.parseColor("#0D47A1"));
+                            bottomNavigation.setInactiveColor(Color.parseColor("#888888"));
 
                             // call home fragment on initial start up
                             callHome();
@@ -357,4 +370,17 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         callComplaints();
     }
 
+    @Override
+    public void openMenuOption(String menuOption) {
+        switch (menuOption) {
+            case "units":
+                // create intent to send the user to the Add Request Fragment
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                ManagerUnits mu = new ManagerUnits();
+                fragmentTransaction.replace(R.id.main_view_container, mu);
+                fragmentTransaction.commit();
+                break;
+        }
+    }
 }
