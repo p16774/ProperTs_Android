@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.newproperts.Fragments.ManagerFragments.AddUnitFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
 import com.project3w.newproperts.Fragments.TenantFragments.AddComplaintFragment;
 import com.project3w.newproperts.Fragments.TenantFragments.AddRequestFragment;
@@ -32,6 +33,7 @@ import com.project3w.newproperts.Fragments.TenantFragments.TenantMaintenance;
 import com.project3w.newproperts.Fragments.TenantFragments.ViewRequestFragment;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.Objects.Request;
+import com.project3w.newproperts.Objects.Unit;
 
 public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener,
         ManagerContent.DismissFragmentListener,
@@ -42,7 +44,10 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         ViewRequestFragment.DismissFragmentListener,
         TenantComplaints.AddNewComplaintListener,
         AddComplaintFragment.DismissFragmentListener,
-        ManagerHome.MenuOptionSelectedListener {
+        ManagerHome.MenuOptionSelectedListener,
+        ManagerUnits.AddNewUnitListener,
+        ManagerUnits.EditUnitListener,
+        AddUnitFragment.DismissUnitFragmentListener {
 
     // class variables
     FirebaseUser mUser;
@@ -382,5 +387,30 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
                 fragmentTransaction.commit();
                 break;
         }
+    }
+
+    @Override
+    public void addNewUnit() {
+        // create intent to send the user to the Add Request Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        AddUnitFragment au = new AddUnitFragment().newInstance(false, new Unit());
+        fragmentTransaction.replace(R.id.main_view_container, au);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void editUnit(Unit unit) {
+        // create intent to send the user to the Edit Unit Fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        AddUnitFragment au = new AddUnitFragment().newInstance(true, unit);
+        fragmentTransaction.replace(R.id.main_view_container, au);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void dismissUnitFragment() {
+        openMenuOption("units");
     }
 }

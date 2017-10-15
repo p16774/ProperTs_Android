@@ -43,6 +43,18 @@ public class ManagerUnits extends Fragment {
     FirebaseRecyclerAdapter unitAdapter;
     String companyCode;
 
+
+    public interface AddNewUnitListener {
+        void addNewUnit();
+    }
+
+    public interface EditUnitListener {
+        void editUnit(Unit unit);
+    }
+
+    AddNewUnitListener onAddNewUnitListener;
+    EditUnitListener onEditUnitListener;
+
     public ManagerUnits() {
     }
 
@@ -68,6 +80,14 @@ public class ManagerUnits extends Fragment {
             // grab our company code from shared preferences
             SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
             companyCode = mPrefs.getString(COMPANY_CODE, null);
+
+            // attach our listener
+            try {
+                onAddNewUnitListener = (AddNewUnitListener) mActivity;
+                onEditUnitListener = (EditUnitListener) mActivity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(mActivity.toString() + " must implement AddNewRequestListener");
+            }
         }
 
         // assign our recycler view
@@ -93,7 +113,7 @@ public class ManagerUnits extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //onAddRequestListener.addNewRequest();
+                onAddNewUnitListener.addNewUnit();
             }
         });
 
@@ -135,7 +155,7 @@ public class ManagerUnits extends Fragment {
                     holder.setOnClickListener(new UnitViewHolder.ClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
-                            //onDisplayRequestListener.displayRequest(model);
+                            onEditUnitListener.editUnit(model);
                         }
                     });
                 } catch (Exception e) {

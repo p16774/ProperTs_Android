@@ -39,7 +39,7 @@ import java.util.HashMap;
 public class ManagerContent extends Fragment {
 
     // class variables
-    public static final String UNIT_NUMBER = "com.project3w.properts.UNIT_NUMBER";
+    public static final String UNIT_NUMBER = "com.project3w.properts.UNIT_INFO";
     String chosenUnit;
     Tenant selectedTenant;
 

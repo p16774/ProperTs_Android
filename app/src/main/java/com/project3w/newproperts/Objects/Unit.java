@@ -1,23 +1,34 @@
 package com.project3w.newproperts.Objects;
 
+import java.io.Serializable;
+
 /**
  * Created by Nate on 10/14/17.
  */
 
-public class Unit {
+public class Unit implements Serializable {
 
     // class variables
-    String unitAddress, unitBeds, unitBaths, unitSqFt, unitNotes;
+    String unitID, unitAddress, unitBeds, unitBaths, unitSqFt, unitNotes;
 
     public Unit() {
     }
 
     public Unit(String unitAddress, String unitBeds, String unitBaths, String unitSqFt, String unitNotes) {
+        this.unitID = "";
         this.unitAddress = unitAddress;
         this.unitBeds = unitBeds;
         this.unitBaths = unitBaths;
         this.unitSqFt = unitSqFt;
         this.unitNotes = unitNotes;
+    }
+
+    public String getUnitID() {
+        return unitID;
+    }
+
+    public void setUnitID(String unitID) {
+        this.unitID = unitID;
     }
 
     public String getUnitAddress() {

@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 
+import com.google.android.gms.common.data.Freezable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +25,7 @@ import com.project3w.newproperts.Objects.Company;
 import com.project3w.newproperts.Objects.Complaint;
 import com.project3w.newproperts.Objects.Request;
 import com.project3w.newproperts.Objects.Tenant;
+import com.project3w.newproperts.Objects.Unit;
 import com.project3w.newproperts.Objects.User;
 
 import java.io.File;
@@ -35,19 +37,23 @@ public class FirebaseDataHelper {
 
     // class variables
     private Activity mActivity;
+    private String companyCode;
+    private FirebaseDatabase firebaseDatabase;
 
     public FirebaseDataHelper(Activity activity) {
         mActivity = activity;
+        SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+        companyCode = mPrefs.getString(COMPANY_CODE, null);
+        firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
 
     public void saveTenant(Tenant tenant, boolean newAccount ) {
 
         // get Firebase Database instances
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference tenantDataRef = database.getReference("tenants");
-        DatabaseReference needAccountRef = database.getReference("needAccount");
-        DatabaseReference unitTenantRef = database.getReference("currentTenants").child(tenant.getTenantAddress());
+        DatabaseReference tenantDataRef = firebaseDatabase.getReference("tenants");
+        DatabaseReference needAccountRef = firebaseDatabase.getReference("needAccount");
+        DatabaseReference unitTenantRef = firebaseDatabase.getReference("currentTenants").child(tenant.getTenantAddress());
 
         // concatenate tenant message
         String tenantMessage = "Tenant: " + tenant.getTenantName() + " updated successfully!";
@@ -90,7 +96,6 @@ public class FirebaseDataHelper {
     public boolean updateNewTenantAccount(String tenantID, String userID) {
 
         // method variables
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference("needAccount").child(tenantID);
         DatabaseReference linkTenantAccountRef = firebaseDatabase.getReference("tenants").child(tenantID).child("userID");
         DatabaseReference userRoleAccessRef = firebaseDatabase.getReference("users").child(userID);
@@ -119,7 +124,6 @@ public class FirebaseDataHelper {
 
         // get firebase database instance and reference
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
         if (currentUser != null) {
 
@@ -175,7 +179,6 @@ public class FirebaseDataHelper {
 
         // get firebase database instance and reference
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
         if (currentUser != null) {
 
@@ -203,7 +206,6 @@ public class FirebaseDataHelper {
         if (mUser != null) {
             // get our firebase reference
             String userID = mUser.getUid();
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
             DatabaseReference newUserRef = firebaseDatabase.getReference().child("users").child(userID);
             DatabaseReference companyUserRef = firebaseDatabase.getReference().child(companyCode).child("1").child("users").child(userID);
 
@@ -217,7 +219,6 @@ public class FirebaseDataHelper {
     public void createCompany(String companyName) {
 
         // create our company reference and get firebase key
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference createCompanyRef = firebaseDatabase.getReference().child("companies");
         String companyCode = createCompanyRef.push().getKey();
 
@@ -236,7 +237,6 @@ public class FirebaseDataHelper {
         // validate for null
         if (mUser != null) {
             // get firebase references
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
             DatabaseReference companyCodeRef = firebaseDatabase.getReference().child("users").child(mUser.getUid());
             companyCodeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -245,6 +245,7 @@ public class FirebaseDataHelper {
                     if(currentUser != null) {
                         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
                         mPrefs.edit().putString(COMPANY_CODE, currentUser.getCompanyCode()).apply();
+                        companyCode = mPrefs.getString(COMPANY_CODE, "");
                     }
                 }
 
@@ -254,10 +255,26 @@ public class FirebaseDataHelper {
                 }
             });
         }
-
-
     }
 
+    public void createNewUnit(Unit unit, boolean isNew) {
+        String unitKey;
+        if (!companyCode.isEmpty()) {
+            DatabaseReference unitCreateRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units");
+            if(isNew) {
+                unitKey = unitCreateRef.push().getKey();
+                unit.setUnitID(unitKey);
+            } else {
+                unitKey = unit.getUnitID();
+            }
+            unitCreateRef.child(unitKey).setValue(unit);
+        }
+    }
 
+    public void deleteSelectedUnit(Unit unit) {
+        String deleteUnitKey = unit.getUnitID();
+        DatabaseReference unitDeleteRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units").child(deleteUnitKey);
+        unitDeleteRef.removeValue();
+    }
 
 }
