@@ -111,7 +111,7 @@ public class TenantHome extends Fragment {
 
                             // check for null and assign our data to the views
                             if (currentTenant != null) {
-                                tenantNameView.setText(currentTenant.getTenantName());
+                                //tenantNameView.setText(currentTenant.getTenantName());
                                 tenantAddressView.setText(currentTenant.getTenantAddress());
                                 tenantPhoneView.setText(currentTenant.getTenantPhone());
                                 tenantEmailView.setText(currentTenant.getTenantEmail());

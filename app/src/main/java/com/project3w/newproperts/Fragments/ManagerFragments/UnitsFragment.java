@@ -23,7 +23,7 @@ import com.project3w.newproperts.R;
  * Created by Nate on 10/14/17.
  */
 
-public class AddUnitFragment extends Fragment implements View.OnClickListener {
+public class UnitsFragment extends Fragment implements View.OnClickListener {
 
     // class variables
     Activity mActivity;
@@ -45,9 +45,9 @@ public class AddUnitFragment extends Fragment implements View.OnClickListener {
     DismissUnitFragmentListener onDismissUnitFragmentListener;
 
 
-    public AddUnitFragment newInstance(Boolean editMode, Unit editUnit) {
+    public UnitsFragment newInstance(Boolean editMode, Unit editUnit) {
 
-        AddUnitFragment addUnitFragment = new AddUnitFragment();
+        UnitsFragment addUnitFragment = new UnitsFragment();
         Bundle args = new Bundle();
         args.putBoolean(UPDATE_UNIT, editMode);
         args.putSerializable(UNIT_INFO, editUnit);
@@ -108,7 +108,7 @@ public class AddUnitFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v) {
                         new MaterialDialog.Builder(getActivity())
-                                .title("Unit: " + newUnit.getUnitAddress())
+                                .title(newUnit.getUnitAddress())
                                 .content("Are you sure you want to delete \nUnit: " + newUnit.getUnitAddress() + "?")
                                 .positiveText("DELETE")
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {

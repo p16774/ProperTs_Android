@@ -1,23 +1,24 @@
 package com.project3w.newproperts.Objects;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by Nate on 9/30/17.
  */
 
-public class Tenant {
+public class Tenant implements Serializable {
 
     // class variables
-    private String tenantID, userID, tenantName, tenantAddress, tenantEmail, tenantPhone, tenantMoveInDate, tenantDeposit, tenantKeys, tenantOccupants;
-    private Map<String,Boolean> tenantMessageIds;
+    private String tenantID, userID, tenantFirstName, tenantLastName, tenantAddress, tenantEmail, tenantPhone, tenantMoveInDate, tenantDeposit, tenantKeys, tenantOccupants;
 
-    private Tenant() {
+    public Tenant() {
         // used for firebase
     }
 
-    public Tenant(String tenantName, String tenantAddress, String tenantEmail, String tenantPhone, String tenantMoveInDate, String tenantDeposit, String tenantKeys, String tenantOccupants) {
-        this.tenantName = tenantName;
+    public Tenant(String tenantFirstName, String tenantLastName, String tenantAddress, String tenantEmail, String tenantPhone, String tenantMoveInDate, String tenantDeposit, String tenantKeys, String tenantOccupants) {
+        this.tenantFirstName = tenantFirstName;
+        this.tenantLastName = tenantLastName;
         this.tenantAddress = tenantAddress;
         this.tenantEmail = tenantEmail;
         this.tenantMoveInDate = tenantMoveInDate;
@@ -43,12 +44,20 @@ public class Tenant {
         this.userID = userID;
     }
 
-    public String getTenantName() {
-        return tenantName;
+    public String getTenantFirstName() {
+        return tenantFirstName;
     }
 
-    public void setTenantName(String tenantName) {
-        this.tenantName = tenantName;
+    public void setTenantFirstName(String tenantFirstName) {
+        this.tenantFirstName = tenantFirstName;
+    }
+
+    public String getTenantLastName() {
+        return tenantLastName;
+    }
+
+    public void setTenantLastName(String tenantLastName) {
+        this.tenantLastName = tenantLastName;
     }
 
     public String getTenantAddress() {
@@ -107,11 +116,20 @@ public class Tenant {
         this.tenantOccupants = tenantOccupants;
     }
 
-    public Map<String, Boolean> getTenantMessageIds() {
-        return tenantMessageIds;
-    }
-
-    public void setTenantMessageIds(Map<String, Boolean> tenantMessageIds) {
-        this.tenantMessageIds = tenantMessageIds;
+    @Override
+    public String toString() {
+        return "Tenant{" +
+                "tenantID='" + tenantID + '\'' +
+                ", userID='" + userID + '\'' +
+                ", tenantFirstName='" + tenantFirstName + '\'' +
+                ", tenantLastName='" + tenantLastName + '\'' +
+                ", tenantAddress='" + tenantAddress + '\'' +
+                ", tenantEmail='" + tenantEmail + '\'' +
+                ", tenantPhone='" + tenantPhone + '\'' +
+                ", tenantMoveInDate='" + tenantMoveInDate + '\'' +
+                ", tenantDeposit='" + tenantDeposit + '\'' +
+                ", tenantKeys='" + tenantKeys + '\'' +
+                ", tenantOccupants='" + tenantOccupants + '\'' +
+                '}';
     }
 }

@@ -109,7 +109,7 @@ public class VerifyFragment extends Fragment {
                                     // assign data from database pull
                                     AccountVerification av = dataSnapshot.getValue(AccountVerification.class);
                                     //TODO: validate for null
-                                    final String tenantName = av.getTenantName();
+                                    final String tenantName = av.getTenantLastName();
                                     String tenantAddress = av.getTenantAddress();
 
                                     // Use the Builder class for convenient dialog construction

@@ -121,6 +121,13 @@ public class ManagerHome extends ListFragment {
             case 0:
                 onMenuOptionSelectedListener.openMenuOption("units");
                 break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                onMenuOptionSelectedListener.openMenuOption("tenants");
+                break;
         }
 
         super.onListItemClick(l, v, position, id);
@@ -154,7 +161,7 @@ public class ManagerHome extends ListFragment {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     Tenant tenant = dataSnapshot.getValue(Tenant.class);
-                                    tenantNames.add(tenant.getTenantName());
+                                    tenantNames.add(tenant.getTenantLastName());
                                     getSpinnerData(tenantSpinner, tenantNames);
                                 }
 

@@ -51,12 +51,13 @@ public class FirebaseDataHelper {
     public void saveTenant(Tenant tenant, boolean newAccount ) {
 
         // get Firebase Database instances
-        DatabaseReference tenantDataRef = firebaseDatabase.getReference("tenants");
+        DatabaseReference tenantDataRef = firebaseDatabase.getReference().child(companyCode).child("1").child("tenants");
         DatabaseReference needAccountRef = firebaseDatabase.getReference("needAccount");
-        DatabaseReference unitTenantRef = firebaseDatabase.getReference("currentTenants").child(tenant.getTenantAddress());
+        DatabaseReference unitTenantRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                                                    .child("currentTenants").child(tenant.getTenantAddress());
 
         // concatenate tenant message
-        String tenantMessage = "Tenant: " + tenant.getTenantName() + " updated successfully!";
+        String tenantMessage = "Tenant: " + tenant.getTenantFirstName() + " " + tenant.getTenantLastName() + " updated successfully!";
 
         // check for new account and run steps necessary for new tenant creation
         if (newAccount) {
@@ -66,7 +67,7 @@ public class FirebaseDataHelper {
             tenant.setUserID(""); // added to prevent iOS code from crashing
 
             // create AccountVerification object
-            AccountVerification accountVerification = new AccountVerification(tenant.getTenantName(), tenant.getTenantAddress());
+            AccountVerification accountVerification = new AccountVerification(tenant.getTenantLastName(), tenant.getTenantAddress());
 
             // create the account verification map
             HashMap<String, Object> needAccount = new HashMap<>();
@@ -76,11 +77,17 @@ public class FirebaseDataHelper {
             needAccountRef.updateChildren(needAccount);
 
             // concatenate tenant message
-            tenantMessage = "Tenant: " + tenant.getTenantName() + " created successfully!";
+            tenantMessage = "Tenant: " + tenant.getTenantFirstName() + " " + tenant.getTenantLastName() + " created successfully!";
         }
 
         // create the currentTenant value
         unitTenantRef.setValue(tenant.getTenantID());
+
+        // validate for null on userID - this is a check should the manager update something in the account before the user
+        // creates their user account and the tenant object gets updated
+        if(tenant.getUserID() == null) {
+            tenant.setUserID("");
+        }
 
         // create HashMap for updating tenants
         HashMap<String, Object> newTenant = new HashMap<>();
@@ -259,16 +266,21 @@ public class FirebaseDataHelper {
 
     public void createNewUnit(Unit unit, boolean isNew) {
         String unitKey;
+        String unitMessage = "Unit: " + unit.getUnitAddress() + " updated successfully!";
         if (!companyCode.isEmpty()) {
             DatabaseReference unitCreateRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units");
             if(isNew) {
                 unitKey = unitCreateRef.push().getKey();
                 unit.setUnitID(unitKey);
+                unitMessage = "Unit: " + unit.getUnitAddress() + " created successfully!";
             } else {
                 unitKey = unit.getUnitID();
             }
             unitCreateRef.child(unitKey).setValue(unit);
         }
+
+        // show success message
+        Snackbar.make(mActivity.findViewById(android.R.id.content), unitMessage, Snackbar.LENGTH_LONG).show();
     }
 
     public void deleteSelectedUnit(Unit unit) {

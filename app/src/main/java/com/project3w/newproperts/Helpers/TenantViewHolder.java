@@ -7,39 +7,37 @@ import android.widget.TextView;
 import com.project3w.newproperts.R;
 
 /**
- * Created by Nate on 10/11/17.
+ * Created by Nate on 10/15/17.
  */
 
-public class ComplaintViewHolder extends RecyclerView.ViewHolder {
+public class TenantViewHolder extends RecyclerView.ViewHolder {
 
     // class variables
-    public TextView complaintTitle, complaintStatus, complaintDate;
+    public TextView tenantName, tenantAddress;
 
-    public ComplaintViewHolder(View itemView) {
+    public TenantViewHolder(View itemView) {
         super(itemView);
 
-        complaintTitle = itemView.findViewById(R.id.complaint_title);
-        complaintStatus = itemView.findViewById(R.id.complaint_status);
-        complaintDate = itemView.findViewById(R.id.complaint_date);
+        tenantName = itemView.findViewById(R.id.tenant_name);
+        tenantAddress = itemView.findViewById(R.id.tenant_address);
 
         //listener set on ENTIRE ROW
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mClickListener.onItemClick(v, getAdapterPosition());
-
             }
         });
     }
 
-    private ComplaintViewHolder.ClickListener mClickListener;
+    private TenantViewHolder.ClickListener mClickListener;
 
     //Interface to send callbacks...
     public interface ClickListener{
         void onItemClick(View view, int position);
     }
 
-    public void setOnClickListener(ComplaintViewHolder.ClickListener clickListener){
+    public void setOnClickListener(TenantViewHolder.ClickListener clickListener){
         mClickListener = clickListener;
     }
 

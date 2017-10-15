@@ -1,8 +1,6 @@
 package com.project3w.newproperts;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,12 +18,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.project3w.newproperts.Fragments.ManagerFragments.AddUnitFragment;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerTenants;
+import com.project3w.newproperts.Fragments.ManagerFragments.UnitsFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
 import com.project3w.newproperts.Fragments.TenantFragments.AddComplaintFragment;
 import com.project3w.newproperts.Fragments.TenantFragments.AddRequestFragment;
-import com.project3w.newproperts.Fragments.ManagerFragments.AddTenantFragment;
-import com.project3w.newproperts.Fragments.ManagerFragments.ManagerContent;
+import com.project3w.newproperts.Fragments.ManagerFragments.TenantsFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantComplaints;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantHome;
@@ -33,11 +31,10 @@ import com.project3w.newproperts.Fragments.TenantFragments.TenantMaintenance;
 import com.project3w.newproperts.Fragments.TenantFragments.ViewRequestFragment;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.Objects.Request;
+import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.Objects.Unit;
 
-public class MainActivity extends AppCompatActivity implements AddTenantFragment.DismissFragmentListener,
-        ManagerContent.DismissFragmentListener,
-        ManagerContent.AddNewTenantListener,
+public class MainActivity extends AppCompatActivity implements TenantsFragment.DismissTenantFragmentListener,
         TenantMaintenance.AddNewRequestListener,
         TenantMaintenance.DisplayRequestListener,
         AddRequestFragment.DismissFragmentListener,
@@ -47,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         ManagerHome.MenuOptionSelectedListener,
         ManagerUnits.AddNewUnitListener,
         ManagerUnits.EditUnitListener,
-        AddUnitFragment.DismissUnitFragmentListener {
+        UnitsFragment.DismissUnitFragmentListener,
+        ManagerTenants.EditTenantFragmentListener {
 
     // class variables
     FirebaseUser mUser;
@@ -115,7 +113,30 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         }
     }
 
+    @Override
+    public void onBackPressed() {
+
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            super.onBackPressed();
+            //additional code
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+
+    }
+
+    private void clearBackStack() {
+        FragmentManager manager = getSupportFragmentManager();
+        if (manager.getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
+            manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+    }
+
     protected void callHome() {
+        clearBackStack();
 
         // start our Fragment Manager
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -150,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
                                     callHome();
                                     break;
                                 case 1:
-                                    // TODO: add tenants functions
+                                    callTenants();
                                     break;
                                 case 2:
                                     // TODO: add messaging functions
@@ -231,7 +252,18 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         }
     }
 
+    protected void callTenants() {
+        clearBackStack();
+        // start our Fragment Manager
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        ManagerTenants mt = new ManagerTenants();
+        fragmentTransaction.replace(R.id.main_view_container, mt);
+        fragmentTransaction.commit();
+    }
+
     protected void callMaintenance() {
+        clearBackStack();
          // start our Fragment Manager
         FragmentManager fragmentManager = getSupportFragmentManager();
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -270,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
     }
 
     protected void callComplaints() {
+        clearBackStack();
         // start our Fragment Manager
         FragmentManager fragmentManager = getSupportFragmentManager();
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -324,24 +357,13 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
     }
 
     @Override
-    public void dismissFragment() {
-        callHome();
-    }
-
-    @Override
-    public void addTenantInstead(String unit) {
-        //TODO: add tenant fragment with unit
-
-
-    }
-
-    @Override
     public void addNewRequest() {
         // create intent to send the user to the Add Request Fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         AddRequestFragment ar = new AddRequestFragment();
         fragmentTransaction.replace(R.id.main_view_container, ar);
+        fragmentTransaction.addToBackStack("addrequest");
         fragmentTransaction.commit();
     }
 
@@ -352,6 +374,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         ViewRequestFragment ar = new ViewRequestFragment().newInstance(request);
         fragmentTransaction.replace(R.id.main_view_container, ar);
+        fragmentTransaction.addToBackStack("displayrequest");
         fragmentTransaction.commit();
     }
 
@@ -367,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         AddComplaintFragment ac = new AddComplaintFragment();
         fragmentTransaction.replace(R.id.main_view_container, ac);
+        fragmentTransaction.addToBackStack("addcomplaint");
         fragmentTransaction.commit();
     }
 
@@ -378,13 +402,24 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
     @Override
     public void openMenuOption(String menuOption) {
         switch (menuOption) {
+
             case "units":
                 // create intent to send the user to the Add Request Fragment
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                FragmentManager unitManager = getSupportFragmentManager();
+                FragmentTransaction unitTransaction = unitManager.beginTransaction();
                 ManagerUnits mu = new ManagerUnits();
-                fragmentTransaction.replace(R.id.main_view_container, mu);
-                fragmentTransaction.commit();
+                unitTransaction.replace(R.id.main_view_container, mu);
+                unitTransaction.addToBackStack("manageunits");
+                unitTransaction.commit();
+                break;
+            case "tenants":
+                // switch to the main add fragment task - bypass the tenant view
+                FragmentManager tenantManager = getSupportFragmentManager();
+                FragmentTransaction tenantTransaction = tenantManager.beginTransaction();
+                TenantsFragment at = new TenantsFragment().newInstance(false, new Tenant());
+                tenantTransaction.replace(R.id.main_view_container, at);
+                tenantTransaction.addToBackStack("addtenant");
+                tenantTransaction.commit();
                 break;
         }
     }
@@ -394,8 +429,9 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         // create intent to send the user to the Add Request Fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        AddUnitFragment au = new AddUnitFragment().newInstance(false, new Unit());
+        UnitsFragment au = new UnitsFragment().newInstance(false, new Unit());
         fragmentTransaction.replace(R.id.main_view_container, au);
+        fragmentTransaction.addToBackStack("newunit");
         fragmentTransaction.commit();
     }
 
@@ -404,13 +440,30 @@ public class MainActivity extends AppCompatActivity implements AddTenantFragment
         // create intent to send the user to the Edit Unit Fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        AddUnitFragment au = new AddUnitFragment().newInstance(true, unit);
+        UnitsFragment au = new UnitsFragment().newInstance(true, unit);
         fragmentTransaction.replace(R.id.main_view_container, au);
+        fragmentTransaction.addToBackStack("editunit");
         fragmentTransaction.commit();
     }
 
     @Override
     public void dismissUnitFragment() {
         openMenuOption("units");
+    }
+
+    @Override
+    public void editTenant(Tenant tenant) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager tenantManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = tenantManager.beginTransaction();
+        TenantsFragment at = new TenantsFragment().newInstance(true, tenant);
+        tenantTransaction.replace(R.id.main_view_container, at);
+        tenantTransaction.addToBackStack("addtenant");
+        tenantTransaction.commit();
+    }
+
+    @Override
+    public void dismissTenantFragment() {
+        callTenants();
     }
 }

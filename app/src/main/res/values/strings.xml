@@ -24,6 +24,7 @@
         Don\'t worry if you don\'t have one right now, you can always change this name later from within the app."</string>
     <string name="enter_company_name">Enter Company Name</string>
     <string name="update_unit">Update Unit</string>
+    <string name="update_tenant">Update Tenant</string>
 
 
     <string-array name="urgencyValues">

@@ -22,40 +22,37 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.project3w.newproperts.Helpers.UnitViewHolder;
+import com.project3w.newproperts.Helpers.TenantViewHolder;
 import com.project3w.newproperts.LoginActivity;
-import com.project3w.newproperts.Objects.Unit;
+import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.R;
 
 import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
 
 /**
- * Created by Nate on 10/14/17.
+ * Created by Nate on 10/15/17.
  */
 
-public class ManagerUnits extends Fragment {
+public class ManagerTenants extends Fragment {
 
     // class variables
     Activity mActivity;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
-    RecyclerView unitView;
-    FirebaseRecyclerAdapter unitAdapter;
+    RecyclerView tenantView;
+    FirebaseRecyclerAdapter tenantAdapter;
     String companyCode;
 
-
-    public interface AddNewUnitListener {
-        void addNewUnit();
+    public interface EditTenantFragmentListener {
+        void editTenant(Tenant tenant);
     }
 
-    public interface EditUnitListener {
-        void editUnit(Unit unit);
-    }
+    EditTenantFragmentListener onEditTenantFragmentListener;
+    // call in our menu selector from the home screen that direct opens our add tenant fragment to reuse code
+    ManagerHome.MenuOptionSelectedListener onMenuOptionSelectedListener;
 
-    AddNewUnitListener onAddNewUnitListener;
-    EditUnitListener onEditUnitListener;
 
-    public ManagerUnits() {
+    public ManagerTenants() {
     }
 
     @Nullable
@@ -66,7 +63,7 @@ public class ManagerUnits extends Fragment {
         mUser = mAuth.getCurrentUser();
 
         // inflate view
-        View view = inflater.inflate(R.layout.manager_units, container, false);
+        View view = inflater.inflate(R.layout.manager_tenants, container, false);
 
         // set our options menu
         setHasOptionsMenu(true);
@@ -83,15 +80,15 @@ public class ManagerUnits extends Fragment {
 
             // attach our listener
             try {
-                onAddNewUnitListener = (AddNewUnitListener) mActivity;
-                onEditUnitListener = (EditUnitListener) mActivity;
+                onMenuOptionSelectedListener = (ManagerHome.MenuOptionSelectedListener) mActivity;
+                onEditTenantFragmentListener = (EditTenantFragmentListener) mActivity;
             } catch (ClassCastException e) {
-                throw new ClassCastException(mActivity.toString() + " must implement AddNewRequestListener");
+                throw new ClassCastException(mActivity.toString() + " must implement ManagerHome.MenuOptionSelectedListener");
             }
         }
 
         // assign our recycler view
-        unitView = view.findViewById(R.id.unit_list);
+        tenantView = view.findViewById(R.id.tenant_list);
 
         return view;
 
@@ -109,11 +106,11 @@ public class ManagerUnits extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // setup our fab to add new requests
-        FloatingActionButton fab = getActivity().findViewById(R.id.unit_fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.tenant_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onAddNewUnitListener.addNewUnit();
+                onMenuOptionSelectedListener.openMenuOption("tenants");
             }
         });
 
@@ -127,34 +124,36 @@ public class ManagerUnits extends Fragment {
         Query tenantRequestsQuery = firebaseDatabase.getReference()
                 .child(companyCode)
                 .child("1")
-                .child("units");
+                .child("tenants");
 
         // setup our RecyclerView to display content
-        FirebaseRecyclerOptions<Unit> unitOptions =
-                new FirebaseRecyclerOptions.Builder<Unit>()
-                        .setQuery(tenantRequestsQuery, Unit.class)
+        FirebaseRecyclerOptions<Tenant> tenantOptions =
+                new FirebaseRecyclerOptions.Builder<Tenant>()
+                        .setQuery(tenantRequestsQuery, Tenant.class)
                         .build();
 
-        unitAdapter = new FirebaseRecyclerAdapter<Unit, UnitViewHolder>(unitOptions) {
+        tenantAdapter = new FirebaseRecyclerAdapter<Tenant, TenantViewHolder>(tenantOptions) {
             @Override
-            public UnitViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public TenantViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 // Create a new instance of the ViewHolder, in this case we are using a custom
                 // layout called R.layout.message for each item
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.viewholder_units, parent, false);
-                return new UnitViewHolder(view);
+                        .inflate(R.layout.viewholder_tenants, parent, false);
+                return new TenantViewHolder(view);
             }
 
             @Override
-            protected void onBindViewHolder(UnitViewHolder holder, int position, final Unit model) {
+            protected void onBindViewHolder(TenantViewHolder holder, int position, final Tenant model) {
 
                 try {
-                    holder.unitAddress.setText(model.getUnitAddress());
+                    String fullName = model.getTenantFirstName() + " " + model.getTenantLastName();
+                    holder.tenantName.setText(fullName);
+                    holder.tenantAddress.setText(model.getTenantAddress());
 
-                    holder.setOnClickListener(new UnitViewHolder.ClickListener() {
+                    holder.setOnClickListener(new TenantViewHolder.ClickListener() {
                         @Override
                         public void onItemClick(View view, int position) {
-                            onEditUnitListener.editUnit(model);
+                            onEditTenantFragmentListener.editTenant(model);
                         }
                     });
                 } catch (Exception e) {
@@ -164,21 +163,20 @@ public class ManagerUnits extends Fragment {
         };
 
         // call our recycler
-        unitView.setAdapter(unitAdapter);
-        unitView.setLayoutManager(layoutManager);
+        tenantView.setAdapter(tenantAdapter);
+        tenantView.setLayoutManager(layoutManager);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        unitAdapter.startListening();
+        tenantAdapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        unitAdapter.stopListening();
+        tenantAdapter.stopListening();
     }
-
 
 }

@@ -10,13 +10,13 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/unit_list"
+            android:id="@+id/tenant_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"/>
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/unit_fab"
+            android:id="@+id/tenant_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"

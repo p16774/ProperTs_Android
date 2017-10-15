@@ -7,23 +7,23 @@ package com.project3w.newproperts.Objects;
 public class AccountVerification {
 
     // class variables
-    private String tenantName, tenantAddress;
+    private String tenantLastName, tenantAddress;
 
     public AccountVerification() {
         // needed for Firebase
     }
 
     public AccountVerification(String tenantName, String tenantAddress) {
-        this.tenantName = tenantName;
+        this.tenantLastName = tenantName;
         this.tenantAddress = tenantAddress;
     }
 
-    public String getTenantName() {
-        return tenantName;
+    public String getTenantLastName() {
+        return tenantLastName;
     }
 
-    public void setTenantName(String tenantName) {
-        this.tenantName = tenantName;
+    public void setTenantLastName(String tenantLastName) {
+        this.tenantLastName = tenantLastName;
     }
 
     public String getTenantAddress() {
