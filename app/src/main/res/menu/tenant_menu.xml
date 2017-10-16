@@ -1,14 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.project3w.properts.MainActivity">
+    tools:context="com.project3w.newproperts.MainActivity">
 
-    <item
+    <!--<item
         android:id="@+id/action_change_settings"
         android:orderInCategory="100"
         android:title="@string/change_user_settings"
         android:icon="@android:drawable/ic_menu_manage"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/action_logout"

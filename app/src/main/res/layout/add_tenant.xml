@@ -3,84 +3,111 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:layout_margin="50dp">
+    android:background="@drawable/list_bg">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:baselineAligned="false">
-
-    <Spinner
-        android:id="@+id/tenant_address_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <EditText
-        android:id="@+id/tenant_name"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Enter Full Name" />
-
-    <EditText
-        android:id="@+id/tenant_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:hint="Enter Email Address"/>
-
-    <EditText
-        android:id="@+id/tenant_phone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="phone"
-        android:hint="Enter Phone Number"/>
-
-    <EditText
-        android:id="@+id/tenant_moveindate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="date"
-        android:focusable="false"
-        android:hint="Select Move-in Date" />
-
-    <EditText
-        android:id="@+id/tenant_deposit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="numberDecimal"
-        android:hint="Enter Deposit Amount Paid"/>
-
-    <EditText
-        android:id="@+id/tenant_keys"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number"
-        android:hint="Enter # of Keys Given"/>
-
-    <EditText
-        android:id="@+id/tenant_occupants"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number"
-        android:hint="Enter Number of Occupants"/>
-
-    <Button
-        android:id="@+id/tenant_add_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:baselineAligned="false"
         android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"/>
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="10dp">
 
+        <Button
+            android:id="@+id/tenant_archive_btn"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:textColor="#FFFFFF"
+            android:text="Archive Tenant"/>
 
-</LinearLayout>
+        <Spinner
+            android:id="@+id/tenant_address_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/tenant_firstname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="Enter First Name" />
+
+        <EditText
+            android:id="@+id/tenant_lastname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="Enter Last Name" />
+
+        <EditText
+            android:id="@+id/tenant_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            android:hint="Enter Email Address"/>
+
+        <EditText
+            android:id="@+id/tenant_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="phone"
+            android:hint="Enter Phone Number"/>
+
+        <EditText
+            android:id="@+id/tenant_moveindate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="date"
+            android:focusable="false"
+            android:hint="Click to select Move-in Date" />
+
+        <EditText
+            android:id="@+id/tenant_deposit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:hint="Enter Deposit Amount Paid"/>
+
+        <EditText
+            android:id="@+id/tenant_keys"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:hint="Enter # of Keys Given"/>
+
+        <EditText
+            android:id="@+id/tenant_occupants"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:hint="Enter Number of Occupants"/>
+
+        <Button
+            android:id="@+id/tenant_add_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:text="Add Tenant"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+    </LinearLayout>
 </ScrollView>

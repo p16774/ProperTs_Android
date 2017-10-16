@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="75dp"
+    android:background="@drawable/login_bg">
+
+    <Button
+        android:id="@+id/create_tenant_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Tenant"
+        android:layout_margin="50dp" />
+
+    <Button
+        android:id="@+id/create_manager_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Property Manager"
+        android:layout_margin="50dp"/>
+
+    <Button
+        android:id="@+id/create_staff_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Staff Worker"
+        android:layout_margin="50dp"
+        android:visibility="invisible"/>
+
+</LinearLayout>

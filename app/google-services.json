@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "164624140483",
-    "firebase_url": "https://properts-e2eaf.firebaseio.com",
-    "project_id": "properts-e2eaf",
-    "storage_bucket": "properts-e2eaf.appspot.com"
+    "project_number": "864630643823",
+    "firebase_url": "https://properts-8db06.firebaseio.com",
+    "project_id": "properts-8db06",
+    "storage_bucket": "properts-8db06.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:164624140483:android:70cf5dc034dfbd72",
+        "mobilesdk_app_id": "1:864630643823:android:187a48443f48737b",
         "android_client_info": {
-          "package_name": "com.project3w.properts"
+          "package_name": "com.project3w.newproperts"
         }
       },
       "oauth_client": [
         {
-          "client_id": "164624140483-3779u249q7i8k4lm1doskvhr5869i8a5.apps.googleusercontent.com",
+          "client_id": "864630643823-uohtdkjp4o5r4or13mg72p3ad3i382fd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.project3w.properts",
+            "package_name": "com.project3w.newproperts",
             "certificate_hash": "12de5ec8fd1bafb0236528e8f4c31ed807d7e5ed"
           }
         },
         {
-          "client_id": "164624140483-705ug40feppl2peq1g1d6ps3kijm96fq.apps.googleusercontent.com",
+          "client_id": "864630643823-7es7d371s6d1saokra6d4fiv1ar3l5e7.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBSF3-fpZzMDKRBiLyi-Z6YIvmiZ9VtQlU"
+          "current_key": "AIzaSyBetcwnhVuCr8LEHo9AwCaezskeJX0NR1o"
         }
       ],
       "services": {
@@ -40,14 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "164624140483-vtqaqeqro228buhru2prd6ddfrvrqdqr.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.ProperTs"
-              }
-            },
-            {
-              "client_id": "164624140483-705ug40feppl2peq1g1d6ps3kijm96fq.apps.googleusercontent.com",
+              "client_id": "864630643823-7es7d371s6d1saokra6d4fiv1ar3l5e7.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

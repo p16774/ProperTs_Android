@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/list_bg">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:baselineAligned="false"
+        android:layout_margin="50dp" >
+
+        <Button
+            android:id="@+id/units_delete_btn"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="50dp"
+            android:textColor="#FFFFFF"
+            android:text="Delete Unit"/>
+
+        <EditText
+            android:id="@+id/units_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPostalAddress"
+            android:hint="Enter Unit Address" />
+
+        <EditText
+            android:id="@+id/units_beds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:hint="Enter # of Beds"/>
+
+        <EditText
+            android:id="@+id/units_baths"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:hint="Enter # of Baths"/>
+
+        <EditText
+            android:id="@+id/units_sqft"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:hint="Enter Square Feet of Unit" />
+
+        <EditText
+            android:id="@+id/units_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textMultiLine"
+            android:hint="Enter any additional notes for the unit."/>
+
+        <Button
+            android:id="@+id/units_add_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="Create Unit"/>
+
+    </LinearLayout>
+</ScrollView>
