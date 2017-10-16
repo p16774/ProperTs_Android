@@ -264,6 +264,7 @@ public class FirebaseDataHelper {
         String deleteUnitKey = unit.getUnitID();
         DatabaseReference unitDeleteRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units").child(deleteUnitKey);
         unitDeleteRef.removeValue();
+        Snackbar.make(mActivity.findViewById(android.R.id.content), "Unit " + unit.getUnitAddress() + " deleted successfully!", Snackbar.LENGTH_LONG).show();
     }
 
 }

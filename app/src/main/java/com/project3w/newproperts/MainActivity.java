@@ -352,11 +352,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_add_tenant:
-                // create intent to send the user to the Add Tenant Fragment
-                break;
-            case R.id.action_change_settings:
-                break;
+
             case R.id.action_logout:
                 FirebaseAuth.getInstance().signOut();
                 finish();

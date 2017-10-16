@@ -111,6 +111,9 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
         companyCode = mPrefs.getString(COMPANY_CODE, null);
 
+        // check if we are updating a tenant
+        isUpdate = getArguments().getBoolean(UPDATE_TENANT);
+
         if(isUpdate) {
             mActivity.setTitle("Update Tenant");
         } else {
@@ -124,8 +127,7 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // check if we are updating a tenant
-        isUpdate = getArguments().getBoolean(UPDATE_TENANT);
+
 
         if (isUpdate) {
             newTenant = (Tenant) getArguments().getSerializable(TENANT_INFO);
@@ -142,7 +144,7 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
                 addTenantBtn.setText(R.string.update_tenant);
 
                 // update our delete button data
-                archiveTenantBtn.setVisibility(View.VISIBLE);
+                archiveTenantBtn.setVisibility(View.GONE); //TODO: update this to visible when the function works
                 archiveTenantBtn.setBackgroundColor(ContextCompat.getColor(getActivity(), android.R.color.holo_red_dark));
                 archiveTenantBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -180,7 +182,7 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
         // pull in our unit data to populate the spinner selection
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference unitsRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units");
-        unitsRef.addValueEventListener(new ValueEventListener() {
+        unitsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final List<String> units = new ArrayList<>();

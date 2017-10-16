@@ -81,6 +81,8 @@ public class UnitsFragment extends Fragment implements View.OnClickListener {
 
         firebaseDataHelper = new FirebaseDataHelper(getActivity());
 
+        isUpdate = getArguments().getBoolean(UPDATE_UNIT);
+
         if(isUpdate) {
             mActivity.setTitle("Update Rental Unit");
         } else {
@@ -94,7 +96,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        isUpdate = getArguments().getBoolean(UPDATE_UNIT);
+
         if (isUpdate) {
             // pull in our text data
             newUnit = (Unit) getArguments().getSerializable(UNIT_INFO);
@@ -114,7 +116,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onClick(View v) {
                         new MaterialDialog.Builder(getActivity())
-                                .title(newUnit.getUnitAddress())
+                                .title("Delete Rental Unit")
                                 .content("Are you sure you want to delete \nUnit: " + newUnit.getUnitAddress() + "?")
                                 .positiveText("DELETE")
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
