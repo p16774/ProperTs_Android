@@ -1,5 +1,6 @@
 package com.project3w.newproperts.Fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import com.project3w.newproperts.R;
 public class NewCompanyCreation extends Fragment implements View.OnClickListener {
 
     // class variables
+    Activity mActivity;
     EditText companyNameView;
     Button companyCreateBtn;
     FirebaseDataHelper firebaseDataHelper;
@@ -35,11 +37,16 @@ public class NewCompanyCreation extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.company_creation, container, false);
 
+        mActivity = getActivity();
+
         // assign our views
         companyNameView = view.findViewById(R.id.creation_company_name);
         companyCreateBtn = view.findViewById(R.id.creation_create_btn);
 
         firebaseDataHelper = new FirebaseDataHelper(getActivity());
+
+        mActivity.setTitle("Create Company");
+
         return view;
     }
 

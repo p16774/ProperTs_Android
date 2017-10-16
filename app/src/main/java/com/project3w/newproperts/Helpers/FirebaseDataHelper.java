@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 
-import com.google.android.gms.common.data.Freezable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,7 +66,7 @@ public class FirebaseDataHelper {
             tenant.setUserID(""); // added to prevent iOS code from crashing
 
             // create AccountVerification object
-            AccountVerification accountVerification = new AccountVerification(tenant.getTenantLastName(), tenant.getTenantAddress());
+            AccountVerification accountVerification = new AccountVerification(tenant.getTenantLastName(), tenant.getTenantAddress(), companyCode);
 
             // create the account verification map
             HashMap<String, Object> needAccount = new HashMap<>();
@@ -100,33 +99,6 @@ public class FirebaseDataHelper {
         Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_LONG).show();
     }
 
-    public boolean updateNewTenantAccount(String tenantID, String userID) {
-
-        // method variables
-        DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference("needAccount").child(tenantID);
-        DatabaseReference linkTenantAccountRef = firebaseDatabase.getReference("tenants").child(tenantID).child("userID");
-        DatabaseReference userRoleAccessRef = firebaseDatabase.getReference("users").child(userID);
-
-        // try catch block to test that the calls are completing correctly
-        try {
-            // remove the needAccount reference
-            removedNeedAccountRef.removeValue();
-
-            // update tenant with current userID
-            linkTenantAccountRef.setValue(userID);
-
-            // set their access role and tenant data ID
-            userRoleAccessRef.child("role").setValue("tenant");
-            userRoleAccessRef.child("tenantID").setValue(tenantID);
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-
-    }
-
     public boolean submitMaintenanceRequest(Request request) {
 
         // get firebase database instance and reference
@@ -135,44 +107,49 @@ public class FirebaseDataHelper {
         if (currentUser != null) {
 
             // get our location reference
-            DatabaseReference newRequestRef = firebaseDatabase.getReference("requests").child(currentUser.getUid());
+            DatabaseReference newRequestRef = firebaseDatabase.getReference().child(companyCode).child("1").child("requests").child(currentUser.getUid());
 
             // create our key to update
             String requestKey = newRequestRef.push().getKey();
 
-            // grab our StorageReference
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-e2eaf.appspot.com");
-            StorageReference saveLocationRef = storageRef.child("requestImages/" + requestKey);
+            // since this field is optional, we need to check for null first before submitting and uploading an image
+            if(!request.getRequestOpenImagePath().isEmpty()) {
+                // grab our StorageReference
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-8db06.appspot.com/");
+                StorageReference saveLocationRef = storageRef.child("requestImages/" + requestKey);
 
-            // get our Uri File reference
-            Uri imageUri = Uri.fromFile(new File(request.getRequestOpenImagePath()));
 
-            // grab our image reference and Uri for File
-            StorageReference imageRef = saveLocationRef.child(imageUri.getLastPathSegment());
+                // get our Uri File reference
+                Uri imageUri = Uri.fromFile(new File(request.getRequestOpenImagePath()));
 
-            // register UploadTask and putFile
-            UploadTask uploadTask = imageRef.putFile(imageUri);
+                // grab our image reference and Uri for File
+                StorageReference imageRef = saveLocationRef.child(imageUri.getLastPathSegment());
 
-            // Register observers to listen for when the download is done or if it fails
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_LONG).show();
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                    // Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_LONG).show();
-                }
-            });
+                // register UploadTask and putFile
+                UploadTask uploadTask = imageRef.putFile(imageUri);
 
-            // add in our key and empty closed image path and update our image path to Firebase Storage location
-            request.setRequestID(requestKey);
-            request.setRequestClosedImagePath("");
-            request.setRequestOpenImagePath(imageUri.getLastPathSegment());
+                // Register observers to listen for when the download is done or if it fails
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_LONG).show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        // Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+                // add in our key and empty closed image path and update our image path to Firebase Storage location
+                request.setRequestID(requestKey);
+                request.setRequestClosedImagePath("");
+                request.setRequestOpenImagePath(imageUri.getLastPathSegment());
+
+            }
 
             // update data
             newRequestRef.child(requestKey).setValue(request);
@@ -190,7 +167,7 @@ public class FirebaseDataHelper {
         if (currentUser != null) {
 
             // get our location reference
-            DatabaseReference newComplaintRef = firebaseDatabase.getReference("complaints").child(currentUser.getUid());
+            DatabaseReference newComplaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints").child(currentUser.getUid());
 
             // create our key to update
             String complaintKey = newComplaintRef.push().getKey();

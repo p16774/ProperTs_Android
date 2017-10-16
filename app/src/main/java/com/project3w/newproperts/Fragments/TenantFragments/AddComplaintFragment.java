@@ -57,6 +57,8 @@ public class AddComplaintFragment extends Fragment {
             throw new ClassCastException(mActivity.toString() + " must implement DismissFragmentListener");
         }
 
+        mActivity.setTitle("Add Complaint");
+
         return view;
     }
 

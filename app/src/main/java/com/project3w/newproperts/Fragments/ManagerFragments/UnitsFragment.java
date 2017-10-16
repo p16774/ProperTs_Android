@@ -81,6 +81,12 @@ public class UnitsFragment extends Fragment implements View.OnClickListener {
 
         firebaseDataHelper = new FirebaseDataHelper(getActivity());
 
+        if(isUpdate) {
+            mActivity.setTitle("Update Rental Unit");
+        } else {
+            mActivity.setTitle("Add Rental Unit");
+        }
+
         return view;
     }
 

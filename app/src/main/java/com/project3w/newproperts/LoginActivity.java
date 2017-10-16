@@ -60,6 +60,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
+        setTitle("Login");
+
         //Link variables to XML
         signupButton = findViewById(R.id.signUpScreenButton);
         loginButton = findViewById(R.id.loginButton);

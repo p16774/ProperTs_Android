@@ -19,18 +19,15 @@ public class Request implements Serializable {
     public Request() {
     }
 
-    public Request(String requestTitle,
-                   String requestContent,
-                   String requestUrgency,
-                   String requestDate,
-                   String requestStatus,
-                   String requestImagePath) {
+    public Request(String requestTitle, String requestContent, String requestUrgency, String requestDate,
+                   String requestStatus, String requestOpenImagePath, String requestClosedImagePath) {
         this.requestTitle = requestTitle;
         this.requestContent = requestContent;
         this.requestUrgency = requestUrgency;
         this.requestDate = requestDate;
         this.requestStatus = requestStatus;
-        this.requestOpenImagePath = requestImagePath;
+        this.requestOpenImagePath = requestOpenImagePath;
+        this.requestClosedImagePath = requestClosedImagePath;
     }
 
     public String getRequestID() {
@@ -97,18 +94,4 @@ public class Request implements Serializable {
         this.requestClosedImagePath = requestClosedImagePath;
     }
 
-    @Exclude
-    public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("requestID", requestID);
-        result.put("complaintTitle", requestTitle);
-        result.put("requestContent", requestContent);
-        result.put("requestUrgency", requestUrgency);
-        result.put("complaintDate", requestDate);
-        result.put("complaintStatus", requestStatus);
-        result.put("requestOpenImagePath", requestOpenImagePath);
-        result.put("requestClosedImagePath", requestClosedImagePath);
-
-        return result;
-    }
 }

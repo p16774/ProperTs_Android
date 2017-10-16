@@ -69,7 +69,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="date"
-            android:hint="Select Move-in Date" />
+            android:focusable="false"
+            android:hint="Click to select Move-in Date" />
 
         <EditText
             android:id="@+id/tenant_deposit"

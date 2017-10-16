@@ -55,7 +55,7 @@ public class CreateAccount extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_signup, container, false);
+        View view = inflater.inflate(R.layout.activity_signup, container, false);
 
         // assign variables and references
         mActivity = getActivity();
@@ -72,6 +72,8 @@ public class CreateAccount extends Fragment {
             throw new ClassCastException(mActivity.toString() + " must fully implement NextStepListener");
         }
 
+        mActivity.setTitle("Create Account");
+
         return view;
     }
 
@@ -81,6 +83,7 @@ public class CreateAccount extends Fragment {
 
         // set our account type
         accountType = getArguments().getString(ACCOUNT_TYPE);
+        System.out.println("ACCOUNT TYPE: " + accountType);
 
 
         //Setup signup button listener
@@ -103,6 +106,7 @@ public class CreateAccount extends Fragment {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     Log.d("Firebase", "createUserWithEmail:onComplete:" + task.isSuccessful());
 
+                                    // perform the next steps
                                     onNextStepListener.performNextStep(accountType);
 
                                     /*// pull our userID to update tenant information

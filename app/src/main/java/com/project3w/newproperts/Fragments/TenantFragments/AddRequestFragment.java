@@ -72,6 +72,8 @@ public class AddRequestFragment extends Fragment {
             throw new ClassCastException(mActivity.toString() + " must implement DismissFragmentListener");
         }
 
+        mActivity.setTitle("Add Request");
+
         return view;
     }
 
@@ -137,8 +139,13 @@ public class AddRequestFragment extends Fragment {
             String date = fmt.format(currentDate);
             String picture = mCurrentPhotoPath;
 
+            // validate for null on picture
+            if(mCurrentPhotoPath == null) {
+                picture = "";
+            }
+
             // create our Request Object
-            Request newRequest = new Request(title,content,urgency,date,status,picture);
+            Request newRequest = new Request(title,content,urgency,date,status,picture,"");
             boolean submitted = firebaseDataHelper.submitMaintenanceRequest(newRequest);
 
             if(submitted) {

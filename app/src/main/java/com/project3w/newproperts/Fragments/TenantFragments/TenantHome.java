@@ -1,7 +1,9 @@
 package com.project3w.newproperts.Fragments.TenantFragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,6 +25,8 @@ import com.project3w.newproperts.LoginActivity;
 import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.R;
 
+import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
+
 /**
  * Created by Nate on 10/5/17.
  */
@@ -36,6 +40,7 @@ public class TenantHome extends Fragment {
     FirebaseAuth mAuth;
     Tenant currentTenant;
     Activity mActivity;
+    String companyCode;
 
     public TenantHome() {
     }
@@ -57,6 +62,8 @@ public class TenantHome extends Fragment {
             startActivity(loginScreen);
             getActivity().finish();
         }
+
+        mActivity.setTitle("Home");
 
         return inflater.inflate(R.layout.tenant_home, container, false);
 
@@ -81,6 +88,9 @@ public class TenantHome extends Fragment {
         tenantPhoneView = mActivity.findViewById(R.id.disp_tenant_phone);
         tenantEmailView = mActivity.findViewById(R.id.disp_tenant_email);
 
+        // grab our company code from shared preferences
+        SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+        companyCode = mPrefs.getString(COMPANY_CODE, null);
 
         // call user data
         displayUserData();
@@ -90,7 +100,7 @@ public class TenantHome extends Fragment {
     public void displayUserData() {
 
         // pull user data to populate Tenant object
-        DatabaseReference userDataRef = firebaseDatabase.getReference("users").child(mUser.getUid()).child("tenantID");
+        DatabaseReference userDataRef = firebaseDatabase.getReference().child("users").child(mUser.getUid()).child("tenantID");
 
         // STUPID FIREBASE!!!!!!
         // get our data through a mass coding call
@@ -102,7 +112,8 @@ public class TenantHome extends Fragment {
                     String tenantID = dataSnapshot.getValue().toString();
 
                     // STUPID FIREBASE FOR NESTED DATA CALLS!!!!!!!!!!
-                    DatabaseReference tenantInfoRef = firebaseDatabase.getReference("tenants").child(tenantID);
+                    DatabaseReference tenantInfoRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                            .child("tenants").child(tenantID);
                     tenantInfoRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {

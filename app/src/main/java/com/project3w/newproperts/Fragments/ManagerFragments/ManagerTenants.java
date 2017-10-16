@@ -87,6 +87,8 @@ public class ManagerTenants extends Fragment {
             }
         }
 
+        mActivity.setTitle("Tenants List");
+
         // assign our recycler view
         tenantView = view.findViewById(R.id.tenant_list);
 

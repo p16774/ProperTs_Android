@@ -4,13 +4,6 @@
     tools:context="com.project3w.newproperts.MainActivity">
 
     <item
-        android:id="@+id/action_add_tenant"
-        android:orderInCategory="100"
-        android:title="@string/add_new_tenant"
-        android:icon="@android:drawable/ic_menu_add"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:title="@string/logout_user"

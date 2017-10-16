@@ -72,6 +72,8 @@ public class ViewRequestFragment extends Fragment {
             throw new ClassCastException(mActivity.toString() + " must implement DismissFragmentListener");
         }
 
+        mActivity.setTitle("View Request");
+
         return view;
     }
 
@@ -103,7 +105,7 @@ public class ViewRequestFragment extends Fragment {
             // pull images as available from firebase storage
             // get our storage reference
             FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-e2eaf.appspot.com");
+            StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-8db06.appspot.com/");
             StorageReference imageOpenRef = null, imageClosedRef = null;
 
             // check for value on open image before pulling file

@@ -1,5 +1,6 @@
 package com.project3w.newproperts.Fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,7 @@ public class ChooseAccountType extends Fragment implements View.OnClickListener 
 
     // class variables
     Button managerBtn, tenantBtn, staffBtn;
+    Activity mActivity;
 
     public ChooseAccountType() {
     }
@@ -34,6 +36,8 @@ public class ChooseAccountType extends Fragment implements View.OnClickListener 
 
         View view = inflater.inflate(R.layout.create_type, container, false);
 
+        mActivity = getActivity();
+
         // pull in our button references to send user to correct fragment
         tenantBtn = view.findViewById(R.id.create_tenant_btn);
         managerBtn = view.findViewById(R.id.create_manager_btn);
@@ -44,6 +48,8 @@ public class ChooseAccountType extends Fragment implements View.OnClickListener 
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must fully implement CreateAccountListener");
         }
+
+        mActivity.setTitle("Choose Account Type");
 
         return view;
     }
@@ -62,6 +68,7 @@ public class ChooseAccountType extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         int btnID = v.getId();
+        System.out.println("BUTTON ID IS: " + btnID);
         switch (btnID) {
             case R.id.create_tenant_btn:
                 onCreateAccountListener.createNewAccount("tenant");

@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.project3w.newproperts.Fragments.ChooseAccountType;
 import com.project3w.newproperts.Fragments.CreateAccount;
 import com.project3w.newproperts.Fragments.NewCompanyCreation;
+import com.project3w.newproperts.Fragments.TenantFragments.VerifyTenantFragment;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 
 /**
@@ -58,17 +59,17 @@ public class CreateAccountActivity extends AppCompatActivity implements ChooseAc
             // depending on the type of account that was just created, perform the next step
             switch (type) {
                 case "tenant":
+                    // send the new tenant to the verification screen to attach their UserID to their TenantID
+                    FragmentTransaction tenantVerification = getSupportFragmentManager().beginTransaction();
+                    tenantVerification.replace(R.id.create_container, new VerifyTenantFragment()).commit();
                     break;
                 case "staff":
                     break;
                 case "manager":
-
-                    //TODO: add our logged in user data to firebase since they should be logged in at this point.
-                    System.out.println("UID:    " + mUser.getUid());
-
                     // send the new manager to the company creation screen
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.create_container, new NewCompanyCreation()).commit();
+                    break;
             }
         }
     }

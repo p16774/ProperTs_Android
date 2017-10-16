@@ -1,7 +1,9 @@
 package com.project3w.newproperts.Fragments.TenantFragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -27,6 +29,8 @@ import com.project3w.newproperts.LoginActivity;
 import com.project3w.newproperts.Objects.Complaint;
 import com.project3w.newproperts.R;
 
+import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
+
 /**
  * Created by Nate on 10/11/17.
  */
@@ -39,6 +43,7 @@ public class TenantComplaints extends Fragment {
     Activity mActivity;
     RecyclerView complaintView;
     FirebaseRecyclerAdapter complaintAdapter;
+    String companyCode;
 
     public interface AddNewComplaintListener {
         void addNewComplaint();
@@ -73,6 +78,11 @@ public class TenantComplaints extends Fragment {
             }
         }
 
+        SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+        companyCode = mPrefs.getString(COMPANY_CODE, null);
+
+        mActivity.setTitle("Complaint List");
+
         return inflater.inflate(R.layout.tenant_complaints, container, false);
     }
 
@@ -104,7 +114,8 @@ public class TenantComplaints extends Fragment {
 
         // setup our database references
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        Query tenantComplaintQuery = firebaseDatabase.getReference("complaints")
+        Query tenantComplaintQuery = firebaseDatabase.getReference().child(companyCode).child("1")
+                .child("complaints")
                 .child(mUser.getUid())
                 .orderByChild("complaintDate");
 

@@ -111,6 +111,12 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
         companyCode = mPrefs.getString(COMPANY_CODE, null);
 
+        if(isUpdate) {
+            mActivity.setTitle("Update Tenant");
+        } else {
+            mActivity.setTitle("Add Tenant");
+        }
+
         return view;
     }
 
@@ -253,6 +259,8 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
     }
 
     public Tenant validateTenant() {
+        String tenantID = "";
+
         // get our text about the tenant
         String tenantFirstName = tenantFirstNameView.getText().toString().trim();
         String tenantLastName = tenantLastNameView.getText().toString().trim();
@@ -263,7 +271,9 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
         String tenantDeposit = tenantDepositView.getText().toString().trim();
         String tenantKeys = tenantKeysView.getText().toString().trim();
         String tenantOccupants = tenantOccupantsView.getText().toString().trim();
-        String tenantID = newTenant.getTenantID(); // created for later deletion that happens in the new Tenant object creation
+        if(isUpdate) {
+            tenantID = newTenant.getTenantID(); // created for later deletion that happens in the new Tenant object creation
+        }
 
         // validate text entered
         if (tenantFirstName.isEmpty()) {
@@ -316,7 +326,7 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
                 tenantKeys, tenantOccupants);
 
         // replace the tenantID that's removed in the previous step
-        if(isUpdate){
+        if(isUpdate && !tenantID.isEmpty()){
             newTenant.setTenantID(tenantID);
         }
 

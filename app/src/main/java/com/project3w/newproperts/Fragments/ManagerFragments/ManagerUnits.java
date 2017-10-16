@@ -90,6 +90,8 @@ public class ManagerUnits extends Fragment {
             }
         }
 
+        mActivity.setTitle("Rental Units List");
+
         // assign our recycler view
         unitView = view.findViewById(R.id.unit_list);
 

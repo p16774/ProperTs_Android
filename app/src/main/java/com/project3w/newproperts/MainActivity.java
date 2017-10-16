@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
             finish();
         } else {
 
-            // set our sharedpreference of the company code
+            // set our sharedpreference of the company code every time we come here just in case something deletes it
             mHelper.setSharedCompanyCode();
 
             if (userType.equals("")) {
@@ -161,6 +161,12 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                     bottomNavigation.addItem(itemMaintenance);
                     bottomNavigation.addItem(itemComplaint);
 
+                    //TODO: add this features and enable these screens
+                    bottomNavigation.disableItemAtPosition(2);
+                    bottomNavigation.disableItemAtPosition(3);
+                    bottomNavigation.disableItemAtPosition(4);
+                    bottomNavigation.setItemDisableColor(Color.parseColor("#00FFFFFF"));
+
                     // setup our navigation in each of the tabs
                     bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
                         @Override
@@ -207,6 +213,10 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                     bottomNavigation.addItem(itemMessaging);
                     bottomNavigation.addItem(itemMaintenance);
                     bottomNavigation.addItem(itemComplaint);
+
+                    //TODO: enable the messaging to remove this call
+                    bottomNavigation.disableItemAtPosition(1);
+                    bottomNavigation.setItemDisableColor(Color.parseColor("#00FFFFFF"));
 
                     // setup our navigation in each of the tabs
                     bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {

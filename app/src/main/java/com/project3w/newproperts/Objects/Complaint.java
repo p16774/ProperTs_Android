@@ -64,15 +64,4 @@ public class Complaint {
         this.complaintDate = complaintDate;
     }
 
-    @Exclude
-    public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("complaintID", complaintID);
-        result.put("complaintTitle", complaintTitle);
-        result.put("complaintContent", complaintContent);
-        result.put("complaintDate", complaintDate);
-        result.put("complaintStatus", complaintStatus);
-
-        return result;
-    }
 }
