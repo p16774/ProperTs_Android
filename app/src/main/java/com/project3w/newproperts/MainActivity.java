@@ -18,13 +18,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerComplaints;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerMaintenance;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerTenants;
-import com.project3w.newproperts.Fragments.ManagerFragments.UnitsFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
+import com.project3w.newproperts.Fragments.ManagerFragments.TenantsFragment;
+import com.project3w.newproperts.Fragments.ManagerFragments.UnitsFragment;
 import com.project3w.newproperts.Fragments.TenantFragments.AddComplaintFragment;
 import com.project3w.newproperts.Fragments.TenantFragments.AddRequestFragment;
-import com.project3w.newproperts.Fragments.ManagerFragments.TenantsFragment;
-import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantComplaints;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantHome;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantMaintenance;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     FirebaseDataHelper mHelper;
 
     public static final String COMPANY_CODE = "com.project3w.properts.COMPANY_CODE";
+    public static final String TENANT_ID = "com.project3w.properts.TENANT_ID";
 
 
     @Override
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
 
             // set our sharedpreference of the company code every time we come here just in case something deletes it
             mHelper.setSharedCompanyCode();
+            mHelper.setSharedTenantID();
 
             if (userType.equals("")) {
 
@@ -136,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     }
 
     protected void callHome() {
+
         clearBackStack();
 
         // start our Fragment Manager
@@ -163,8 +168,6 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
 
                     //TODO: add this features and enable these screens
                     bottomNavigation.disableItemAtPosition(2);
-                    bottomNavigation.disableItemAtPosition(3);
-                    bottomNavigation.disableItemAtPosition(4);
                     bottomNavigation.setItemDisableColor(Color.parseColor("#00FFFFFF"));
 
                     // setup our navigation in each of the tabs
@@ -252,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 fragmentTransaction.commit();
 
                 break;
-            case "maintenance":
+            case "staff":
 
                 // add the MaintenanceHome Fragment
                 //TODO: create the maintenance home fragment
@@ -285,8 +288,8 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 tenantMenu = false;
 
                 // add the ManagerHome fragment
-                ManagerHome mf = new ManagerHome();
-                fragmentTransaction.replace(R.id.main_view_container, mf);
+                ManagerMaintenance mm = new ManagerMaintenance();
+                fragmentTransaction.replace(R.id.main_view_container, mm);
                 fragmentTransaction.commit();
 
                 break;
@@ -301,9 +304,9 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 fragmentTransaction.commit();
 
                 break;
-            case "maintenance":
+            case "staff":
 
-                // add the MaintenanceHome Fragment
+                // add the StaffHome Fragment
                 //TODO: create the maintenance home fragment
                 break;
 
@@ -321,8 +324,8 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
             case "manager":
 
                 // add the ManagerHome fragment
-                ManagerHome mf = new ManagerHome();
-                fragmentTransaction.replace(R.id.main_view_container, mf);
+                ManagerComplaints mc = new ManagerComplaints();
+                fragmentTransaction.replace(R.id.main_view_container, mc);
                 fragmentTransaction.commit();
 
                 break;
@@ -334,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 fragmentTransaction.commit();
 
                 break;
-            case "maintenance":
+            case "staff":
 
                 // add the MaintenanceHome Fragment
                 //TODO: create the maintenance home fragment

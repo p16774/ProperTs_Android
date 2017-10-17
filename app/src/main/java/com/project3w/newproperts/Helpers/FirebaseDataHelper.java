@@ -31,18 +31,20 @@ import java.io.File;
 import java.util.HashMap;
 
 import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
+import static com.project3w.newproperts.MainActivity.TENANT_ID;
 
 public class FirebaseDataHelper {
 
     // class variables
     private Activity mActivity;
-    private String companyCode;
+    private String companyCode, tenantID;
     private FirebaseDatabase firebaseDatabase;
 
     public FirebaseDataHelper(Activity activity) {
         mActivity = activity;
         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
         companyCode = mPrefs.getString(COMPANY_CODE, null);
+        tenantID = mPrefs.getString(TENANT_ID,null);
         firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
@@ -107,10 +109,15 @@ public class FirebaseDataHelper {
         if (currentUser != null) {
 
             // get our location reference
-            DatabaseReference newRequestRef = firebaseDatabase.getReference().child(companyCode).child("1").child("requests").child(currentUser.getUid());
+            DatabaseReference newRequestRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                    .child("requests").child(currentUser.getUid());
 
             // create our key to update
             String requestKey = newRequestRef.push().getKey();
+
+            // create duplicate record for manager/maintenance staff to see
+            DatabaseReference duplicateRequestForManagerRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                    .child("requests").child("active");
 
             // since this field is optional, we need to check for null first before submitting and uploading an image
             if(!request.getRequestOpenImagePath().isEmpty()) {
@@ -151,8 +158,12 @@ public class FirebaseDataHelper {
 
             }
 
+            // add the current user to the request for manager data
+            request.setRequestUser(tenantID);
+
             // update data
             newRequestRef.child(requestKey).setValue(request);
+            duplicateRequestForManagerRef.child(requestKey).setValue(request);
             return true;
         }
 
@@ -167,16 +178,23 @@ public class FirebaseDataHelper {
         if (currentUser != null) {
 
             // get our location reference
-            DatabaseReference newComplaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints").child(currentUser.getUid());
+            DatabaseReference newComplaintRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                    .child("complaints").child(currentUser.getUid());
 
             // create our key to update
             String complaintKey = newComplaintRef.push().getKey();
 
-            // add in our key and empty closed image path and update our image path to Firebase Storage location
+            // create our duplicate record for our manager
+            DatabaseReference duplicateComplaintForManagerRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                    .child("complaints").child("active");
+
+            // add in our key and user
             complaint.setComplaintID(complaintKey);
+            complaint.setComplaintUser(tenantID);
 
             // update data
             newComplaintRef.child(complaintKey).setValue(complaint);
+            duplicateComplaintForManagerRef.child(complaintKey).setValue(complaint);
             return true;
         }
 
@@ -229,7 +247,34 @@ public class FirebaseDataHelper {
                     if(currentUser != null) {
                         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
                         mPrefs.edit().putString(COMPANY_CODE, currentUser.getCompanyCode()).apply();
-                        companyCode = mPrefs.getString(COMPANY_CODE, "");
+                        //companyCode = mPrefs.getString(COMPANY_CODE, "");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    public void setSharedTenantID() {
+        // get our user data
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // validate for null
+        if (mUser != null) {
+            // get firebase references
+            DatabaseReference companyCodeRef = firebaseDatabase.getReference().child("users").child(mUser.getUid());
+            companyCodeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User currentUser = dataSnapshot.getValue(User.class);
+                    if(currentUser != null) {
+                        SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+                        mPrefs.edit().putString(TENANT_ID, currentUser.getTenantID()).apply();
+                        //tenantID = mPrefs.getString(TENANT_ID, "");
                     }
                 }
 

@@ -12,16 +12,17 @@ import java.util.Map;
 public class Complaint {
 
     // class variables
-    private String complaintID, complaintTitle, complaintContent, complaintStatus, complaintDate;
+    private String complaintID, complaintTitle, complaintContent, complaintStatus, complaintDate, complaintUser;
 
     public Complaint() {
     }
 
-    public Complaint(String complaintTitle, String complaintContent, String complaintStatus, String complaintDate) {
+    public Complaint(String complaintTitle, String complaintContent, String complaintStatus, String complaintDate, String complaintUser) {
         this.complaintTitle = complaintTitle;
         this.complaintContent = complaintContent;
         this.complaintStatus = complaintStatus;
         this.complaintDate = complaintDate;
+        this.complaintUser = complaintUser;
     }
 
     public String getComplaintID() {
@@ -64,4 +65,11 @@ public class Complaint {
         this.complaintDate = complaintDate;
     }
 
+    public String getComplaintUser() {
+        return complaintUser;
+    }
+
+    public void setComplaintUser(String complaintUser) {
+        this.complaintUser = complaintUser;
+    }
 }

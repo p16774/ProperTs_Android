@@ -13,7 +13,7 @@ import com.project3w.newproperts.R;
 public class RequestViewHolder extends RecyclerView.ViewHolder {
 
     // class variables
-    public TextView requestTitle, requestStatus, requestDate;
+    public TextView requestTitle, requestStatus, requestDate, managerRequestTitle;
     //public Request requestItem;
 
     public RequestViewHolder(View itemView) {
@@ -22,6 +22,7 @@ public class RequestViewHolder extends RecyclerView.ViewHolder {
         requestTitle = itemView.findViewById(R.id.request_title);
         requestStatus = itemView.findViewById(R.id.request_status);
         requestDate = itemView.findViewById(R.id.request_date);
+        managerRequestTitle = itemView.findViewById(R.id.manager_request_title);
 
         //listener set on ENTIRE ROW
         itemView.setOnClickListener(new View.OnClickListener() {

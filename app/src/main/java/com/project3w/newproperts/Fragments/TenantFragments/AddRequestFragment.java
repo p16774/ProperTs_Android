@@ -88,7 +88,6 @@ public class AddRequestFragment extends Fragment {
         requestPictureView = getActivity().findViewById(R.id.new_request_picture);
         requestPictureView.setImageResource(R.drawable.placeholder);
 
-
     }
 
     @Override
@@ -144,8 +143,8 @@ public class AddRequestFragment extends Fragment {
                 picture = "";
             }
 
-            // create our Request Object
-            Request newRequest = new Request(title,content,urgency,date,status,picture,"");
+            // create our Request Object - the two empty strings on the end are for closed image and user
+            Request newRequest = new Request(title,content,urgency,date,status,picture,"","");
             boolean submitted = firebaseDataHelper.submitMaintenanceRequest(newRequest);
 
             if(submitted) {
