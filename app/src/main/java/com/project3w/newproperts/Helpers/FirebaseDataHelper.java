@@ -37,14 +37,14 @@ public class FirebaseDataHelper {
 
     // class variables
     private Activity mActivity;
-    private String companyCode, tenantID;
+    private String companyCode, globalTenantID;
     private FirebaseDatabase firebaseDatabase;
 
     public FirebaseDataHelper(Activity activity) {
         mActivity = activity;
         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
         companyCode = mPrefs.getString(COMPANY_CODE, null);
-        tenantID = mPrefs.getString(TENANT_ID,null);
+        globalTenantID = mPrefs.getString(TENANT_ID, null);
         firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
@@ -62,7 +62,7 @@ public class FirebaseDataHelper {
 
         // check for new account and run steps necessary for new tenant creation
         if (newAccount) {
-            // assign phone number to the tenantID of tenant object
+            // assign phone number to the globalTenantID of tenant object
             String tenantID = tenant.getTenantPhone();
             tenant.setTenantID(tenantID);
             tenant.setUserID(""); // added to prevent iOS code from crashing
@@ -159,7 +159,7 @@ public class FirebaseDataHelper {
             }
 
             // add the current user to the request for manager data
-            request.setRequestUser(tenantID);
+            request.setRequestUser(globalTenantID);
 
             // update data
             newRequestRef.child(requestKey).setValue(request);
@@ -190,7 +190,7 @@ public class FirebaseDataHelper {
 
             // add in our key and user
             complaint.setComplaintID(complaintKey);
-            complaint.setComplaintUser(tenantID);
+            complaint.setComplaintUser(globalTenantID);
 
             // update data
             newComplaintRef.child(complaintKey).setValue(complaint);
@@ -210,6 +210,11 @@ public class FirebaseDataHelper {
             String userID = mUser.getUid();
             DatabaseReference newUserRef = firebaseDatabase.getReference().child("users").child(userID);
             DatabaseReference companyUserRef = firebaseDatabase.getReference().child(companyCode).child("1").child("users").child(userID);
+
+            if (accessType.equals("tenant")) {
+                DatabaseReference tenantLinkRef = firebaseDatabase.getReference().child(companyCode).child("1").child("tenants").child(tenantID).child("userID");
+                tenantLinkRef.setValue(userID);
+            }
 
             // create the user and the company/user references
             User createUser = new User(companyCode, "1", tenantID, accessType);
@@ -274,7 +279,7 @@ public class FirebaseDataHelper {
                     if(currentUser != null) {
                         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
                         mPrefs.edit().putString(TENANT_ID, currentUser.getTenantID()).apply();
-                        //tenantID = mPrefs.getString(TENANT_ID, "");
+                        //globalTenantID = mPrefs.getString(TENANT_ID, "");
                     }
                 }
 
@@ -310,6 +315,29 @@ public class FirebaseDataHelper {
         DatabaseReference unitDeleteRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units").child(deleteUnitKey);
         unitDeleteRef.removeValue();
         Snackbar.make(mActivity.findViewById(android.R.id.content), "Unit " + unit.getUnitAddress() + " deleted successfully!", Snackbar.LENGTH_LONG).show();
+    }
+
+    public void acknowledgeComplaint(Complaint complaint, Tenant tenant) {
+        System.out.println("HERE:!!!!!!!!!!! " + tenant.getUserID());
+        DatabaseReference complaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints")
+                .child(tenant.getUserID()).child(complaint.getComplaintID());
+        DatabaseReference managerComplaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints")
+                .child("active").child(complaint.getComplaintID());
+        DatabaseReference managerAcknowledgedRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints")
+                .child("closed").child(complaint.getComplaintID());
+
+        // update, remove, and create our complaint objects
+        complaintRef.setValue(complaint);
+        managerComplaintRef.removeValue();
+        managerAcknowledgedRef.setValue(complaint);
+    }
+
+    public void updateRequest(Request request, Tenant tenant) {
+
+    }
+
+    public void closeRequest(Request request, Tenant tenant) {
+
     }
 
 }

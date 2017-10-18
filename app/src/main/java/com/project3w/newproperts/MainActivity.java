@@ -18,6 +18,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintFragment;
+import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintsView;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerComplaints;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerMaintenance;
@@ -32,6 +34,7 @@ import com.project3w.newproperts.Fragments.TenantFragments.TenantHome;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantMaintenance;
 import com.project3w.newproperts.Fragments.TenantFragments.ViewRequestFragment;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
+import com.project3w.newproperts.Objects.Complaint;
 import com.project3w.newproperts.Objects.Request;
 import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.Objects.Unit;
@@ -47,7 +50,10 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         ManagerUnits.AddNewUnitListener,
         ManagerUnits.EditUnitListener,
         UnitsFragment.DismissUnitFragmentListener,
-        ManagerTenants.EditTenantFragmentListener {
+        ManagerTenants.EditTenantFragmentListener,
+        ComplaintsView.ComplaintAcknowledgementListener,
+        ComplaintFragment.ComplaintAcknowledgedListener,
+        ManagerComplaints.ComplaintTypeListener {
 
     // class variables
     FirebaseUser mUser;
@@ -474,5 +480,32 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     @Override
     public void dismissTenantFragment() {
         callTenants();
+    }
+
+    @Override
+    public void displayComplaint(Complaint complaint, Tenant tenant, Boolean isClosed) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager complaintManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = complaintManager.beginTransaction();
+        ComplaintFragment at = new ComplaintFragment().newInstance(complaint, tenant, isClosed);
+        tenantTransaction.replace(R.id.main_view_container, at);
+        tenantTransaction.addToBackStack("managercomplaints");
+        tenantTransaction.commit();
+    }
+
+    @Override
+    public void complaintAcknowledged() {
+        callComplaints();
+    }
+
+    @Override
+    public void callComplaintFragment(String complaintType) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager complaintManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = complaintManager.beginTransaction();
+        ComplaintsView at = new ComplaintsView().newInstance(complaintType);
+        tenantTransaction.replace(R.id.main_view_container, at);
+        tenantTransaction.addToBackStack("complainttype");
+        tenantTransaction.commit();
     }
 }
