@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,12 +70,13 @@ public class ComplaintFragment extends Fragment {
 
         complaint = (Complaint) getArguments().getSerializable(COMPLAINT_INFO);
         tenant = (Tenant) getArguments().getSerializable(TENANT_INFO);
-        isClosed = (Boolean) getArguments().getBoolean(CLOSED_COMPLAINT);
+        isClosed = getArguments().getBoolean(CLOSED_COMPLAINT);
 
         // assign our references
         complaintDateView = view.findViewById(R.id.manager_complaint_date);
         complaintTitleView = view.findViewById(R.id.manager_complaint_complainttitle);
         complaintContentView = view.findViewById(R.id.manager_complaint_complaintcontent);
+        complaintContentView.setMovementMethod(new ScrollingMovementMethod());
         complaintTenantView = view.findViewById(R.id.manager_complaint_tenantname);
         complaintTenantAddressView = view.findViewById(R.id.manager_complaint_tenantaddress);
         managerReplyContentView = view.findViewById(R.id.manager_complaint_reply);

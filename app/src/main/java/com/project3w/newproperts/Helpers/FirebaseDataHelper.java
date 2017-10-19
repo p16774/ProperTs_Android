@@ -152,13 +152,13 @@ public class FirebaseDataHelper {
                 });
 
                 // add in our key and empty closed image path and update our image path to Firebase Storage location
-                request.setRequestID(requestKey);
                 request.setRequestClosedImagePath("");
                 request.setRequestOpenImagePath(imageUri.getLastPathSegment());
 
             }
 
-            // add the current user to the request for manager data
+            // add the requestID and current tenantID to the request for manager data
+            request.setRequestID(requestKey);
             request.setRequestUser(globalTenantID);
 
             // update data
@@ -318,7 +318,6 @@ public class FirebaseDataHelper {
     }
 
     public void acknowledgeComplaint(Complaint complaint, Tenant tenant) {
-        System.out.println("HERE:!!!!!!!!!!! " + tenant.getUserID());
         DatabaseReference complaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints")
                 .child(tenant.getUserID()).child(complaint.getComplaintID());
         DatabaseReference managerComplaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints")
@@ -332,7 +331,24 @@ public class FirebaseDataHelper {
         managerAcknowledgedRef.setValue(complaint);
     }
 
-    public void updateRequest(Request request, Tenant tenant) {
+    public void updateRequest(Request request, Tenant tenant, String requestTo, String requestFrom) {
+        // set our database references
+        DatabaseReference rootRef = firebaseDatabase.getReference().child(companyCode).child("1").child("requests");
+        DatabaseReference userRequestRef = rootRef.child(tenant.getUserID()).child(request.getRequestID());
+
+        if(!requestTo.equals(requestFrom)) {
+            // remove our old value since we are moving the request to a new category
+            DatabaseReference managerRequestRef = rootRef.child(requestFrom).child(request.getRequestID());
+            managerRequestRef.removeValue();
+        }
+
+        DatabaseReference newManagerRequestRef = rootRef.child(requestTo).child(request.getRequestID());
+
+        // update the request for the manager and the user
+        userRequestRef.setValue(request);
+        newManagerRequestRef.setValue(request);
+
+        Snackbar.make(mActivity.findViewById(android.R.id.content), "Request Updated Successfully!", Snackbar.LENGTH_SHORT).show();
 
     }
 

@@ -22,23 +22,23 @@ import com.project3w.newproperts.R;
 import java.util.ArrayList;
 
 /**
- * Created by Nate on 9/20/17.
+ * Created by Nate on 10/18/17.
  */
 
-public class ManagerHome extends ListFragment {
+public class ManagerRequests extends ListFragment {
 
     // class variables
     Activity mActivity;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
 
-    public interface MenuOptionSelectedListener {
-        void openMenuOption(String menuOption);
+    public interface RequestTypeListener {
+        void callRequestFragment(String requestType);
     }
 
-    MenuOptionSelectedListener onMenuOptionSelectedListener;
+    RequestTypeListener onRequestTypeListener;
 
-    public ManagerHome() {
+    public ManagerRequests() {
         // empty constructor
     }
 
@@ -60,13 +60,13 @@ public class ManagerHome extends ListFragment {
         }else {
             // attach our listener
             try {
-                onMenuOptionSelectedListener = (MenuOptionSelectedListener) mActivity;
+                onRequestTypeListener = (RequestTypeListener) mActivity;
             } catch (ClassCastException e) {
-                throw new ClassCastException(mActivity.toString() + " must implement MenuOptionSelectedListener");
+                throw new ClassCastException(mActivity.toString() + " must implement RequestTypeListener");
             }
         }
 
-        mActivity.setTitle("Home");
+        mActivity.setTitle("Request Category");
 
         return super.onCreateView(inflater, container, savedInstanceState);
 
@@ -84,10 +84,11 @@ public class ManagerHome extends ListFragment {
         super.onViewCreated(view, savedInstanceState);
 
         ArrayList<String> displayItems = new ArrayList<>();
-        displayItems.add("Manage Rental Units");
-        displayItems.add("Update Company Info");
-        displayItems.add("Manage Staff Members");
-        displayItems.add("Add a New Tenant");
+        displayItems.add("Critical Requests");
+        displayItems.add("New Requests");
+        displayItems.add("Active Requests");
+        displayItems.add("Closed Requests");
+
 
         // create our adapter and set it to our listview
         ArrayAdapter<String> managerOptionsAdapter = new ArrayAdapter<>(getActivity(), R.layout.manager_items, displayItems);
@@ -103,14 +104,16 @@ public class ManagerHome extends ListFragment {
         // call the appropriate flag to transition to the right fragment
         switch (position) {
             case 0:
-                onMenuOptionSelectedListener.openMenuOption("units");
+                onRequestTypeListener.callRequestFragment("critical");
                 break;
             case 1:
+                onRequestTypeListener.callRequestFragment("new");
                 break;
             case 2:
+                onRequestTypeListener.callRequestFragment("active");
                 break;
             case 3:
-                onMenuOptionSelectedListener.openMenuOption("tenants");
+                onRequestTypeListener.callRequestFragment("closed");
                 break;
         }
 

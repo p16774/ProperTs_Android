@@ -199,7 +199,7 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
                 if (units.size() < 2) {
                     units.clear();
                     units.add("Create Rental Unit First!");
-                    Snackbar.make(mActivity.findViewById(android.R.id.content), "You must create a rental unit before you create a tenant", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "You must create a rental unit before you create a tenant", Snackbar.LENGTH_SHORT).show();
                     addTenantBtn.setVisibility(View.GONE);
                 }
 
@@ -280,47 +280,47 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
         // validate text entered
         if (tenantFirstName.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must enter the first name to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must enter the first name to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
         if (tenantLastName.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must enter the first name to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must enter the first name to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
         if (tenantAddress.equals("Select Rental Unit...")) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must select a unit to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must select a unit to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
         if (tenantEmail.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must enter an email address to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must enter an email address to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
         if (tenantPhone.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must enter a phone number to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must enter a phone number to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
         if (tenantDate.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must select a move-in date to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must select a move-in date to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
         if (tenantDeposit.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must enter the deposit amount to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must enter the deposit amount to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
         if (tenantKeys.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must enter the # of keys given to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must enter the # of keys given to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
         if (tenantOccupants.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must enter the # of occupants to create a tenant", Snackbar.LENGTH_LONG).show();
+                    "You must enter the # of occupants to create a tenant", Snackbar.LENGTH_SHORT).show();
             return null;
         }
 

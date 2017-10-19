@@ -99,7 +99,7 @@ public class AddComplaintFragment extends Fragment {
         if (complaintTitleView.getText().toString().trim().equals("") || complaintContentView.getText().toString().trim().equals("")) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
                     "You must fill out all fields.",
-                    Snackbar.LENGTH_LONG).show();
+                    Snackbar.LENGTH_SHORT).show();
             return false;
         } else {
 

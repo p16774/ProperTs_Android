@@ -36,7 +36,7 @@ import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
  * Created by Nate on 10/16/17.
  */
 
-public class ManagerMaintenance extends Fragment {
+public class RequestsView extends Fragment {
 
     // class variables
     FirebaseAuth mAuth;
@@ -44,9 +44,24 @@ public class ManagerMaintenance extends Fragment {
     Activity mActivity;
     RecyclerView requestView;
     FirebaseRecyclerAdapter requestAdapter;
-    String companyCode;
+    String companyCode, requestType;
 
-    public ManagerMaintenance() {
+    public static final String REQUEST_TYPE = "com.project3w.properts.REQUEST_TYPE";
+
+    public interface DisplayRequestListener {
+        void displayRequest(Request request, Tenant tenant, String requestType, Boolean isClosed);
+    }
+
+    DisplayRequestListener onDisplayRequestListener;
+
+    public RequestsView newInstance(String requestType) {
+
+        RequestsView myFragment = new RequestsView();
+        Bundle args = new Bundle();
+        args.putString(REQUEST_TYPE, requestType);
+        myFragment.setArguments(args);
+
+        return myFragment;
     }
 
     @Override
@@ -56,6 +71,8 @@ public class ManagerMaintenance extends Fragment {
         mUser = mAuth.getCurrentUser();
         mActivity = getActivity();
 
+        requestType = getArguments().getString(REQUEST_TYPE, "Active");
+
         // set our options menu
         setHasOptionsMenu(true);
 
@@ -64,10 +81,19 @@ public class ManagerMaintenance extends Fragment {
             Intent loginScreen = new Intent(getActivity(), LoginActivity.class);
             startActivity(loginScreen);
             getActivity().finish();
-        }
+        } else {
 
-        SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
-        companyCode = mPrefs.getString(COMPANY_CODE, null);
+            SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+            companyCode = mPrefs.getString(COMPANY_CODE, null);
+
+            // attach our listener
+            try {
+                onDisplayRequestListener = (DisplayRequestListener) mActivity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(mActivity.toString() + " must implement DisplayRequestListener");
+            }
+
+        }
 
         mActivity.setTitle("Tenant Requests");
 
@@ -94,8 +120,8 @@ public class ManagerMaintenance extends Fragment {
         // setup our database references
         final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         Query tenantRequestsQuery = firebaseDatabase.getReference().child(companyCode).child("1").child("requests")
-                .child("active")
-                .orderByChild("complaintDate");
+                .child(requestType)
+                .orderByChild("requestDate");
 
         // setup our RecyclerView to display content
         FirebaseRecyclerOptions<Request> maintenanceOptions =
@@ -120,16 +146,11 @@ public class ManagerMaintenance extends Fragment {
                 DatabaseReference tenantInfoRef = firebaseDatabase.getReference().child(companyCode).child("1")
                         .child("tenants").child(request.getRequestUser());
 
-                /*// display our progress dialog box
-                final ProgressDialog Dialog = new ProgressDialog(mActivity);
-                Dialog.setMessage("Doing something...");
-                Dialog.show();*/
-
                 // pull in our tenant info and set our fields appropriately
                 tenantInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Tenant requestTenant = dataSnapshot.getValue(Tenant.class);
+                        final Tenant requestTenant = dataSnapshot.getValue(Tenant.class);
 
                         if (requestTenant != null) {
                             try {
@@ -142,7 +163,12 @@ public class ManagerMaintenance extends Fragment {
                                 holder.setOnClickListener(new RequestViewHolder.ClickListener() {
                                     @Override
                                     public void onItemClick(View view, int position) {
-                                       // onDisplayRequestListener.displayRequest(request);
+                                        // send our manager to the complaint view where they can acknowledge and respond with comment
+                                        Boolean isClosed = false;
+                                        if (requestType.equals("closed")) {
+                                            isClosed = true;
+                                        }
+                                       onDisplayRequestListener.displayRequest(request, requestTenant, requestType, isClosed);
                                     }
 
                                     @Override

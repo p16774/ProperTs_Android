@@ -22,7 +22,9 @@ import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintsView;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerComplaints;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
-import com.project3w.newproperts.Fragments.ManagerFragments.ManagerMaintenance;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerRequests;
+import com.project3w.newproperts.Fragments.ManagerFragments.RequestFragment;
+import com.project3w.newproperts.Fragments.ManagerFragments.RequestsView;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerTenants;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
 import com.project3w.newproperts.Fragments.ManagerFragments.TenantsFragment;
@@ -53,7 +55,10 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         ManagerTenants.EditTenantFragmentListener,
         ComplaintsView.ComplaintAcknowledgementListener,
         ComplaintFragment.ComplaintAcknowledgedListener,
-        ManagerComplaints.ComplaintTypeListener {
+        ManagerComplaints.ComplaintTypeListener,
+        ManagerRequests.RequestTypeListener,
+        RequestsView.DisplayRequestListener,
+        RequestFragment.RequestUpdateListener {
 
     // class variables
     FirebaseUser mUser;
@@ -294,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 tenantMenu = false;
 
                 // add the ManagerHome fragment
-                ManagerMaintenance mm = new ManagerMaintenance();
+                ManagerRequests mm = new ManagerRequests();
                 fragmentTransaction.replace(R.id.main_view_container, mm);
                 fragmentTransaction.commit();
 
@@ -503,9 +508,36 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         // switch to the main add fragment task - bypass the tenant view
         FragmentManager complaintManager = getSupportFragmentManager();
         FragmentTransaction tenantTransaction = complaintManager.beginTransaction();
-        ComplaintsView at = new ComplaintsView().newInstance(complaintType);
-        tenantTransaction.replace(R.id.main_view_container, at);
+        ComplaintsView cv = new ComplaintsView().newInstance(complaintType);
+        tenantTransaction.replace(R.id.main_view_container, cv);
         tenantTransaction.addToBackStack("complainttype");
         tenantTransaction.commit();
+    }
+
+    @Override
+    public void callRequestFragment(String requestType) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager requestManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = requestManager.beginTransaction();
+        RequestsView rv = new RequestsView().newInstance(requestType);
+        tenantTransaction.replace(R.id.main_view_container, rv);
+        tenantTransaction.addToBackStack("requesttype");
+        tenantTransaction.commit();
+    }
+
+    @Override
+    public void displayRequest(Request request, Tenant tenant, String requestType, Boolean isClosed) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager requestManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = requestManager.beginTransaction();
+        RequestFragment rf = new RequestFragment().newInstance(request, tenant, requestType, isClosed);
+        tenantTransaction.replace(R.id.main_view_container, rf);
+        tenantTransaction.addToBackStack("managerrequest");
+        tenantTransaction.commit();
+    }
+
+    @Override
+    public void requestUpdated() {
+        callMaintenance();
     }
 }
