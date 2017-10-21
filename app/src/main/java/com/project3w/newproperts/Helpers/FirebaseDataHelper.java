@@ -19,10 +19,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.project3w.newproperts.Objects.AccountVerification;
+import com.project3w.newproperts.Objects.TenantVerification;
 import com.project3w.newproperts.Objects.Company;
 import com.project3w.newproperts.Objects.Complaint;
 import com.project3w.newproperts.Objects.Request;
+import com.project3w.newproperts.Objects.Staff;
 import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.Objects.Unit;
 import com.project3w.newproperts.Objects.User;
@@ -67,12 +68,12 @@ public class FirebaseDataHelper {
             tenant.setTenantID(tenantID);
             tenant.setUserID(""); // added to prevent iOS code from crashing
 
-            // create AccountVerification object
-            AccountVerification accountVerification = new AccountVerification(tenant.getTenantLastName(), tenant.getTenantAddress(), companyCode);
+            // create TenantVerification object
+            TenantVerification tenantVerification = new TenantVerification(tenant.getTenantLastName(), tenant.getTenantAddress(), companyCode);
 
             // create the account verification map
             HashMap<String, Object> needAccount = new HashMap<>();
-            needAccount.put(tenantID, accountVerification);
+            needAccount.put(tenantID, tenantVerification);
 
             // update database with account creation needs
             needAccountRef.updateChildren(needAccount);
@@ -105,6 +106,14 @@ public class FirebaseDataHelper {
 
         // get firebase database instance and reference
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String requestType;
+
+        // get status and assign requestType appropriately
+        if (request.getRequestUrgency().equals("Critical")) {
+            requestType = "critical";
+        } else {
+            requestType = "new";
+        }
 
         if (currentUser != null) {
 
@@ -117,7 +126,7 @@ public class FirebaseDataHelper {
 
             // create duplicate record for manager/maintenance staff to see
             DatabaseReference duplicateRequestForManagerRef = firebaseDatabase.getReference().child(companyCode).child("1")
-                    .child("requests").child("active");
+                    .child("requests").child(requestType);
 
             // since this field is optional, we need to check for null first before submitting and uploading an image
             if(!request.getRequestOpenImagePath().isEmpty()) {
@@ -216,6 +225,11 @@ public class FirebaseDataHelper {
                 tenantLinkRef.setValue(userID);
             }
 
+            if (accessType.equals("staff")) {
+                DatabaseReference staffLinkRef = firebaseDatabase.getReference().child(companyCode).child("1").child("staff").child(tenantID).child("userID");
+                staffLinkRef.setValue(userID);
+            }
+
             // create the user and the company/user references
             User createUser = new User(companyCode, "1", tenantID, accessType);
             newUserRef.setValue(createUser);
@@ -235,6 +249,14 @@ public class FirebaseDataHelper {
 
         // create our manager user inside our new company/property
         createUserReference(companyCode, "", "manager");
+    }
+
+    public void updateCompany(Company company) {
+        // create our company reference and get firebase key
+        DatabaseReference updateCompanyRef = firebaseDatabase.getReference().child("companies").child(companyCode);
+
+        // update our company
+        updateCompanyRef.setValue(company);
     }
 
     public void setSharedCompanyCode() {
@@ -354,6 +376,16 @@ public class FirebaseDataHelper {
 
     public void closeRequest(Request request, Tenant tenant) {
 
+    }
+
+    public void createStaffMember(Staff staffMember) {
+        DatabaseReference staffRef = firebaseDatabase.getReference().child(companyCode).child("1").child("staff").child("current");
+        DatabaseReference staffNeedsAccount = firebaseDatabase.getReference().child("needAccount");
+        String staffKey = staffMember.getStaffPhone();
+        staffMember.setStaffID(staffKey);
+
+        staffRef.child(staffKey).setValue(staffMember);
+        staffNeedsAccount.child(staffKey).setValue(staffMember);
     }
 
 }

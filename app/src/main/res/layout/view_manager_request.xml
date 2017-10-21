@@ -1,151 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/manager_request_scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/complaint_bg"
-    android:columnCount="2"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:rowCount="9">
+    android:background="@drawable/maintenance_bg"
+    android:fillViewport="true">
 
-    <TextView
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="0"
-        android:gravity="center_horizontal|start"
-        android:text="Request Date: "
-        android:textSize="16sp" />
+        android:padding="16dp"
+        android:shrinkColumns="1"
+        android:stretchColumns="0">
 
-    <TextView
-        android:id="@+id/manager_request_viewdate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="0"
-        android:gravity="center_horizontal|start"
-        android:textSize="16sp" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="1"
-        android:gravity="center_horizontal|start"
-        android:text="Request Title: "
-        android:textSize="16sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:gravity="center_horizontal|start"
+                android:text="Request Date: "
+                android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/manager_request_viewtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="1"
-        android:gravity="center_vertical|start"
-        android:maxLines="2"
-        android:textSize="16sp"
-        android:layout_marginBottom="20dp"/>
+            <TextView
+                android:id="@+id/manager_request_viewdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:gravity="center_horizontal|start"
+                android:textSize="16sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="2"
-        android:gravity="center_vertical|start"
-        android:text="Tenant: "
-        android:textSize="20sp" />
+        </TableRow>
 
-    <TextView
-        android:id="@+id/manager_request_tenantname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="2"
-        android:gravity="center_vertical|end"
-        android:maxLines="2"
-        android:textSize="20sp" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="3"
-        android:gravity="center_horizontal|start"
-        android:text="Address: "
-        android:textSize="20sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:gravity="center_horizontal|start"
+                android:text="Request Title: "
+                android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/manager_request_tenantaddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="3"
-        android:gravity="center_horizontal|start"
-        android:textSize="20sp" />
+            <TextView
+                android:id="@+id/manager_request_viewtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginBottom="20dp"
+                android:gravity="center_vertical|start"
+                android:maxLines="2"
+                android:textSize="16sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="4"
-        android:gravity="center_horizontal|start"
-        android:text="Request: "
-        android:textSize="20sp" />
+        </TableRow>
 
-    <TextView
-        android:id="@+id/manager_request_viewcontent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxLines="6"
-        android:scrollbars="vertical"
-        android:fadeScrollbars="false"
-        android:layout_column="1"
-        android:layout_row="4"
-        android:gravity="center_vertical|start"
-        android:textSize="20sp" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_column="0"
-        android:layout_columnSpan="2"
-        android:layout_row="5"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:gravity="center_vertical|start"
+                android:text="Tenant: "
+                android:textSize="20sp" />
 
-    <EditText
-        android:id="@+id/manager_request_reply"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_columnSpan="2"
-        android:layout_row="6"
-        android:ems="10"
-        android:inputType="textMultiLine"
-        android:hint="Add Update Content"
-        android:paddingBottom="20dp"/>
+            <TextView
+                android:id="@+id/manager_request_tenantname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:gravity="center_vertical|start"
+                android:maxLines="2"
+                android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/manager_update_request_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_columnSpan="2"
-        android:layout_row="7"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:text="Update Request"/>
+        </TableRow>
 
-    <Button
-        android:id="@+id/manager_close_request_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_columnSpan="2"
-        android:layout_row="8"
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:background="@android:color/holo_red_dark"
-        android:textColor="#FFFFFF"
-        android:text="Close Request"/>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
 
-</GridLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:gravity="center_horizontal|start"
+                android:text="Address: "
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/manager_request_tenantaddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:gravity="center_horizontal|start"
+                android:textSize="20sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:gravity="center_horizontal|start"
+                android:text="Request: "
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/manager_request_viewcontent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:fadeScrollbars="true"
+                android:gravity="center_vertical|start"
+                android:maxLines="6"
+                android:scrollbars="vertical"
+                android:textSize="20sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
+
+            <EditText
+                android:id="@+id/manager_request_reply"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:ems="10"
+                android:hint="Add Update Content"
+                android:inputType="textMultiLine"
+                android:paddingBottom="20dp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
+
+            <Button
+                android:id="@+id/manager_update_request_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:layout_marginEnd="50dp"
+                android:layout_marginStart="50dp"
+                android:text="Update Request" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
+
+            <Button
+                android:id="@+id/manager_close_request_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:layout_marginEnd="50dp"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="30dp"
+                android:background="@android:color/holo_red_dark"
+                android:text="Close Request"
+                android:textColor="#FFFFFF" />
+
+        </TableRow>
+
+    </TableLayout>
+
+</ScrollView>

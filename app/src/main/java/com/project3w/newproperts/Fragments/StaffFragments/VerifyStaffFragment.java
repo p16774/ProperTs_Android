@@ -1,4 +1,4 @@
-package com.project3w.newproperts.Fragments.TenantFragments;
+package com.project3w.newproperts.Fragments.StaffFragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,22 +24,22 @@ import com.project3w.newproperts.MainActivity;
 import com.project3w.newproperts.Objects.TenantVerification;
 import com.project3w.newproperts.R;
 
+import static com.project3w.newproperts.Fragments.TenantFragments.VerifyTenantFragment.ACCESS_TYPE;
+
 /**
- * Created by Nate on 10/15/17.
+ * Created by Nate on 10/20/17.
  */
 
-public class VerifyTenantFragment extends Fragment implements View.OnClickListener {
+public class VerifyStaffFragment extends Fragment {
 
     // class variables
     Activity mActivity;
-    EditText lastNameView, verifyCodeView;
+    EditText staffNameView, verifyCodeView;
     Button verifyAccountBtn;
     FirebaseDataHelper firebaseDataHelper;
     FirebaseAuth mAuth;
 
-    public static final String ACCESS_TYPE = "com.project3w.properts.ACCESS_TYPE";
-
-    public VerifyTenantFragment() {
+    public VerifyStaffFragment() {
     }
 
     @Nullable
@@ -50,72 +50,79 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
 
         // grab our variable references
         mActivity = getActivity();
-        lastNameView = view.findViewById(R.id.verify_last_name);
+        staffNameView = view.findViewById(R.id.verify_last_name);
         verifyCodeView = view.findViewById(R.id.verify_code);
         verifyAccountBtn = view.findViewById(R.id.verify_btn);
         firebaseDataHelper = new FirebaseDataHelper(mActivity);
 
-        // assign our click listener
-        verifyAccountBtn.setOnClickListener(this);
+        // hide the name - it's not needed
+        staffNameView.setVisibility(View.GONE);
 
-        mAuth = FirebaseAuth.getInstance();
-
-        mActivity.setTitle("Verify Tenant");
+        mActivity.setTitle("Verify Staff");
 
         return view;
     }
 
     @Override
-    public void onClick(View v) {
-        // grab our entered text
-        String lastName = lastNameView.getText().toString().trim();
-        String verifyCode = verifyCodeView.getText().toString().trim();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        // verify they have entered data into both fields
-        if(lastName.isEmpty() || verifyCode.isEmpty()) {
-            Snackbar.make(mActivity.findViewById(android.R.id.content), "You must fill out both fields to continue", Snackbar.LENGTH_SHORT).show();
-        } else {
-            // grab our current userID and assign our data points in FirebaseDataHelper
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (currentUser != null) {
-                String userID = currentUser.getUid();
-                // validate tenant information and assign data before sending tenant to their home page
-                updateNewTenantAccount(verifyCode, userID);
+        mAuth = FirebaseAuth.getInstance();
+
+        // assign our click listener
+        verifyAccountBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // grab our entered text
+                String verifyCode = verifyCodeView.getText().toString().trim();
+
+                // verify they have entered data into both fields
+                if(verifyCode.isEmpty()) {
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "You must have enter a valid code to continue", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    // grab our current userID and assign our data points in FirebaseDataHelper
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (currentUser != null) {
+                        String userID = currentUser.getUid();
+                        // validate tenant information and assign data before sending tenant to their home page
+                        updateNewStaffAccount(verifyCode, userID);
+                    }
+                }
             }
-        }
+        });
     }
 
-    public void updateNewTenantAccount(final String tenantID, final String userID) {
+    public void updateNewStaffAccount(final String staffID, final String userID) {
 
         // method variables
         final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        final DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference().child("needAccount").child(tenantID);
+        final DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference().child("needAccount").child(staffID);
 
-        // set our value listener to get the companyCode to assign the user and tenant correctly
+        // set our value listener to get the companyCode to assign the user and staff correctly
         removedNeedAccountRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 TenantVerification userData = dataSnapshot.getValue(TenantVerification.class);
                 if (userData != null) {
-                    DatabaseReference linkTenantAccountRef = firebaseDatabase.getReference()
+                    DatabaseReference linkStaffAccountRef = firebaseDatabase.getReference()
                             .child(userData.getCompanyCode())
                             .child("1")
-                            .child("tenants").child(tenantID).child("userID");
+                            .child("staff").child(staffID).child("userID");
 
                     // update our user reference and assign the accessRole
-                    firebaseDataHelper.createUserReference(userData.getCompanyCode(), tenantID, "tenant");
+                    firebaseDataHelper.createUserReference(userData.getCompanyCode(), staffID, "staff");
 
                     // try catch block to test that the calls are completing correctly
                     try {
-                        // update tenant with current userID
-                        linkTenantAccountRef.setValue(userID);
+                        // update staff with current userID
+                        linkStaffAccountRef.setValue(userID);
 
                         // remove the needAccount reference last (just in case)
                         removedNeedAccountRef.removeValue();
 
                         // send user to the MainActivity
                         Intent sendToMainIntent = new Intent(mActivity, MainActivity.class);
-                        sendToMainIntent.putExtra(ACCESS_TYPE, "tenant");
+                        sendToMainIntent.putExtra(ACCESS_TYPE, "staff");
                         startActivity(sendToMainIntent);
                         mActivity.finish();
 
@@ -143,3 +150,4 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
         mActivity.finish();
     }
 }
+

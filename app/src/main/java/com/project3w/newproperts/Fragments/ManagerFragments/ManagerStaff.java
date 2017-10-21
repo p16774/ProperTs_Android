@@ -22,24 +22,23 @@ import com.project3w.newproperts.R;
 import java.util.ArrayList;
 
 /**
- * Created by Nate on 9/20/17.
+ * Created by Nate on 10/19/17.
  */
 
-public class ManagerHome extends ListFragment {
+public class ManagerStaff extends ListFragment {
 
     // class variables
     Activity mActivity;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
 
-    public interface MenuOptionSelectedListener {
-        void openMenuOption(String menuOption);
+    public interface ManageStaffListener {
+        void callManagerStaff(String staffFunction);
     }
 
-    MenuOptionSelectedListener onMenuOptionSelectedListener;
+    ManageStaffListener onManageStaffListener;
 
-    public ManagerHome() {
-        // empty constructor
+    public ManagerStaff() {
     }
 
     @Nullable
@@ -60,13 +59,13 @@ public class ManagerHome extends ListFragment {
         }else {
             // attach our listener
             try {
-                onMenuOptionSelectedListener = (MenuOptionSelectedListener) mActivity;
+                onManageStaffListener = (ManageStaffListener) mActivity;
             } catch (ClassCastException e) {
-                throw new ClassCastException(mActivity.toString() + " must implement MenuOptionSelectedListener");
+                throw new ClassCastException(mActivity.toString() + " must implement ManageStaffListener");
             }
         }
 
-        mActivity.setTitle("Home");
+        mActivity.setTitle("Manage Staff");
 
         return super.onCreateView(inflater, container, savedInstanceState);
 
@@ -84,10 +83,9 @@ public class ManagerHome extends ListFragment {
         super.onViewCreated(view, savedInstanceState);
 
         ArrayList<String> displayItems = new ArrayList<>();
-        displayItems.add("Update Company Info");
-        displayItems.add("Manage Rental Units");
-        displayItems.add("Manage Staff Members");
-        displayItems.add("Add a New Tenant");
+        displayItems.add("View Current Staff");
+        displayItems.add("View Previous Staff");
+
 
         // create our adapter and set it to our listview
         ArrayAdapter<String> managerOptionsAdapter = new ArrayAdapter<>(getActivity(), R.layout.manager_items, displayItems);
@@ -103,16 +101,10 @@ public class ManagerHome extends ListFragment {
         // call the appropriate flag to transition to the right fragment
         switch (position) {
             case 0:
-                onMenuOptionSelectedListener.openMenuOption("company");
+                onManageStaffListener.callManagerStaff("current");
                 break;
             case 1:
-                onMenuOptionSelectedListener.openMenuOption("units");
-                break;
-            case 2:
-                onMenuOptionSelectedListener.openMenuOption("staff");
-                break;
-            case 3:
-                onMenuOptionSelectedListener.openMenuOption("tenants");
+                onManageStaffListener.callManagerStaff("previous");
                 break;
         }
 

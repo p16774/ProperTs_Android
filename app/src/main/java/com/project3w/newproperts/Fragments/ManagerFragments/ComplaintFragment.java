@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -67,6 +69,7 @@ public class ComplaintFragment extends Fragment {
 
         mActivity = getActivity();
         mHelper = new FirebaseDataHelper(getActivity());
+        setHasOptionsMenu(true);
 
         complaint = (Complaint) getArguments().getSerializable(COMPLAINT_INFO);
         tenant = (Tenant) getArguments().getSerializable(TENANT_INFO);
@@ -96,6 +99,13 @@ public class ComplaintFragment extends Fragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.manager_menu, menu);
     }
 
     @Override

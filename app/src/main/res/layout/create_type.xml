@@ -24,7 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="New Staff Worker"
-        android:layout_margin="50dp"
-        android:visibility="invisible"/>
+        android:layout_margin="50dp" />
 
 </LinearLayout>

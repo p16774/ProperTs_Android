@@ -17,6 +17,8 @@ import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.MainActivity;
 import com.project3w.newproperts.R;
 
+import static com.project3w.newproperts.Fragments.TenantFragments.VerifyTenantFragment.ACCESS_TYPE;
+
 /**
  * Created by Nate on 10/12/17.
  */
@@ -71,6 +73,7 @@ public class NewCompanyCreation extends Fragment implements View.OnClickListener
 
             // send the new manager to their property
             Intent managerHome = new Intent(getActivity().getApplicationContext(), MainActivity.class);
+            managerHome.putExtra(ACCESS_TYPE, "manager");
             startActivity(managerHome);
             getActivity().finish();
         }

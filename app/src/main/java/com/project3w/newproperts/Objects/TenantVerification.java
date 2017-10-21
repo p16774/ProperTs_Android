@@ -4,16 +4,16 @@ package com.project3w.newproperts.Objects;
  * Created by Nate on 10/1/17.
  */
 
-public class AccountVerification {
+public class TenantVerification {
 
     // class variables
     private String tenantLastName, tenantAddress, companyCode;
 
-    public AccountVerification() {
+    public TenantVerification() {
         // needed for Firebase
     }
 
-    public AccountVerification(String tenantName, String tenantAddress, String companyCode) {
+    public TenantVerification(String tenantName, String tenantAddress, String companyCode) {
         this.tenantLastName = tenantName;
         this.tenantAddress = tenantAddress;
         this.companyCode = companyCode;

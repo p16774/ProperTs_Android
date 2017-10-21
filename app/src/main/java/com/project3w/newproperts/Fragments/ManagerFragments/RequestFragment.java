@@ -7,10 +7,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
@@ -30,6 +32,7 @@ public class RequestFragment extends Fragment {
 
     // class variables
     TextView requestDateView, requestTitleView, requestContentView, requestTenantView, requestTenantAddressView;
+    ScrollView requestScrollView;
     EditText managerUpdateContentView;
     Button managerUpdateBtn, managerClosedBtn;
     Activity mActivity;
@@ -81,12 +84,32 @@ public class RequestFragment extends Fragment {
         requestDateView = view.findViewById(R.id.manager_request_viewdate);
         requestTitleView = view.findViewById(R.id.manager_request_viewtitle);
         requestContentView = view.findViewById(R.id.manager_request_viewcontent);
-        requestContentView.setMovementMethod(new ScrollingMovementMethod());
         requestTenantView = view.findViewById(R.id.manager_request_tenantname);
         requestTenantAddressView = view.findViewById(R.id.manager_request_tenantaddress);
         managerUpdateContentView = view.findViewById(R.id.manager_request_reply);
         managerUpdateBtn = view.findViewById(R.id.manager_update_request_btn);
         managerClosedBtn = view.findViewById(R.id.manager_close_request_btn);
+
+        // update our scrolling movement to properly scroll text OR the main windows
+        requestScrollView = view.findViewById(R.id.manager_request_scrollview);
+        requestContentView.setMovementMethod(new ScrollingMovementMethod());
+        requestScrollView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                requestContentView.getParent().requestDisallowInterceptTouchEvent(false);
+                return false;
+            }
+        });
+
+        requestContentView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                requestContentView.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
 
         // if complaint has been closed, remove the update functions
         if(isClosed) {
