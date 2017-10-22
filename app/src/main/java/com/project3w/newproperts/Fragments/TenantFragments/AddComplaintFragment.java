@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.Objects.Complaint;
 import com.project3w.newproperts.R;
@@ -98,7 +99,7 @@ public class AddComplaintFragment extends Fragment {
         if (complaintTitleView.getText().toString().trim().equals("") || complaintContentView.getText().toString().trim().equals("")) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
                     "You must fill out all fields.",
-                    Snackbar.LENGTH_LONG).show();
+                    Snackbar.LENGTH_SHORT).show();
             return false;
         } else {
 
@@ -116,7 +117,7 @@ public class AddComplaintFragment extends Fragment {
             String date = fmt.format(currentDate);
 
             // create our Request Object
-            Complaint newComplaint = new Complaint(title,content,status,date);
+            Complaint newComplaint = new Complaint(title,content,status,date,"");
             boolean submitted = firebaseDataHelper.submitComplaint(newComplaint);
 
             if(submitted) {

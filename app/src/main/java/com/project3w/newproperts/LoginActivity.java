@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,8 +18,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.project3w.newproperts.Fragments.NewCompanyCreation;
+import com.project3w.newproperts.Fragments.StaffFragments.VerifyStaffFragment;
+import com.project3w.newproperts.Fragments.TenantFragments.VerifyTenantFragment;
+import com.project3w.newproperts.Objects.User;
 
 import java.util.Objects;
+
+import static com.project3w.newproperts.Fragments.CreateAccount.ACCOUNT_TYPE;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -36,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         // get reference to our FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
 
@@ -45,14 +59,40 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
-                    Log.d("Firebase", "onAuthStateChanged:signed_in:" + user.getUid());
-                    //if signed in, move to data activity
-                    Intent toMainScreenIntent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(toMainScreenIntent);
+                    // User is signed in - let's make sure they went through the full process correctly
+                    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                    DatabaseReference userDataRef = firebaseDatabase.getReference().child("users").child(user.getUid());
+                    userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                User mUser = dataSnapshot.getValue(User.class);
+                                if (mUser != null) {
+                                    if (mUser.getCompanyCode().isEmpty()) {
+                                        // create intent to send them to finish the login process
+                                        Intent CreateAccountIntent = new Intent(LoginActivity.this, CreateAccountActivity.class);
+                                        CreateAccountIntent.putExtra(ACCOUNT_TYPE, mUser.getAccessRole());
+                                        startActivity(CreateAccountIntent);
+                                    } else {
+                                        // clear the fields
+                                        emailEditText.setText("");
+                                        passwordEditText.setText("");
 
-                    emailEditText.setText("");
-                    passwordEditText.setText("");
+                                        // if signed in, move to main activity
+                                        Intent toMainScreenIntent = new Intent(getApplicationContext(), MainActivity.class);
+                                        startActivity(toMainScreenIntent);
+                                    }
+                                }
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
                 } else {
                     // User is signed out
                     Log.d("Firebase", "onAuthStateChanged:signed_out");

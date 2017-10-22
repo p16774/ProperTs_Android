@@ -84,10 +84,10 @@ public class ManagerHome extends ListFragment {
         super.onViewCreated(view, savedInstanceState);
 
         ArrayList<String> displayItems = new ArrayList<>();
+        displayItems.add("Update Company Info");
         displayItems.add("Manage Rental Units");
-        //displayItems.add("Update Company Info");
-        //displayItems.add("Manage Staff Members");
-        //displayItems.add("Add a New Tenant");
+        displayItems.add("Manage Staff Members");
+        displayItems.add("Add a New Tenant");
 
         // create our adapter and set it to our listview
         ArrayAdapter<String> managerOptionsAdapter = new ArrayAdapter<>(getActivity(), R.layout.manager_items, displayItems);
@@ -103,11 +103,13 @@ public class ManagerHome extends ListFragment {
         // call the appropriate flag to transition to the right fragment
         switch (position) {
             case 0:
-                onMenuOptionSelectedListener.openMenuOption("units");
+                onMenuOptionSelectedListener.openMenuOption("company");
                 break;
             case 1:
+                onMenuOptionSelectedListener.openMenuOption("units");
                 break;
             case 2:
+                onMenuOptionSelectedListener.openMenuOption("staff");
                 break;
             case 3:
                 onMenuOptionSelectedListener.openMenuOption("tenants");

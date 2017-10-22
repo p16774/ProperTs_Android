@@ -3,6 +3,15 @@
 
     <item
         is-multidex="true"
+        jar="/Users/Nate/.android/build-cache/46f50ac174c6fc7452dd44137ea7eb8db902af1d/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="44ee06abb66da30f5855e6bf54574e64cdcd982a">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_18a849ad4c407c528c85fcc2a7911c5abed527ee/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="/Users/Nate/.android/build-cache/725b34822a77065a0a5026da8aed0266697f0503/output/jars/classes.jar"
         jumboMode="false"
         optimize="true"
@@ -72,6 +81,15 @@
         revision="26.0.2"
         sha1="6e6b94b72d7912a627fb1629c310b2bca9261f06">
         <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_1da52328f2efc346e1a344cf028006a766e23155/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/Nate/Library/Android/sdk/extras/m2repository/com/android/support/constraint/constraint-layout-solver/1.0.2/constraint-layout-solver-1.0.2.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="26.0.2"
+        sha1="b9cd8fc6bd15cb915735d34535db30ece0c44603">
+        <dex dex="/Users/Nate/Documents/Class_Work/IPV/ProperTs/app/build/intermediates/transforms/dex/debug/folders/1000/10/constraint-layout-solver-1.0.2_fb9af117c4a714a5ba41ed3b6c18af0b7ecde901/classes.dex" />
     </item>
     <item
         is-multidex="true"

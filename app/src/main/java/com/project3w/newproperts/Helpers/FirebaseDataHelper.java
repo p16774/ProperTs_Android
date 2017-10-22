@@ -19,10 +19,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.project3w.newproperts.Objects.AccountVerification;
+import com.project3w.newproperts.Objects.Message;
+import com.project3w.newproperts.Objects.TenantVerification;
 import com.project3w.newproperts.Objects.Company;
 import com.project3w.newproperts.Objects.Complaint;
 import com.project3w.newproperts.Objects.Request;
+import com.project3w.newproperts.Objects.Staff;
 import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.Objects.Unit;
 import com.project3w.newproperts.Objects.User;
@@ -31,18 +33,20 @@ import java.io.File;
 import java.util.HashMap;
 
 import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
+import static com.project3w.newproperts.MainActivity.TENANT_ID;
 
 public class FirebaseDataHelper {
 
     // class variables
     private Activity mActivity;
-    private String companyCode;
+    private String companyCode, globalTenantID;
     private FirebaseDatabase firebaseDatabase;
 
     public FirebaseDataHelper(Activity activity) {
         mActivity = activity;
         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
         companyCode = mPrefs.getString(COMPANY_CODE, null);
+        globalTenantID = mPrefs.getString(TENANT_ID, null);
         firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
@@ -60,17 +64,17 @@ public class FirebaseDataHelper {
 
         // check for new account and run steps necessary for new tenant creation
         if (newAccount) {
-            // assign phone number to the tenantID of tenant object
+            // assign phone number to the globalTenantID of tenant object
             String tenantID = tenant.getTenantPhone();
             tenant.setTenantID(tenantID);
             tenant.setUserID(""); // added to prevent iOS code from crashing
 
-            // create AccountVerification object
-            AccountVerification accountVerification = new AccountVerification(tenant.getTenantLastName(), tenant.getTenantAddress(), companyCode);
+            // create TenantVerification object
+            TenantVerification tenantVerification = new TenantVerification(tenant.getTenantLastName(), tenant.getTenantAddress(), companyCode);
 
             // create the account verification map
             HashMap<String, Object> needAccount = new HashMap<>();
-            needAccount.put(tenantID, accountVerification);
+            needAccount.put(tenantID, tenantVerification);
 
             // update database with account creation needs
             needAccountRef.updateChildren(needAccount);
@@ -96,21 +100,34 @@ public class FirebaseDataHelper {
         tenantDataRef.updateChildren(newTenant);
 
         // show success message
-        Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     public boolean submitMaintenanceRequest(Request request) {
 
         // get firebase database instance and reference
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String requestType;
+
+        // get status and assign requestType appropriately
+        if (request.getRequestUrgency().equals("Critical")) {
+            requestType = "critical";
+        } else {
+            requestType = "new";
+        }
 
         if (currentUser != null) {
 
             // get our location reference
-            DatabaseReference newRequestRef = firebaseDatabase.getReference().child(companyCode).child("1").child("requests").child(currentUser.getUid());
+            DatabaseReference newRequestRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                    .child("requests").child(currentUser.getUid());
 
             // create our key to update
             String requestKey = newRequestRef.push().getKey();
+
+            // create duplicate record for manager/maintenance staff to see
+            DatabaseReference duplicateRequestForManagerRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                    .child("requests").child(requestType);
 
             // since this field is optional, we need to check for null first before submitting and uploading an image
             if(!request.getRequestOpenImagePath().isEmpty()) {
@@ -133,26 +150,30 @@ public class FirebaseDataHelper {
                 uploadTask.addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
-                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_SHORT).show();
                     }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                         // Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_SHORT).show();
                     }
                 });
 
                 // add in our key and empty closed image path and update our image path to Firebase Storage location
-                request.setRequestID(requestKey);
                 request.setRequestClosedImagePath("");
                 request.setRequestOpenImagePath(imageUri.getLastPathSegment());
 
             }
 
+            // add the requestID and current tenantID to the request for manager data
+            request.setRequestID(requestKey);
+            request.setRequestUser(globalTenantID);
+
             // update data
             newRequestRef.child(requestKey).setValue(request);
+            duplicateRequestForManagerRef.child(requestKey).setValue(request);
             return true;
         }
 
@@ -167,23 +188,45 @@ public class FirebaseDataHelper {
         if (currentUser != null) {
 
             // get our location reference
-            DatabaseReference newComplaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints").child(currentUser.getUid());
+            DatabaseReference newComplaintRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                    .child("complaints").child(currentUser.getUid());
 
             // create our key to update
             String complaintKey = newComplaintRef.push().getKey();
 
-            // add in our key and empty closed image path and update our image path to Firebase Storage location
+            // create our duplicate record for our manager
+            DatabaseReference duplicateComplaintForManagerRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                    .child("complaints").child("active");
+
+            // add in our key and user
             complaint.setComplaintID(complaintKey);
+            complaint.setComplaintUser(globalTenantID);
 
             // update data
             newComplaintRef.child(complaintKey).setValue(complaint);
+            duplicateComplaintForManagerRef.child(complaintKey).setValue(complaint);
             return true;
         }
 
         return false;
     }
 
-    public void createUserReference(String companyCode, String tenantID, String accessType) {
+    public void createUserReference(String accessType) {
+        // get our current userID
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUser = mAuth.getCurrentUser();
+        if (mUser != null) {
+            // get our firebase reference
+            String userID = mUser.getUid();
+            DatabaseReference newUserRef = firebaseDatabase.getReference().child("users").child(userID);
+
+            // create the user and the company/user references
+            User createUser = new User("", "1", "", accessType);
+            newUserRef.setValue(createUser);
+        }
+    }
+
+    public void updateUserReference(String companyCode, String tenantID, String accessType) {
         // get our current userID
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser mUser = mAuth.getCurrentUser();
@@ -192,6 +235,16 @@ public class FirebaseDataHelper {
             String userID = mUser.getUid();
             DatabaseReference newUserRef = firebaseDatabase.getReference().child("users").child(userID);
             DatabaseReference companyUserRef = firebaseDatabase.getReference().child(companyCode).child("1").child("users").child(userID);
+
+            if (accessType.equals("tenant")) {
+                DatabaseReference tenantLinkRef = firebaseDatabase.getReference().child(companyCode).child("1").child("tenants").child(tenantID).child("userID");
+                tenantLinkRef.setValue(userID);
+            }
+
+            if (accessType.equals("staff")) {
+                DatabaseReference staffLinkRef = firebaseDatabase.getReference().child(companyCode).child("1").child("staff").child(tenantID).child("userID");
+                staffLinkRef.setValue(userID);
+            }
 
             // create the user and the company/user references
             User createUser = new User(companyCode, "1", tenantID, accessType);
@@ -211,7 +264,50 @@ public class FirebaseDataHelper {
         createCompanyRef.child(companyCode).setValue(newCompany);
 
         // create our manager user inside our new company/property
-        createUserReference(companyCode, "", "manager");
+        updateUserReference(companyCode, "", "manager");
+    }
+
+    public void updateCompany(Company company) {
+        // create our company reference and get firebase key
+        DatabaseReference updateCompanyRef = firebaseDatabase.getReference().child("companies").child(companyCode);
+
+        // since this field is optional, we need to check for null first before submitting and uploading an image
+        if(!company.getCompanyImagePath().isEmpty()) {
+            // grab our StorageReference
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-8db06.appspot.com/");
+            StorageReference saveLocationRef = storageRef.child("companyImages/" + companyCode);
+
+            // get our Uri File reference
+            Uri imageUri = Uri.fromFile(new File(company.getCompanyImagePath()));
+
+            // grab our image reference and Uri for File
+            StorageReference imageRef = saveLocationRef.child(imageUri.getLastPathSegment());
+
+            // register UploadTask and putFile
+            UploadTask uploadTask = imageRef.putFile(imageUri);
+
+            // Register observers to listen for when the download is done or if it fails
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_SHORT).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    // Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+
+            // add in our key and empty closed image path and update our image path to Firebase Storage location
+            company.setCompanyImagePath(imageUri.getLastPathSegment());
+        }
+
+        // update our company
+        updateCompanyRef.setValue(company);
     }
 
     public void setSharedCompanyCode() {
@@ -229,7 +325,34 @@ public class FirebaseDataHelper {
                     if(currentUser != null) {
                         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
                         mPrefs.edit().putString(COMPANY_CODE, currentUser.getCompanyCode()).apply();
-                        companyCode = mPrefs.getString(COMPANY_CODE, "");
+                        //companyCode = mPrefs.getString(COMPANY_CODE, "");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    public void setSharedTenantID() {
+        // get our user data
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // validate for null
+        if (mUser != null) {
+            // get firebase references
+            DatabaseReference companyCodeRef = firebaseDatabase.getReference().child("users").child(mUser.getUid());
+            companyCodeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User currentUser = dataSnapshot.getValue(User.class);
+                    if(currentUser != null) {
+                        SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+                        mPrefs.edit().putString(TENANT_ID, currentUser.getTenantID()).apply();
+                        //globalTenantID = mPrefs.getString(TENANT_ID, "");
                     }
                 }
 
@@ -257,14 +380,114 @@ public class FirebaseDataHelper {
         }
 
         // show success message
-        Snackbar.make(mActivity.findViewById(android.R.id.content), unitMessage, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mActivity.findViewById(android.R.id.content), unitMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     public void deleteSelectedUnit(Unit unit) {
         String deleteUnitKey = unit.getUnitID();
         DatabaseReference unitDeleteRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units").child(deleteUnitKey);
         unitDeleteRef.removeValue();
-        Snackbar.make(mActivity.findViewById(android.R.id.content), "Unit " + unit.getUnitAddress() + " deleted successfully!", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mActivity.findViewById(android.R.id.content), "Unit " + unit.getUnitAddress() + " deleted successfully!", Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void acknowledgeComplaint(Complaint complaint, Tenant tenant) {
+        DatabaseReference complaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints")
+                .child(tenant.getUserID()).child(complaint.getComplaintID());
+        DatabaseReference managerComplaintRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints")
+                .child("active").child(complaint.getComplaintID());
+        DatabaseReference managerAcknowledgedRef = firebaseDatabase.getReference().child(companyCode).child("1").child("complaints")
+                .child("closed").child(complaint.getComplaintID());
+
+        // update, remove, and create our complaint objects
+        complaintRef.setValue(complaint);
+        managerComplaintRef.removeValue();
+        managerAcknowledgedRef.setValue(complaint);
+    }
+
+    public void updateRequest(Request request, Tenant tenant, String requestTo, String requestFrom) {
+        // set our database references
+        DatabaseReference rootRef = firebaseDatabase.getReference().child(companyCode).child("1").child("requests");
+        DatabaseReference userRequestRef = rootRef.child(tenant.getUserID()).child(request.getRequestID());
+
+        if(!requestTo.equals(requestFrom)) {
+            // remove our old value since we are moving the request to a new category
+            DatabaseReference managerRequestRef = rootRef.child(requestFrom).child(request.getRequestID());
+            managerRequestRef.removeValue();
+        }
+
+        DatabaseReference newManagerRequestRef = rootRef.child(requestTo).child(request.getRequestID());
+
+        // update the request for the manager and the user
+        userRequestRef.setValue(request);
+        newManagerRequestRef.setValue(request);
+
+        Snackbar.make(mActivity.findViewById(android.R.id.content), "Request Updated Successfully!", Snackbar.LENGTH_SHORT).show();
+
+    }
+
+    public void closeRequest(Request request, Tenant tenant, String requestType) {
+        // set our database references
+        DatabaseReference rootRef = firebaseDatabase.getReference().child(companyCode).child("1").child("requests");
+        DatabaseReference userRequestRef = rootRef.child(tenant.getUserID()).child(request.getRequestID());
+        DatabaseReference newManagerRequestRef = rootRef.child(requestType).child(request.getRequestID());
+        DatabaseReference closedRequestRef = rootRef.child("closed").child(request.getRequestID());
+
+        // update status
+        request.setRequestStatus("Completed");
+
+        // update the request for the manager and the user
+        userRequestRef.setValue(request);
+        closedRequestRef.setValue(request);
+        newManagerRequestRef.removeValue();
+
+        Snackbar.make(mActivity.findViewById(android.R.id.content), "Request Closed Successfully!", Snackbar.LENGTH_SHORT).show();
+
+    }
+
+    public void createStaffMember(Staff staffMember) {
+        DatabaseReference staffRef = firebaseDatabase.getReference().child(companyCode).child("1").child("staff").child("current");
+        DatabaseReference staffNeedsAccount = firebaseDatabase.getReference().child("needAccount");
+        String staffKey = staffMember.getStaffPhone();
+        staffMember.setStaffID(staffKey);
+
+        staffRef.child(staffKey).setValue(staffMember);
+        staffNeedsAccount.child(staffKey).setValue(staffMember);
+    }
+
+    public void sendTenantMessage(final Message message) {
+        // get our user data
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // validate for null
+        if (mUser != null) {
+            String userID = mUser.getUid();
+            DatabaseReference userDataRef = firebaseDatabase.getReference().child("users").child(userID);
+            userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User currentUser = dataSnapshot.getValue(User.class);
+                    if(currentUser != null) {
+                        String tenantID = currentUser.getTenantID();
+                        DatabaseReference tenantMessageRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                                .child("messages").child(tenantID).child("" + message.getMessageDate());
+                        tenantMessageRef.setValue(message);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+    }
+
+    public void sendManagerMessage(final Message message, String tenantID) {
+        // send our message to the tenant
+        DatabaseReference tenantMessageRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                .child("messages").child(tenantID).child("" + message.getMessageDate());
+        tenantMessageRef.setValue(message);
     }
 
 }

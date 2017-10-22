@@ -9,26 +9,16 @@ import java.util.Date;
 public class Message {
 
     // class variables
-    private String messageId;
-    private String messageContent;
-    private Date messageDate;
+    private String messageContent, messageSender;
+    private long messageDate;
 
     private Message() {
     }
 
-    Message(String messageId, String messageContent, Date messageDate) {
-
-        this.messageId = messageId;
+    public Message(String messageContent, String messageSender, long messageDate) {
         this.messageContent = messageContent;
+        this.messageSender = messageSender;
         this.messageDate = messageDate;
-    }
-
-    public String getMessageId() {
-        return messageId;
-    }
-
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
     }
 
     public String getMessageContent() {
@@ -39,12 +29,28 @@ public class Message {
         this.messageContent = messageContent;
     }
 
-    public Date getMessageDate() {
+    public String getMessageSender() {
+        return messageSender;
+    }
+
+    public void setMessageSender(String messageSender) {
+        this.messageSender = messageSender;
+    }
+
+    public long getMessageDate() {
         return messageDate;
     }
 
-    public void setMessageDate(Date messageDate) {
+    public void setMessageDate(long messageDate) {
         this.messageDate = messageDate;
     }
 
+    @Override
+    public String toString() {
+        return "Message{" +
+                ", messageContent='" + messageContent + '\'' +
+                ", messageSender='" + messageSender + '\'' +
+                ", messageDate=" + messageDate +
+                '}';
+    }
 }

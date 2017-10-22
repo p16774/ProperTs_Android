@@ -7,7 +7,7 @@ package com.project3w.newproperts.Objects;
 public class Company {
 
     // class variables
-    String companyCode, companyName, companyAddress, companyPhone, companyHours, managerName;
+    private String companyCode, companyName, companyAddress, companyPhone, companyEmail, companyHours, companyImagePath, managerName;
 
     // firebase constructor
     public Company() {
@@ -20,16 +20,20 @@ public class Company {
         this.companyName = companyName;
         this.companyAddress = ""; // set these to empty values that user can update later
         this.companyPhone = "";
+        this.companyEmail = "";
         this.companyHours = "";
+        this.companyImagePath = "";
         this.managerName = "";
     }
 
-    public Company(String companyCode, String companyName, String companyAddress, String companyPhone, String companyHours, String managerName) {
+    public Company(String companyCode, String companyName, String companyAddress, String companyPhone, String companyEmail, String companyHours, String companyImagePath, String managerName) {
         this.companyCode = companyCode;
         this.companyName = companyName;
         this.companyAddress = companyAddress;
         this.companyPhone = companyPhone;
+        this.companyEmail = companyEmail;
         this.companyHours = companyHours;
+        this.companyImagePath = companyImagePath;
         this.managerName = managerName;
     }
 
@@ -65,12 +69,28 @@ public class Company {
         this.companyPhone = companyPhone;
     }
 
+    public String getCompanyEmail() {
+        return companyEmail;
+    }
+
+    public void setCompanyEmail(String companyEmail) {
+        this.companyEmail = companyEmail;
+    }
+
     public String getCompanyHours() {
         return companyHours;
     }
 
     public void setCompanyHours(String companyHours) {
         this.companyHours = companyHours;
+    }
+
+    public String getCompanyImagePath() {
+        return companyImagePath;
+    }
+
+    public void setCompanyImagePath(String companyImagePath) {
+        this.companyImagePath = companyImagePath;
     }
 
     public String getManagerName() {

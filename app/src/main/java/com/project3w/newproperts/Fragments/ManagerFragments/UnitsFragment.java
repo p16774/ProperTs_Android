@@ -168,7 +168,7 @@ public class UnitsFragment extends Fragment implements View.OnClickListener {
         // validate text entered
         if (unitAddress.isEmpty()) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
-                    "You must enter an address to define the Unit.", Snackbar.LENGTH_LONG).show();
+                    "You must enter an address to define the Unit.", Snackbar.LENGTH_SHORT).show();
             return false;
         }
 

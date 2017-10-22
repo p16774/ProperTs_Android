@@ -13,7 +13,7 @@ import com.project3w.newproperts.R;
 public class ComplaintViewHolder extends RecyclerView.ViewHolder {
 
     // class variables
-    public TextView complaintTitle, complaintStatus, complaintDate;
+    public TextView complaintTitle, complaintStatus, complaintDate, managerComplaintTitle;
 
     public ComplaintViewHolder(View itemView) {
         super(itemView);
@@ -21,6 +21,7 @@ public class ComplaintViewHolder extends RecyclerView.ViewHolder {
         complaintTitle = itemView.findViewById(R.id.complaint_title);
         complaintStatus = itemView.findViewById(R.id.complaint_status);
         complaintDate = itemView.findViewById(R.id.complaint_date);
+        managerComplaintTitle = itemView.findViewById(R.id.manager_complaint_title);
 
         //listener set on ENTIRE ROW
         itemView.setOnClickListener(new View.OnClickListener() {

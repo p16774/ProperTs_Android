@@ -2,6 +2,7 @@ package com.project3w.newproperts.Objects;
 
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,19 +10,20 @@ import java.util.Map;
  * Created by Nate on 9/30/17.
  */
 
-public class Complaint {
+public class Complaint implements Serializable {
 
     // class variables
-    private String complaintID, complaintTitle, complaintContent, complaintStatus, complaintDate;
+    private String complaintID, complaintTitle, complaintContent, complaintStatus, complaintDate, complaintUser;
 
     public Complaint() {
     }
 
-    public Complaint(String complaintTitle, String complaintContent, String complaintStatus, String complaintDate) {
+    public Complaint(String complaintTitle, String complaintContent, String complaintStatus, String complaintDate, String complaintUser) {
         this.complaintTitle = complaintTitle;
         this.complaintContent = complaintContent;
         this.complaintStatus = complaintStatus;
         this.complaintDate = complaintDate;
+        this.complaintUser = complaintUser;
     }
 
     public String getComplaintID() {
@@ -64,4 +66,23 @@ public class Complaint {
         this.complaintDate = complaintDate;
     }
 
+    public String getComplaintUser() {
+        return complaintUser;
+    }
+
+    public void setComplaintUser(String complaintUser) {
+        this.complaintUser = complaintUser;
+    }
+
+    @Override
+    public String toString() {
+        return "Complaint{" +
+                "complaintID='" + complaintID + '\'' +
+                ", complaintTitle='" + complaintTitle + '\'' +
+                ", complaintContent='" + complaintContent + '\'' +
+                ", complaintStatus='" + complaintStatus + '\'' +
+                ", complaintDate='" + complaintDate + '\'' +
+                ", complaintUser='" + complaintUser + '\'' +
+                '}';
+    }
 }

@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.MainActivity;
-import com.project3w.newproperts.Objects.AccountVerification;
+import com.project3w.newproperts.Objects.TenantVerification;
 import com.project3w.newproperts.R;
 
 /**
@@ -35,6 +35,9 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
     EditText lastNameView, verifyCodeView;
     Button verifyAccountBtn;
     FirebaseDataHelper firebaseDataHelper;
+    FirebaseAuth mAuth;
+
+    public static final String ACCESS_TYPE = "com.project3w.properts.ACCESS_TYPE";
 
     public VerifyTenantFragment() {
     }
@@ -55,14 +58,11 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
         // assign our click listener
         verifyAccountBtn.setOnClickListener(this);
 
+        mAuth = FirebaseAuth.getInstance();
+
         mActivity.setTitle("Verify Tenant");
 
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
 
         // verify they have entered data into both fields
         if(lastName.isEmpty() || verifyCode.isEmpty()) {
-            Snackbar.make(mActivity.findViewById(android.R.id.content), "You must fill out both fields to continue", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mActivity.findViewById(android.R.id.content), "You must fill out both fields to continue", Snackbar.LENGTH_SHORT).show();
         } else {
             // grab our current userID and assign our data points in FirebaseDataHelper
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -95,7 +95,7 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
         removedNeedAccountRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                AccountVerification userData = dataSnapshot.getValue(AccountVerification.class);
+                TenantVerification userData = dataSnapshot.getValue(TenantVerification.class);
                 if (userData != null) {
                     DatabaseReference linkTenantAccountRef = firebaseDatabase.getReference()
                             .child(userData.getCompanyCode())
@@ -103,7 +103,7 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
                             .child("tenants").child(tenantID).child("userID");
 
                     // update our user reference and assign the accessRole
-                    firebaseDataHelper.createUserReference(userData.getCompanyCode(), tenantID, "tenant");
+                    firebaseDataHelper.updateUserReference(userData.getCompanyCode(), tenantID, "tenant");
 
                     // try catch block to test that the calls are completing correctly
                     try {
@@ -115,13 +115,15 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
 
                         // send user to the MainActivity
                         Intent sendToMainIntent = new Intent(mActivity, MainActivity.class);
-                        //sendToMainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        sendToMainIntent.putExtra(ACCESS_TYPE, "tenant");
                         startActivity(sendToMainIntent);
                         mActivity.finish();
 
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                } else {
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Invalid Verification Code", Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -130,5 +132,14 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
 
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // sign out the user
+        mAuth.signOut();
+        // close this activity to force the user to login
+        mActivity.finish();
     }
 }

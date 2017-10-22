@@ -1,11 +1,17 @@
 package com.project3w.newproperts;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -18,21 +24,39 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.newproperts.Fragments.ManagerFragments.CompanyInfo;
+import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintFragment;
+import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintsView;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerComplaints;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerMessages;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerRequests;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerStaff;
+import com.project3w.newproperts.Fragments.ManagerFragments.MessagesView;
+import com.project3w.newproperts.Fragments.ManagerFragments.RequestFragment;
+import com.project3w.newproperts.Fragments.ManagerFragments.RequestsView;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerTenants;
-import com.project3w.newproperts.Fragments.ManagerFragments.UnitsFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
+import com.project3w.newproperts.Fragments.ManagerFragments.StaffFragment;
+import com.project3w.newproperts.Fragments.ManagerFragments.StaffView;
+import com.project3w.newproperts.Fragments.ManagerFragments.TenantsFragment;
+import com.project3w.newproperts.Fragments.ManagerFragments.UnitsFragment;
+import com.project3w.newproperts.Fragments.StaffFragments.StaffHome;
 import com.project3w.newproperts.Fragments.TenantFragments.AddComplaintFragment;
 import com.project3w.newproperts.Fragments.TenantFragments.AddRequestFragment;
-import com.project3w.newproperts.Fragments.ManagerFragments.TenantsFragment;
-import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantComplaints;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantHome;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantMaintenance;
+import com.project3w.newproperts.Fragments.TenantFragments.TenantMessages;
 import com.project3w.newproperts.Fragments.TenantFragments.ViewRequestFragment;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
+import com.project3w.newproperts.Objects.Complaint;
 import com.project3w.newproperts.Objects.Request;
+import com.project3w.newproperts.Objects.Staff;
 import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.Objects.Unit;
+
+import static com.project3w.newproperts.Fragments.TenantFragments.VerifyTenantFragment.ACCESS_TYPE;
 
 public class MainActivity extends AppCompatActivity implements TenantsFragment.DismissTenantFragmentListener,
         TenantMaintenance.AddNewRequestListener,
@@ -45,7 +69,18 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         ManagerUnits.AddNewUnitListener,
         ManagerUnits.EditUnitListener,
         UnitsFragment.DismissUnitFragmentListener,
-        ManagerTenants.EditTenantFragmentListener {
+        ManagerTenants.EditTenantFragmentListener,
+        ComplaintsView.ComplaintAcknowledgementListener,
+        ComplaintFragment.ComplaintAcknowledgedListener,
+        ManagerComplaints.ComplaintTypeListener,
+        ManagerRequests.RequestTypeListener,
+        RequestsView.DisplayRequestListener,
+        RequestFragment.RequestUpdateListener,
+        ManagerStaff.ManageStaffListener,
+        StaffView.DisplayStaffListener,
+        StaffFragment.StaffFunctionListener,
+        CompanyInfo.CompanyUpdatedListener,
+        ManagerMessages.DisplayTenantMesssages {
 
     // class variables
     FirebaseUser mUser;
@@ -55,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     FirebaseDataHelper mHelper;
 
     public static final String COMPANY_CODE = "com.project3w.properts.COMPANY_CODE";
+    public static final String TENANT_ID = "com.project3w.properts.TENANT_ID";
+    public static final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 0x2001;
 
 
     @Override
@@ -63,11 +100,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         setContentView(R.layout.activity_main);
 
         // check bools.xml and set the proper screen orientation for device widths
-        if(getResources().getBoolean(R.bool.portrait_only)){
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        }
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         mHelper = new FirebaseDataHelper(this);
 
@@ -78,9 +111,24 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
             finish();
         } else {
 
+            if (Build.VERSION.SDK_INT >= 23) {
+                // request permissions
+                requestPermissions(new String[]{
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        ASK_MULTIPLE_PERMISSION_REQUEST_CODE);
+            }
+
             // set our sharedpreference of the company code every time we come here just in case something deletes it
             mHelper.setSharedCompanyCode();
+            mHelper.setSharedTenantID();
 
+            // grab our intent that should have our access type
+            if (getIntent().hasExtra(ACCESS_TYPE)) {
+                userType = getIntent().getExtras().getString(ACCESS_TYPE, "");
+            }
+
+            // grab the access type from the database if sent back here in a weird way to not have the intent running
             if (userType.equals("")) {
 
                 // pull in the user data and send the appropriate home page flow
@@ -109,6 +157,15 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
 
                     }
                 });
+            } else {
+                // call in our bottom navigation library
+                bottomNavigation = findViewById(R.id.bottom_navigation);
+                bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
+                bottomNavigation.setAccentColor(Color.parseColor("#0D47A1"));
+                bottomNavigation.setInactiveColor(Color.parseColor("#888888"));
+
+                // call home fragment on initial start up
+                callHome();
             }
         }
     }
@@ -136,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     }
 
     protected void callHome() {
+
         clearBackStack();
 
         // start our Fragment Manager
@@ -161,12 +219,6 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                     bottomNavigation.addItem(itemMaintenance);
                     bottomNavigation.addItem(itemComplaint);
 
-                    //TODO: add this features and enable these screens
-                    bottomNavigation.disableItemAtPosition(2);
-                    bottomNavigation.disableItemAtPosition(3);
-                    bottomNavigation.disableItemAtPosition(4);
-                    bottomNavigation.setItemDisableColor(Color.parseColor("#00FFFFFF"));
-
                     // setup our navigation in each of the tabs
                     bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
                         @Override
@@ -180,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                                     callTenants();
                                     break;
                                 case 2:
-                                    // TODO: add messaging functions
+                                    callMessages();
                                     break;
                                 case 3:
                                     callMaintenance();
@@ -214,10 +266,6 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                     bottomNavigation.addItem(itemMaintenance);
                     bottomNavigation.addItem(itemComplaint);
 
-                    //TODO: enable the messaging to remove this call
-                    bottomNavigation.disableItemAtPosition(1);
-                    bottomNavigation.setItemDisableColor(Color.parseColor("#00FFFFFF"));
-
                     // setup our navigation in each of the tabs
                     bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
                         @Override
@@ -228,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                                     callHome();
                                     break;
                                 case 1:
-                                    // TODO: add messaging functions
+                                    callMessages();
                                     break;
                                 case 2:
                                     callMaintenance();
@@ -252,13 +300,62 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 fragmentTransaction.commit();
 
                 break;
-            case "maintenance":
+            case "staff":
+                if(bottomNavigation.getItemsCount() == 0) {
+                    // add our navigations
+                    bottomNavigation.addItem(itemHome);
+                    bottomNavigation.addItem(itemMaintenance);
 
-                // add the MaintenanceHome Fragment
-                //TODO: create the maintenance home fragment
+                    // setup our navigation in each of the tabs
+                    bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+                        @Override
+                        public boolean onTabSelected(int position, boolean wasSelected) {
+
+                            switch (position) {
+                                case 0:
+                                    callHome();
+                                    break;
+                                case 1:
+                                    callMaintenance();
+                                    break;
+                            }
+
+                            return true;
+                        }
+                    });
+                }
+
+                // validate menu
+                tenantMenu = false;
+
+                // add the ManagerHome fragment
+                StaffHome sh = new StaffHome();
+                fragmentTransaction.replace(R.id.main_view_container, sh);
+                fragmentTransaction.commit();
                 break;
 
             //TODO: create default display showing error - no access assigned and prevent usage
+        }
+    }
+
+    protected void callMessages() {
+        switch (userType) {
+            case "tenant":
+                // start our Fragment Manager
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                TenantMessages tm = new TenantMessages();
+                fragmentTransaction.replace(R.id.main_view_container, tm);
+                fragmentTransaction.commit();
+                break;
+            case "manager":
+                // start our Fragment Manager
+                FragmentManager messagesManager = getSupportFragmentManager();
+                FragmentTransaction messagesTransaction = messagesManager.beginTransaction();
+                ManagerMessages mm = new ManagerMessages();
+                messagesTransaction.replace(R.id.main_view_container, mm);
+                messagesTransaction.commit();
+                break;
         }
     }
 
@@ -285,10 +382,9 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 tenantMenu = false;
 
                 // add the ManagerHome fragment
-                ManagerHome mf = new ManagerHome();
-                fragmentTransaction.replace(R.id.main_view_container, mf);
+                ManagerRequests mm = new ManagerRequests();
+                fragmentTransaction.replace(R.id.main_view_container, mm);
                 fragmentTransaction.commit();
-
                 break;
             case "tenant":
 
@@ -299,12 +395,16 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 TenantMaintenance tm = new TenantMaintenance();
                 fragmentTransaction.replace(R.id.main_view_container, tm);
                 fragmentTransaction.commit();
-
                 break;
-            case "maintenance":
+            case "staff":
 
-                // add the MaintenanceHome Fragment
-                //TODO: create the maintenance home fragment
+                // validate menu
+                tenantMenu = false;
+
+                // reuse the manager maintenance task
+                ManagerRequests sm = new ManagerRequests();
+                fragmentTransaction.replace(R.id.main_view_container, sm);
+                fragmentTransaction.commit();
                 break;
 
             //TODO: create default display showing error - no access assigned and prevent usage
@@ -321,8 +421,8 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
             case "manager":
 
                 // add the ManagerHome fragment
-                ManagerHome mf = new ManagerHome();
-                fragmentTransaction.replace(R.id.main_view_container, mf);
+                ManagerComplaints mc = new ManagerComplaints();
+                fragmentTransaction.replace(R.id.main_view_container, mc);
                 fragmentTransaction.commit();
 
                 break;
@@ -334,10 +434,8 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 fragmentTransaction.commit();
 
                 break;
-            case "maintenance":
-
-                // add the MaintenanceHome Fragment
-                //TODO: create the maintenance home fragment
+            case "staff":
+                //TODO: for later versions to implement staff functionality
                 break;
 
             //TODO: create default display showing error - no access assigned and prevent usage
@@ -410,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         switch (menuOption) {
 
             case "units":
-                // create intent to send the user to the Add Request Fragment
+                // go to the manage units screen
                 FragmentManager unitManager = getSupportFragmentManager();
                 FragmentTransaction unitTransaction = unitManager.beginTransaction();
                 ManagerUnits mu = new ManagerUnits();
@@ -427,6 +525,23 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 tenantTransaction.addToBackStack("addtenant");
                 tenantTransaction.commit();
                 break;
+            case "staff":
+                // go to the manage staff screen
+                FragmentManager staffManager = getSupportFragmentManager();
+                FragmentTransaction staffTransaction = staffManager.beginTransaction();
+                ManagerStaff ms = new ManagerStaff();
+                staffTransaction.replace(R.id.main_view_container, ms);
+                staffTransaction.addToBackStack("managestaff");
+                staffTransaction.commit();
+                break;
+            case "company":
+                // update our company data
+                FragmentManager companyManager = getSupportFragmentManager();
+                FragmentTransaction companyTransaction = companyManager.beginTransaction();
+                CompanyInfo ci = new CompanyInfo();
+                companyTransaction.replace(R.id.main_view_container, ci);
+                companyTransaction.addToBackStack("companydata");
+                companyTransaction.commit();
         }
     }
 
@@ -471,5 +586,113 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     @Override
     public void dismissTenantFragment() {
         callTenants();
+    }
+
+    @Override
+    public void displayComplaint(Complaint complaint, Tenant tenant, Boolean isClosed) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager complaintManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = complaintManager.beginTransaction();
+        ComplaintFragment at = new ComplaintFragment().newInstance(complaint, tenant, isClosed);
+        tenantTransaction.replace(R.id.main_view_container, at);
+        tenantTransaction.addToBackStack("managercomplaints");
+        tenantTransaction.commit();
+    }
+
+    @Override
+    public void complaintAcknowledged() {
+        callComplaints();
+    }
+
+    @Override
+    public void callComplaintFragment(String complaintType) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager complaintManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = complaintManager.beginTransaction();
+        ComplaintsView cv = new ComplaintsView().newInstance(complaintType);
+        tenantTransaction.replace(R.id.main_view_container, cv);
+        tenantTransaction.addToBackStack("complainttype");
+        tenantTransaction.commit();
+    }
+
+    @Override
+    public void callRequestFragment(String requestType) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager requestManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = requestManager.beginTransaction();
+        RequestsView rv = new RequestsView().newInstance(requestType);
+        tenantTransaction.replace(R.id.main_view_container, rv);
+        tenantTransaction.addToBackStack("requesttype");
+        tenantTransaction.commit();
+    }
+
+    @Override
+    public void displayRequest(Request request, Tenant tenant, String requestType, Boolean isClosed) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager requestManager = getSupportFragmentManager();
+        FragmentTransaction tenantTransaction = requestManager.beginTransaction();
+        RequestFragment rf = new RequestFragment().newInstance(request, tenant, requestType, isClosed);
+        tenantTransaction.replace(R.id.main_view_container, rf);
+        tenantTransaction.addToBackStack("managerrequest");
+        tenantTransaction.commit();
+    }
+
+    @Override
+    public void requestUpdated() {
+        callMaintenance();
+    }
+
+    @Override
+    public void callManagerStaff(String staffFunction) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager staffManager = getSupportFragmentManager();
+        FragmentTransaction staffTransaction = staffManager.beginTransaction();
+        StaffView sv = new StaffView().newInstance(staffFunction);
+        staffTransaction.replace(R.id.main_view_container, sv);
+        staffTransaction.addToBackStack("managerstaff");
+        staffTransaction.commit();
+    }
+
+    @Override
+    public void displayStaff(Staff staff, Boolean isCurrent) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager staffManager = getSupportFragmentManager();
+        FragmentTransaction staffTransaction = staffManager.beginTransaction();
+        StaffFragment sf = new StaffFragment().newInstance(staff, isCurrent);
+        staffTransaction.replace(R.id.main_view_container, sf);
+        staffTransaction.addToBackStack("viewstaff");
+        staffTransaction.commit();
+    }
+
+    @Override
+    public void addNewStaff() {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager newStaffManager = getSupportFragmentManager();
+        FragmentTransaction newStaffTransaction = newStaffManager.beginTransaction();
+        StaffFragment sf = new StaffFragment();
+        newStaffTransaction.replace(R.id.main_view_container, sf);
+        newStaffTransaction.addToBackStack("newstaff");
+        newStaffTransaction.commit();
+    }
+
+    @Override
+    public void dismissStaffFragment() {
+        openMenuOption("staff");
+    }
+
+    @Override
+    public void companyUpdated() {
+        callHome();
+    }
+
+    @Override
+    public void displayMessages(Tenant tenant) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager messagesManager = getSupportFragmentManager();
+        FragmentTransaction messagesTransaction = messagesManager.beginTransaction();
+        MessagesView sf = new MessagesView().newInstance(tenant);
+        messagesTransaction.replace(R.id.main_view_container, sf);
+        messagesTransaction.addToBackStack("managermessages");
+        messagesTransaction.commit();
     }
 }

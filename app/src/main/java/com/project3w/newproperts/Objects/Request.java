@@ -14,13 +14,13 @@ public class Request implements Serializable {
 
     // class variables
     private String requestID, requestTitle, requestContent, requestUrgency, requestDate,
-            requestStatus, requestOpenImagePath, requestClosedImagePath;
+            requestStatus, requestOpenImagePath, requestClosedImagePath, requestUser;
 
     public Request() {
     }
 
     public Request(String requestTitle, String requestContent, String requestUrgency, String requestDate,
-                   String requestStatus, String requestOpenImagePath, String requestClosedImagePath) {
+                   String requestStatus, String requestOpenImagePath, String requestClosedImagePath, String requestUser) {
         this.requestTitle = requestTitle;
         this.requestContent = requestContent;
         this.requestUrgency = requestUrgency;
@@ -28,6 +28,7 @@ public class Request implements Serializable {
         this.requestStatus = requestStatus;
         this.requestOpenImagePath = requestOpenImagePath;
         this.requestClosedImagePath = requestClosedImagePath;
+        this.requestUser = requestUser;
     }
 
     public String getRequestID() {
@@ -94,4 +95,11 @@ public class Request implements Serializable {
         this.requestClosedImagePath = requestClosedImagePath;
     }
 
+    public String getRequestUser() {
+        return requestUser;
+    }
+
+    public void setRequestUser(String requestUser) {
+        this.requestUser = requestUser;
+    }
 }

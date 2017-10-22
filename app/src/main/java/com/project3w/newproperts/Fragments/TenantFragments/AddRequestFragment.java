@@ -88,7 +88,6 @@ public class AddRequestFragment extends Fragment {
         requestPictureView = getActivity().findViewById(R.id.new_request_picture);
         requestPictureView.setImageResource(R.drawable.placeholder);
 
-
     }
 
     @Override
@@ -120,7 +119,7 @@ public class AddRequestFragment extends Fragment {
         if (requestTitleView.getText().toString().trim().equals("") || requestContentView.getText().toString().trim().equals("")) {
             Snackbar.make(getActivity().findViewById(android.R.id.content),
                     "You must fill out all fields.",
-                    Snackbar.LENGTH_LONG).show();
+                    Snackbar.LENGTH_SHORT).show();
             return false;
         } else {
 
@@ -134,7 +133,7 @@ public class AddRequestFragment extends Fragment {
             String status = "New";
 
             // convert our date object for swift iOS implementation
-            SimpleDateFormat fmt = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm:ss aaa", Locale.US);
+            SimpleDateFormat fmt = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
             Date currentDate = new Date();
             String date = fmt.format(currentDate);
             String picture = mCurrentPhotoPath;
@@ -144,8 +143,8 @@ public class AddRequestFragment extends Fragment {
                 picture = "";
             }
 
-            // create our Request Object
-            Request newRequest = new Request(title,content,urgency,date,status,picture,"");
+            // create our Request Object - the two empty strings on the end are for closed image and user
+            Request newRequest = new Request(title,content,urgency,date,status,picture,"","");
             boolean submitted = firebaseDataHelper.submitMaintenanceRequest(newRequest);
 
             if(submitted) {

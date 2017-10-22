@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.R;
 
 import java.util.Objects;
@@ -35,6 +37,7 @@ public class CreateAccount extends Fragment {
     String accountType;
     Activity mActivity;
     FirebaseAuth mAuth;
+    FirebaseUser mUser;
 
     public interface NextStepListener {
         void performNextStep(String type);
@@ -83,7 +86,6 @@ public class CreateAccount extends Fragment {
 
         // set our account type
         accountType = getArguments().getString(ACCOUNT_TYPE);
-        System.out.println("ACCOUNT TYPE: " + accountType);
 
 
         //Setup signup button listener
@@ -106,35 +108,15 @@ public class CreateAccount extends Fragment {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     Log.d("Firebase", "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-                                    // perform the next steps
-                                    onNextStepListener.performNextStep(accountType);
+                                    // create an initial "empty" user to validate if they leave the app before verifying their account
+                                    mUser = FirebaseAuth.getInstance().getCurrentUser();
+                                    if (mUser != null) {
+                                        FirebaseDataHelper firebaseDataHelper = new FirebaseDataHelper(mActivity);
+                                        firebaseDataHelper.createUserReference(accountType);
 
-                                    /*// pull our userID to update tenant information
-                                    FirebaseUser newUser = mAuth.getCurrentUser();
-                                    Boolean didCreate = false;
-                                    try {
-                                        String userID = newUser.getUid();
-                                        FirebaseDataHelper firebaseDataHelper = new FirebaseDataHelper(getActivity());
-                                        didCreate = firebaseDataHelper.updateNewTenantAccount(newTenant, userID);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        Snackbar.make(mActivity.findViewById(android.R.id.content),
-                                                "Something went terribly wrong. Please read the StackTrace.",
-                                                Snackbar.LENGTH_INDEFINITE).show();
+                                        // perform the next steps
+                                        onNextStepListener.performNextStep(accountType);
                                     }
-
-                                    if (didCreate) {
-                                        //TODO: send user to tenant screen and log them in
-                                    }
-
-                                    // If sign in fails, display a message to the user.
-                                    if (!task.isSuccessful()) {
-                                        Snackbar.make(mActivity.findViewById(android.R.id.content),
-                                                "It appears that an account with this email address has already been created. " +
-                                                        "Please use another email, or sign in with your account.",
-                                                Snackbar.LENGTH_LONG).show();
-                                    }*/
-
                                 }
                             });
 

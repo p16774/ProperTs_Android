@@ -10,8 +10,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.project3w.newproperts.Fragments.ChooseAccountType;
 import com.project3w.newproperts.Fragments.CreateAccount;
 import com.project3w.newproperts.Fragments.NewCompanyCreation;
+import com.project3w.newproperts.Fragments.StaffFragments.VerifyStaffFragment;
 import com.project3w.newproperts.Fragments.TenantFragments.VerifyTenantFragment;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
+
+import static com.project3w.newproperts.Fragments.CreateAccount.ACCOUNT_TYPE;
 
 /**
  * Created by Nate on 10/12/17.
@@ -21,6 +24,7 @@ public class CreateAccountActivity extends AppCompatActivity implements ChooseAc
 
     // class variables
     FirebaseDataHelper firebaseDataHelper;
+    String accountType;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,8 +34,14 @@ public class CreateAccountActivity extends AppCompatActivity implements ChooseAc
         // assign our Firebase Helper class
         firebaseDataHelper = new FirebaseDataHelper(this);
 
-        // add in our create fragment
-        createAccountView();
+        // pull our intent for extra to verify user state in creation process
+        if(getIntent().hasExtra(ACCOUNT_TYPE)) {
+            accountType = getIntent().getExtras().getString(ACCOUNT_TYPE);
+            performNextStep(accountType);
+        } else {
+            // add in our create fragment
+            createAccountView();
+        }
     }
 
     private void createAccountView() {
@@ -64,6 +74,9 @@ public class CreateAccountActivity extends AppCompatActivity implements ChooseAc
                     tenantVerification.replace(R.id.create_container, new VerifyTenantFragment()).commit();
                     break;
                 case "staff":
+                    // send the new tenant to the verification screen to attach their UserID to their TenantID
+                    FragmentTransaction staffVerification = getSupportFragmentManager().beginTransaction();
+                    staffVerification.replace(R.id.create_container, new VerifyStaffFragment()).commit();
                     break;
                 case "manager":
                     // send the new manager to the company creation screen
