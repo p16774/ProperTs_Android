@@ -12,10 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
+import com.project3w.newproperts.Helpers.GlideApp;
 import com.project3w.newproperts.Objects.Request;
 import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.R;
@@ -32,6 +36,7 @@ public class RequestFragment extends Fragment {
 
     // class variables
     TextView requestDateView, requestTitleView, requestContentView, requestTenantView, requestTenantAddressView;
+    ImageView requestOpenImageView, requestClosedImageView;
     ScrollView requestScrollView;
     EditText managerUpdateContentView;
     Button managerUpdateBtn, managerClosedBtn;
@@ -87,6 +92,7 @@ public class RequestFragment extends Fragment {
         requestTenantView = view.findViewById(R.id.manager_request_tenantname);
         requestTenantAddressView = view.findViewById(R.id.manager_request_tenantaddress);
         managerUpdateContentView = view.findViewById(R.id.manager_request_reply);
+        requestOpenImageView = view.findViewById(R.id.manager_request_image_open);
         managerUpdateBtn = view.findViewById(R.id.manager_update_request_btn);
         managerClosedBtn = view.findViewById(R.id.manager_close_request_btn);
 
@@ -139,6 +145,38 @@ public class RequestFragment extends Fragment {
             requestContentView.setText(request.getRequestContent());
             requestTenantView.setText(tenant.getTenantFirstName() +  " " + tenant.getTenantLastName());
             requestTenantAddressView.setText(tenant.getTenantAddress());
+
+            // pull images as available from firebase storage
+            // get our storage reference
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-8db06.appspot.com/");
+            StorageReference imageOpenRef = null, imageClosedRef = null;
+
+            // check for value on open image before pulling file
+            if (!request.getRequestOpenImagePath().equals("")) {
+                imageOpenRef = storageRef.child("requestImages/" + request.getRequestID() + "/" + request.getRequestOpenImagePath());
+            }
+
+            /*// check for value on closed image before pulling file
+            if (!request.getRequestClosedImagePath().equals("")) {
+                imageClosedRef = storageRef.child("requestImages/" + request.getRequestID() + "/" + request.getRequestClosedImagePath());
+            }*/
+
+            // check for null on open image
+            if (imageOpenRef != null) {
+                // download and set our imageview
+                GlideApp.with(getActivity())
+                        .load(imageOpenRef)
+                        .into(requestOpenImageView);
+            }
+
+            /*// check for null on closed image
+            if (imageClosedRef != null) {
+                // download and set our imageview
+                GlideApp.with(getActivity())
+                        .load(imageClosedRef)
+                        .into(requestClosedImageView);
+            }*/
 
             managerUpdateBtn.setOnClickListener(new View.OnClickListener() {
                 @Override

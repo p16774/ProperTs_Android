@@ -100,4 +100,18 @@ public class Company {
     public void setManagerName(String managerName) {
         this.managerName = managerName;
     }
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "companyCode='" + companyCode + '\'' +
+                ", companyName='" + companyName + '\'' +
+                ", companyAddress='" + companyAddress + '\'' +
+                ", companyPhone='" + companyPhone + '\'' +
+                ", companyEmail='" + companyEmail + '\'' +
+                ", companyHours='" + companyHours + '\'' +
+                ", companyImagePath='" + companyImagePath + '\'' +
+                ", managerName='" + managerName + '\'' +
+                '}';
+    }
 }

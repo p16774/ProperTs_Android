@@ -18,6 +18,19 @@
             android:layout_height="match_parent"
             android:paddingBottom="8dp">
 
+            <ImageView
+                android:id="@+id/manager_request_image_open"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:contentDescription="Image of Original Condition"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

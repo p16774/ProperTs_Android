@@ -1,17 +1,16 @@
 package com.project3w.newproperts;
 
-import android.*;
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -32,11 +31,11 @@ import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerMessages;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerRequests;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerStaff;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerTenants;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
 import com.project3w.newproperts.Fragments.ManagerFragments.MessagesView;
 import com.project3w.newproperts.Fragments.ManagerFragments.RequestFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.RequestsView;
-import com.project3w.newproperts.Fragments.ManagerFragments.ManagerTenants;
-import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
 import com.project3w.newproperts.Fragments.ManagerFragments.StaffFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.StaffView;
 import com.project3w.newproperts.Fragments.ManagerFragments.TenantsFragment;
@@ -87,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     AHBottomNavigation bottomNavigation;
     Boolean tenantMenu = false;
     String userType = "";
+    String companyCode;
     FirebaseDataHelper mHelper;
 
     public static final String COMPANY_CODE = "com.project3w.properts.COMPANY_CODE";
@@ -105,6 +105,24 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         mHelper = new FirebaseDataHelper(this);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // set our sharedpreference of the company code every time we come here just in case something deletes it
+        mHelper.setSharedCompanyCode();
+
+        // grab our company code from shared preferences
+        SharedPreferences mPrefs = getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+        companyCode = mPrefs.getString(COMPANY_CODE, "");
+
+        System.out.println("HERE!!!!!!!!!!!!!!!!   " + companyCode);
+
+        if(companyCode.isEmpty()) {
+            Snackbar.make(findViewById(android.R.id.content), "Account Created. Please Login Again.", Snackbar.LENGTH_LONG).show();
+            Intent loginScreen = new Intent(this, LoginActivity.class);
+            startActivity(loginScreen);
+            finish();
+        }
+
+
         if (mUser == null) {
             Intent loginScreen = new Intent(this, LoginActivity.class);
             startActivity(loginScreen);
@@ -118,10 +136,6 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         ASK_MULTIPLE_PERMISSION_REQUEST_CODE);
             }
-
-            // set our sharedpreference of the company code every time we come here just in case something deletes it
-            mHelper.setSharedCompanyCode();
-            mHelper.setSharedTenantID();
 
             // grab our intent that should have our access type
             if (getIntent().hasExtra(ACCESS_TYPE)) {

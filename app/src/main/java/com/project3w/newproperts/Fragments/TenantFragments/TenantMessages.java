@@ -51,8 +51,6 @@ public class TenantMessages extends Fragment {
     FirebaseUser mUser;
     Context mContext;
     FirebaseDataHelper mHelper;
-    private static final int VIEW_TYPE_MESSAGE_SENT = 1;
-    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
 
     @Nullable
@@ -79,10 +77,7 @@ public class TenantMessages extends Fragment {
             startActivity(loginScreen);
             getActivity().finish();
         } else {
-            // grab our company code from shared preferences
-            SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
-            companyCode = mPrefs.getString(COMPANY_CODE, null);
-            tenantID = mPrefs.getString(TENANT_ID, "");
+
         }
 
         mActivity.setTitle("Messages");
@@ -101,8 +96,13 @@ public class TenantMessages extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // grab our company code from shared preferences
+        SharedPreferences mPrefs = mContext.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
+        companyCode = mPrefs.getString(COMPANY_CODE, null);
+        tenantID = mPrefs.getString(TENANT_ID, "Error");
+
         // make sure we have a tenantID first
-        if (!tenantID.isEmpty()) {
+        if (!tenantID.equals("Error")) {
 
             // grab the reference to our RecyclerView
             final LinearLayoutManager layoutManager = new LinearLayoutManager(mActivity);

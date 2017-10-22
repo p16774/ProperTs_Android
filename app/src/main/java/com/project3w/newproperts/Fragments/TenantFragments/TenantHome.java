@@ -62,13 +62,6 @@ public class TenantHome extends Fragment {
         // set options menu
         setHasOptionsMenu(true);
 
-        // send user to the login screen if they aren't logged in
-        if (mUser == null) {
-            Intent loginScreen = new Intent(getActivity(), LoginActivity.class);
-            startActivity(loginScreen);
-            getActivity().finish();
-        }
-
         mActivity.setTitle("Home");
 
         return inflater.inflate(R.layout.tenant_home, container, false);
@@ -98,7 +91,7 @@ public class TenantHome extends Fragment {
 
         // grab our company code from shared preferences
         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
-        companyCode = mPrefs.getString(COMPANY_CODE, null);
+        companyCode = mPrefs.getString(COMPANY_CODE, "");
 
         // call user data
         displayUserData();
@@ -116,6 +109,8 @@ public class TenantHome extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Company myCompany = dataSnapshot.getValue(Company.class);
                 if (myCompany != null) {
+
+                    System.out.println(myCompany);
 
                     // get our storage reference
                     FirebaseStorage storage = FirebaseStorage.getInstance();

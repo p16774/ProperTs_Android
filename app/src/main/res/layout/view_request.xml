@@ -16,6 +16,12 @@
         android:layout_marginBottom="50dp"
         android:layout_marginTop="10dp">
 
+        <ImageView
+            android:id="@+id/view_request_image_open"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:contentDescription="Image of Original Condition"/>
+
         <TextView
             android:id="@+id/view_request_id"
             android:layout_width="match_parent"
@@ -45,12 +51,6 @@
             android:id="@+id/view_request_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <ImageView
-            android:id="@+id/view_request_image_open"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:contentDescription="Image of Original Condition"/>
 
         <ImageView
             android:id="@+id/view_request_image_closed"
