@@ -2,6 +2,7 @@ package com.project3w.newproperts;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -48,7 +49,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        // check bools.xml and set the proper screen orientation for device widths
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // get reference to our FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
@@ -82,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
                                         Intent toMainScreenIntent = new Intent(getApplicationContext(), MainActivity.class);
                                         startActivity(toMainScreenIntent);
                                     }
+                                    mAuth.removeAuthStateListener(mAuthListener);
                                 }
                             }
 
@@ -107,6 +110,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         emailEditText = findViewById(R.id.loginEmailEditText);
         passwordEditText = findViewById(R.id.loginPasswordEditText);
+
+        // clear the fields
+        emailEditText.setText("");
+        passwordEditText.setText("");
 
         //Setup signup button listener
         signupButton.setOnClickListener(new View.OnClickListener() {

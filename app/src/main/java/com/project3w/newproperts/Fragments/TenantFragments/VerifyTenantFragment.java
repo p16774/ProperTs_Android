@@ -113,6 +113,9 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
                         // remove the needAccount reference last (just in case)
                         removedNeedAccountRef.removeValue();
 
+                        // set our codes
+                        firebaseDataHelper.setSharedCompanyCode();
+
                         // send user to the MainActivity
                         Intent sendToMainIntent = new Intent(mActivity, MainActivity.class);
                         sendToMainIntent.putExtra(ACCESS_TYPE, "tenant");
@@ -137,8 +140,6 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
     @Override
     public void onStop() {
         super.onStop();
-        // sign out the user
-        mAuth.signOut();
         // close this activity to force the user to login
         mActivity.finish();
     }

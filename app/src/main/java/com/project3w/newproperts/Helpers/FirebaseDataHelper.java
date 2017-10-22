@@ -45,8 +45,8 @@ public class FirebaseDataHelper {
     public FirebaseDataHelper(Activity activity) {
         mActivity = activity;
         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
-        companyCode = mPrefs.getString(COMPANY_CODE, null);
-        globalTenantID = mPrefs.getString(TENANT_ID, null);
+        companyCode = mPrefs.getString(COMPANY_CODE, "");
+        globalTenantID = mPrefs.getString(TENANT_ID, "");
         firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
@@ -324,8 +324,10 @@ public class FirebaseDataHelper {
                     User currentUser = dataSnapshot.getValue(User.class);
                     if(currentUser != null) {
                         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
-                        mPrefs.edit().putString(COMPANY_CODE, currentUser.getCompanyCode()).apply();
-                        //companyCode = mPrefs.getString(COMPANY_CODE, "");
+                        SharedPreferences.Editor mPrefsEditor = mPrefs.edit();
+                        mPrefsEditor.putString(COMPANY_CODE, currentUser.getCompanyCode());
+                        mPrefsEditor.putString(TENANT_ID, currentUser.getTenantID());
+                        mPrefsEditor.apply();
                     }
                 }
 
@@ -337,35 +339,15 @@ public class FirebaseDataHelper {
         }
     }
 
-    public void setSharedTenantID() {
-        // get our user data
-        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // validate for null
-        if (mUser != null) {
-            // get firebase references
-            DatabaseReference companyCodeRef = firebaseDatabase.getReference().child("users").child(mUser.getUid());
-            companyCodeRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    User currentUser = dataSnapshot.getValue(User.class);
-                    if(currentUser != null) {
-                        SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
-                        mPrefs.edit().putString(TENANT_ID, currentUser.getTenantID()).apply();
-                        //globalTenantID = mPrefs.getString(TENANT_ID, "");
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-    }
 
     public void createNewUnit(Unit unit, boolean isNew) {
         String unitKey;
+
+        // strip all punctuation from the address due to a firebase limitation in a key reference
+        String strippedAddress = unit.getUnitAddress().replaceAll("[^\\w\\s]","");
+        unit.setUnitAddress(strippedAddress);
+
         String unitMessage = "Unit: " + unit.getUnitAddress() + " updated successfully!";
         if (!companyCode.isEmpty()) {
             DatabaseReference unitCreateRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units");
