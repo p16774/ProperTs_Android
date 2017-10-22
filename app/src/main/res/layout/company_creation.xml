@@ -4,20 +4,25 @@
     android:layout_height="match_parent"
     android:background="@drawable/login_bg">
 
-    <TextView
-        android:text="@string/company_creation_welcome"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="50dp"
-        android:textSize="14sp"/>
-
     <EditText
         android:id="@+id/creation_company_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/enter_company_name"
+        android:layout_marginTop="30dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"/>
+
+    <TextView
+        android:text="@string/company_creation_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="30dp"
+        android:textAlignment="center"
+        android:textSize="14sp"/>
 
     <Button
         android:id="@+id/creation_create_btn"

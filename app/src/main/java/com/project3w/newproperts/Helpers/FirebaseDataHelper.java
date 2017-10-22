@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.project3w.newproperts.Objects.Message;
 import com.project3w.newproperts.Objects.TenantVerification;
 import com.project3w.newproperts.Objects.Company;
 import com.project3w.newproperts.Objects.Complaint;
@@ -99,7 +100,7 @@ public class FirebaseDataHelper {
         tenantDataRef.updateChildren(newTenant);
 
         // show success message
-        Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     public boolean submitMaintenanceRequest(Request request) {
@@ -149,14 +150,14 @@ public class FirebaseDataHelper {
                 uploadTask.addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
-                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_SHORT).show();
                     }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                         // Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_SHORT).show();
                     }
                 });
 
@@ -210,7 +211,22 @@ public class FirebaseDataHelper {
         return false;
     }
 
-    public void createUserReference(String companyCode, String tenantID, String accessType) {
+    public void createUserReference(String accessType) {
+        // get our current userID
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUser = mAuth.getCurrentUser();
+        if (mUser != null) {
+            // get our firebase reference
+            String userID = mUser.getUid();
+            DatabaseReference newUserRef = firebaseDatabase.getReference().child("users").child(userID);
+
+            // create the user and the company/user references
+            User createUser = new User("", "1", "", accessType);
+            newUserRef.setValue(createUser);
+        }
+    }
+
+    public void updateUserReference(String companyCode, String tenantID, String accessType) {
         // get our current userID
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser mUser = mAuth.getCurrentUser();
@@ -248,12 +264,47 @@ public class FirebaseDataHelper {
         createCompanyRef.child(companyCode).setValue(newCompany);
 
         // create our manager user inside our new company/property
-        createUserReference(companyCode, "", "manager");
+        updateUserReference(companyCode, "", "manager");
     }
 
     public void updateCompany(Company company) {
         // create our company reference and get firebase key
         DatabaseReference updateCompanyRef = firebaseDatabase.getReference().child("companies").child(companyCode);
+
+        // since this field is optional, we need to check for null first before submitting and uploading an image
+        if(!company.getCompanyImagePath().isEmpty()) {
+            // grab our StorageReference
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReferenceFromUrl("gs://properts-8db06.appspot.com/");
+            StorageReference saveLocationRef = storageRef.child("companyImages/" + companyCode);
+
+            // get our Uri File reference
+            Uri imageUri = Uri.fromFile(new File(company.getCompanyImagePath()));
+
+            // grab our image reference and Uri for File
+            StorageReference imageRef = saveLocationRef.child(imageUri.getLastPathSegment());
+
+            // register UploadTask and putFile
+            UploadTask uploadTask = imageRef.putFile(imageUri);
+
+            // Register observers to listen for when the download is done or if it fails
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Upload Failed!!", Snackbar.LENGTH_SHORT).show();
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    // Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "Image Successfully Uploaded", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+
+            // add in our key and empty closed image path and update our image path to Firebase Storage location
+            company.setCompanyImagePath(imageUri.getLastPathSegment());
+        }
 
         // update our company
         updateCompanyRef.setValue(company);
@@ -329,14 +380,14 @@ public class FirebaseDataHelper {
         }
 
         // show success message
-        Snackbar.make(mActivity.findViewById(android.R.id.content), unitMessage, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mActivity.findViewById(android.R.id.content), unitMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     public void deleteSelectedUnit(Unit unit) {
         String deleteUnitKey = unit.getUnitID();
         DatabaseReference unitDeleteRef = firebaseDatabase.getReference().child(companyCode).child("1").child("units").child(deleteUnitKey);
         unitDeleteRef.removeValue();
-        Snackbar.make(mActivity.findViewById(android.R.id.content), "Unit " + unit.getUnitAddress() + " deleted successfully!", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mActivity.findViewById(android.R.id.content), "Unit " + unit.getUnitAddress() + " deleted successfully!", Snackbar.LENGTH_SHORT).show();
     }
 
     public void acknowledgeComplaint(Complaint complaint, Tenant tenant) {
@@ -374,7 +425,22 @@ public class FirebaseDataHelper {
 
     }
 
-    public void closeRequest(Request request, Tenant tenant) {
+    public void closeRequest(Request request, Tenant tenant, String requestType) {
+        // set our database references
+        DatabaseReference rootRef = firebaseDatabase.getReference().child(companyCode).child("1").child("requests");
+        DatabaseReference userRequestRef = rootRef.child(tenant.getUserID()).child(request.getRequestID());
+        DatabaseReference newManagerRequestRef = rootRef.child(requestType).child(request.getRequestID());
+        DatabaseReference closedRequestRef = rootRef.child("closed").child(request.getRequestID());
+
+        // update status
+        request.setRequestStatus("Completed");
+
+        // update the request for the manager and the user
+        userRequestRef.setValue(request);
+        closedRequestRef.setValue(request);
+        newManagerRequestRef.removeValue();
+
+        Snackbar.make(mActivity.findViewById(android.R.id.content), "Request Closed Successfully!", Snackbar.LENGTH_SHORT).show();
 
     }
 
@@ -386,6 +452,42 @@ public class FirebaseDataHelper {
 
         staffRef.child(staffKey).setValue(staffMember);
         staffNeedsAccount.child(staffKey).setValue(staffMember);
+    }
+
+    public void sendTenantMessage(final Message message) {
+        // get our user data
+        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        // validate for null
+        if (mUser != null) {
+            String userID = mUser.getUid();
+            DatabaseReference userDataRef = firebaseDatabase.getReference().child("users").child(userID);
+            userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User currentUser = dataSnapshot.getValue(User.class);
+                    if(currentUser != null) {
+                        String tenantID = currentUser.getTenantID();
+                        DatabaseReference tenantMessageRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                                .child("messages").child(tenantID).child("" + message.getMessageDate());
+                        tenantMessageRef.setValue(message);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+    }
+
+    public void sendManagerMessage(final Message message, String tenantID) {
+        // send our message to the tenant
+        DatabaseReference tenantMessageRef = firebaseDatabase.getReference().child(companyCode).child("1")
+                .child("messages").child(tenantID).child("" + message.getMessageDate());
+        tenantMessageRef.setValue(message);
     }
 
 }

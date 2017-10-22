@@ -174,7 +174,7 @@ public class RequestFragment extends Fragment {
                         onRequestUpdateListener.requestUpdated();
 
                     } else {
-                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Update content needed to update request", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(mActivity.findViewById(android.R.id.content), "Update content needed to submit request", Snackbar.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -182,7 +182,8 @@ public class RequestFragment extends Fragment {
             managerClosedBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Snackbar.make(mActivity.findViewById(android.R.id.content), "CLOSED", Snackbar.LENGTH_SHORT).show();
+                    mHelper.closeRequest(request, tenant, requestType);
+                    onRequestUpdateListener.requestUpdated();
                 }
             });
         }

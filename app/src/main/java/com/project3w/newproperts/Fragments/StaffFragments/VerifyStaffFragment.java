@@ -110,7 +110,7 @@ public class VerifyStaffFragment extends Fragment {
                             .child("staff").child(staffID).child("userID");
 
                     // update our user reference and assign the accessRole
-                    firebaseDataHelper.createUserReference(userData.getCompanyCode(), staffID, "staff");
+                    firebaseDataHelper.updateUserReference(userData.getCompanyCode(), staffID, "staff");
 
                     // try catch block to test that the calls are completing correctly
                     try {

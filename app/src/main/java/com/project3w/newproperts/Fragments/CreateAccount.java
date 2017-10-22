@@ -20,7 +20,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
-import com.project3w.newproperts.Objects.User;
 import com.project3w.newproperts.R;
 
 import java.util.Objects;
@@ -113,7 +112,7 @@ public class CreateAccount extends Fragment {
                                     mUser = FirebaseAuth.getInstance().getCurrentUser();
                                     if (mUser != null) {
                                         FirebaseDataHelper firebaseDataHelper = new FirebaseDataHelper(mActivity);
-                                        firebaseDataHelper.createUserReference("","1",accountType);
+                                        firebaseDataHelper.createUserReference(accountType);
 
                                         // perform the next steps
                                         onNextStepListener.performNextStep(accountType);

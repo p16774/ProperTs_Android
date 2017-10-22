@@ -6,31 +6,45 @@
     android:background="@drawable/home_bg"
     android:weightSum="1">
 
+    <ImageView
+        android:id="@+id/company_tenant_image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Image of the Property or Rental Unit"
+        android:layout_weight=".25"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:layout_weight=".7">
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight=".5">
 
         <TextView
             android:id="@+id/disp_tenant_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/disp_tenant_address"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/disp_tenant_phone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/disp_tenant_email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="18sp" />
 
     </LinearLayout>
 
@@ -38,6 +52,6 @@
         android:id="@+id/broadcast_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight=".3"/>
+        android:layout_weight=".25"/>
 
 </LinearLayout>

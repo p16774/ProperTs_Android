@@ -103,7 +103,7 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
                             .child("tenants").child(tenantID).child("userID");
 
                     // update our user reference and assign the accessRole
-                    firebaseDataHelper.createUserReference(userData.getCompanyCode(), tenantID, "tenant");
+                    firebaseDataHelper.updateUserReference(userData.getCompanyCode(), tenantID, "tenant");
 
                     // try catch block to test that the calls are completing correctly
                     try {

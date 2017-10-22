@@ -48,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         // get reference to our FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
 
@@ -71,7 +73,6 @@ public class LoginActivity extends AppCompatActivity {
                                         Intent CreateAccountIntent = new Intent(LoginActivity.this, CreateAccountActivity.class);
                                         CreateAccountIntent.putExtra(ACCOUNT_TYPE, mUser.getAccessRole());
                                         startActivity(CreateAccountIntent);
-                                        finish();
                                     } else {
                                         // clear the fields
                                         emailEditText.setText("");
@@ -80,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
                                         // if signed in, move to main activity
                                         Intent toMainScreenIntent = new Intent(getApplicationContext(), MainActivity.class);
                                         startActivity(toMainScreenIntent);
-                                        finish();
                                     }
                                 }
                             }

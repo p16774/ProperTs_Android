@@ -1,11 +1,17 @@
 package com.project3w.newproperts;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -23,8 +29,10 @@ import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintsView;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerComplaints;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerHome;
+import com.project3w.newproperts.Fragments.ManagerFragments.ManagerMessages;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerRequests;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerStaff;
+import com.project3w.newproperts.Fragments.ManagerFragments.MessagesView;
 import com.project3w.newproperts.Fragments.ManagerFragments.RequestFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.RequestsView;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerTenants;
@@ -39,6 +47,7 @@ import com.project3w.newproperts.Fragments.TenantFragments.AddRequestFragment;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantComplaints;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantHome;
 import com.project3w.newproperts.Fragments.TenantFragments.TenantMaintenance;
+import com.project3w.newproperts.Fragments.TenantFragments.TenantMessages;
 import com.project3w.newproperts.Fragments.TenantFragments.ViewRequestFragment;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.Objects.Complaint;
@@ -70,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         ManagerStaff.ManageStaffListener,
         StaffView.DisplayStaffListener,
         StaffFragment.StaffFunctionListener,
-        CompanyInfo.CompanyUpdatedListener {
+        CompanyInfo.CompanyUpdatedListener,
+        ManagerMessages.DisplayTenantMesssages {
 
     // class variables
     FirebaseUser mUser;
@@ -81,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
 
     public static final String COMPANY_CODE = "com.project3w.properts.COMPANY_CODE";
     public static final String TENANT_ID = "com.project3w.properts.TENANT_ID";
+    public static final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 0x2001;
 
 
     @Override
@@ -89,11 +100,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         setContentView(R.layout.activity_main);
 
         // check bools.xml and set the proper screen orientation for device widths
-        if(getResources().getBoolean(R.bool.portrait_only)){
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        }
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         mHelper = new FirebaseDataHelper(this);
 
@@ -104,15 +111,21 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
             finish();
         } else {
 
+            if (Build.VERSION.SDK_INT >= 23) {
+                // request permissions
+                requestPermissions(new String[]{
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        ASK_MULTIPLE_PERMISSION_REQUEST_CODE);
+            }
+
             // set our sharedpreference of the company code every time we come here just in case something deletes it
             mHelper.setSharedCompanyCode();
             mHelper.setSharedTenantID();
 
             // grab our intent that should have our access type
-            try {
+            if (getIntent().hasExtra(ACCESS_TYPE)) {
                 userType = getIntent().getExtras().getString(ACCESS_TYPE, "");
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
             // grab the access type from the database if sent back here in a weird way to not have the intent running
@@ -206,10 +219,6 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                     bottomNavigation.addItem(itemMaintenance);
                     bottomNavigation.addItem(itemComplaint);
 
-                    //TODO: add this features and enable these screens
-                    bottomNavigation.disableItemAtPosition(2);
-                    bottomNavigation.setItemDisableColor(Color.parseColor("#00FFFFFF"));
-
                     // setup our navigation in each of the tabs
                     bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
                         @Override
@@ -223,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                                     callTenants();
                                     break;
                                 case 2:
-                                    // TODO: add messaging functions
+                                    callMessages();
                                     break;
                                 case 3:
                                     callMaintenance();
@@ -257,10 +266,6 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                     bottomNavigation.addItem(itemMaintenance);
                     bottomNavigation.addItem(itemComplaint);
 
-                    //TODO: enable the messaging to remove this call
-                    bottomNavigation.disableItemAtPosition(1);
-                    bottomNavigation.setItemDisableColor(Color.parseColor("#00FFFFFF"));
-
                     // setup our navigation in each of the tabs
                     bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
                         @Override
@@ -271,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                                     callHome();
                                     break;
                                 case 1:
-                                    // TODO: add messaging functions
+                                    callMessages();
                                     break;
                                 case 2:
                                     callMaintenance();
@@ -330,6 +335,27 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 break;
 
             //TODO: create default display showing error - no access assigned and prevent usage
+        }
+    }
+
+    protected void callMessages() {
+        switch (userType) {
+            case "tenant":
+                // start our Fragment Manager
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                TenantMessages tm = new TenantMessages();
+                fragmentTransaction.replace(R.id.main_view_container, tm);
+                fragmentTransaction.commit();
+                break;
+            case "manager":
+                // start our Fragment Manager
+                FragmentManager messagesManager = getSupportFragmentManager();
+                FragmentTransaction messagesTransaction = messagesManager.beginTransaction();
+                ManagerMessages mm = new ManagerMessages();
+                messagesTransaction.replace(R.id.main_view_container, mm);
+                messagesTransaction.commit();
+                break;
         }
     }
 
@@ -657,5 +683,16 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     @Override
     public void companyUpdated() {
         callHome();
+    }
+
+    @Override
+    public void displayMessages(Tenant tenant) {
+        // switch to the main add fragment task - bypass the tenant view
+        FragmentManager messagesManager = getSupportFragmentManager();
+        FragmentTransaction messagesTransaction = messagesManager.beginTransaction();
+        MessagesView sf = new MessagesView().newInstance(tenant);
+        messagesTransaction.replace(R.id.main_view_container, sf);
+        messagesTransaction.addToBackStack("managermessages");
+        messagesTransaction.commit();
     }
 }
