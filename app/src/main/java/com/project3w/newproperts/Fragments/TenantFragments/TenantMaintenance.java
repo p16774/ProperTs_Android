@@ -19,14 +19,20 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.project3w.newproperts.Helpers.RequestViewHolder;
 import com.project3w.newproperts.LoginActivity;
 import com.project3w.newproperts.Objects.Request;
+import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.R;
 
 import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
+import static com.project3w.newproperts.MainActivity.TENANT_ID;
 
 /**
  * Created by Nate on 10/7/17.
@@ -40,7 +46,7 @@ public class TenantMaintenance extends Fragment {
     Activity mActivity;
     RecyclerView requestView;
     FirebaseRecyclerAdapter requestAdapter;
-    String companyCode;
+    String companyCode, tenantID;
 
     public interface AddNewRequestListener {
         void addNewRequest();
@@ -82,7 +88,8 @@ public class TenantMaintenance extends Fragment {
         }
 
         SharedPreferences mPrefs = mActivity.getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
-        companyCode = mPrefs.getString(COMPANY_CODE, null);
+        companyCode = mPrefs.getString(COMPANY_CODE, "");
+        tenantID = mPrefs.getString(TENANT_ID, "");
 
         mActivity.setTitle("Request List");
 
@@ -101,7 +108,7 @@ public class TenantMaintenance extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // setup our fab to add new requests
-        FloatingActionButton fab = getActivity().findViewById(R.id.maintenance_fab);
+        final FloatingActionButton fab = getActivity().findViewById(R.id.maintenance_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -165,6 +172,25 @@ public class TenantMaintenance extends Fragment {
         // call our recycler
         requestView.setAdapter(requestAdapter);
         requestView.setLayoutManager(layoutManager);
+
+        // disable the add fab if the tenant is not active
+        DatabaseReference tenantData = firebaseDatabase.getReference().child(companyCode).child("1").child("tenants").child(tenantID);
+        tenantData.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Tenant tenant = dataSnapshot.getValue(Tenant.class);
+                if(tenant != null){
+                    if(!tenant.getTenantStatus()) {
+                        fab.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

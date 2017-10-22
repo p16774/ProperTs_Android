@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static com.project3w.newproperts.Fragments.ManagerFragments.TenantsView.TENANT_STATUS;
 import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
 
 /**
@@ -50,7 +51,7 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
     FirebaseDataHelper firebaseDataHelper;
     EditText tenantFirstNameView, tenantLastNameView, tenantEmailView, tenantPhoneView, tenantMoveInDate, tenantDepositView, tenantKeysView, tenantOccupantsView;
     Spinner tenantAddressSpinner;
-    Boolean isUpdate;
+    Boolean isUpdate, tenantStatus;
     String companyCode;
     Button addTenantBtn, archiveTenantBtn;
     Tenant newTenant;
@@ -65,12 +66,13 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
     // create listener
     DismissTenantFragmentListener onDismissFragmentListener;
 
-    public TenantsFragment newInstance(Boolean editMode, Tenant editTenant) {
+    public TenantsFragment newInstance(Boolean editMode, Tenant editTenant, Boolean status) {
 
         TenantsFragment addTenantFragment = new TenantsFragment();
         Bundle args = new Bundle();
         args.putBoolean(UPDATE_TENANT, editMode);
         args.putSerializable(TENANT_INFO, editTenant);
+        args.putBoolean(TENANT_STATUS, status);
         addTenantFragment.setArguments(args);
 
         return addTenantFragment;
@@ -112,7 +114,8 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
         companyCode = mPrefs.getString(COMPANY_CODE, null);
 
         // check if we are updating a tenant
-        isUpdate = getArguments().getBoolean(UPDATE_TENANT);
+        isUpdate = getArguments().getBoolean(UPDATE_TENANT, false);
+        tenantStatus = getArguments().getBoolean(TENANT_STATUS, true);
 
         if(isUpdate) {
             mActivity.setTitle("Update Tenant");
@@ -142,9 +145,16 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
                 tenantKeysView.setText(newTenant.getTenantKeys());
                 tenantOccupantsView.setText(newTenant.getTenantOccupants());
                 addTenantBtn.setText(R.string.update_tenant);
+                archiveTenantBtn.setVisibility(View.VISIBLE);
+
+                // hide the buttons if this is an archived user to prevent updates after the user has been archived
+                if(!tenantStatus) {
+                    addTenantBtn.setVisibility(View.GONE);
+                    archiveTenantBtn.setVisibility(View.GONE);
+                }
 
                 // update our delete button data
-                archiveTenantBtn.setVisibility(View.GONE); //TODO: update this to visible when the function works
+                //TODO: update this to visible when the function works
                 archiveTenantBtn.setBackgroundColor(ContextCompat.getColor(getActivity(), android.R.color.holo_red_dark));
                 archiveTenantBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -157,10 +167,8 @@ public class TenantsFragment extends Fragment implements View.OnClickListener {
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        //firebaseDataHelper.deleteSelectedUnit(newUnit);
-                                        //onDismissUnitFragmentListener.dismissUnitFragment();
-                                        //TODO: create archive function in firebasedatahelper file
-                                        dialog.dismiss();
+                                        firebaseDataHelper.archiveTenant(newTenant);
+                                        onDismissFragmentListener.dismissTenantFragment();
                                     }
                                 })
                                 .positiveColorRes(R.color.colorBlack)

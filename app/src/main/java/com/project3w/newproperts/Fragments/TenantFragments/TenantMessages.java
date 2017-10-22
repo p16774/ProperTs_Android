@@ -24,12 +24,17 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.Helpers.MessageViewHolder;
 import com.project3w.newproperts.LoginActivity;
 import com.project3w.newproperts.Objects.Message;
+import com.project3w.newproperts.Objects.Tenant;
 import com.project3w.newproperts.R;
 
 import static com.project3w.newproperts.MainActivity.COMPANY_CODE;
@@ -175,6 +180,26 @@ public class TenantMessages extends Fragment {
             // call our recycler
             mMessageRecycler.setAdapter(mMessageAdapter);
             mMessageRecycler.setLayoutManager(layoutManager);
+
+            // disable the add fab if the tenant is not active
+            DatabaseReference tenantData = firebaseDatabase.getReference().child(companyCode).child("1").child("tenants").child(tenantID);
+            tenantData.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Tenant tenant = dataSnapshot.getValue(Tenant.class);
+                    if(tenant != null){
+                        if(!tenant.getTenantStatus()) {
+                            messageSendBtn.setVisibility(View.GONE);
+                            messageContentView.setVisibility(View.GONE);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
         } else {
             Snackbar.make(mActivity.findViewById(android.R.id.content), "ERROR", Snackbar.LENGTH_SHORT).show();
