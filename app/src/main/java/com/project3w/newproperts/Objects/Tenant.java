@@ -11,6 +11,7 @@ public class Tenant implements Serializable {
 
     // class variables
     private String tenantID, userID, tenantFirstName, tenantLastName, tenantAddress, tenantEmail, tenantPhone, tenantMoveInDate, tenantDeposit, tenantKeys, tenantOccupants;
+    private Boolean tenantStatus;
 
     public Tenant() {
         // used for firebase
@@ -26,6 +27,7 @@ public class Tenant implements Serializable {
         this.tenantKeys = tenantKeys;
         this.tenantOccupants = tenantOccupants;
         this.tenantPhone = tenantPhone;
+        this.tenantStatus = true;
     }
 
     public String getTenantID() {
@@ -114,6 +116,14 @@ public class Tenant implements Serializable {
 
     public void setTenantOccupants(String tenantOccupants) {
         this.tenantOccupants = tenantOccupants;
+    }
+
+    public Boolean getTenantStatus() {
+        return tenantStatus;
+    }
+
+    public void setTenantStatus(Boolean tenantStatus) {
+        this.tenantStatus = tenantStatus;
     }
 
     @Override

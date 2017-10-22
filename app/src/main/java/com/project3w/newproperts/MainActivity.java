@@ -32,6 +32,7 @@ import com.project3w.newproperts.Fragments.ManagerFragments.ManagerMessages;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerRequests;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerStaff;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerTenants;
+import com.project3w.newproperts.Fragments.ManagerFragments.TenantsView;
 import com.project3w.newproperts.Fragments.ManagerFragments.ManagerUnits;
 import com.project3w.newproperts.Fragments.ManagerFragments.MessagesView;
 import com.project3w.newproperts.Fragments.ManagerFragments.RequestFragment;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         ManagerUnits.AddNewUnitListener,
         ManagerUnits.EditUnitListener,
         UnitsFragment.DismissUnitFragmentListener,
-        ManagerTenants.EditTenantFragmentListener,
+        TenantsView.EditTenantFragmentListener,
         ComplaintsView.ComplaintAcknowledgementListener,
         ComplaintFragment.ComplaintAcknowledgedListener,
         ManagerComplaints.ComplaintTypeListener,
@@ -79,7 +80,8 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         StaffView.DisplayStaffListener,
         StaffFragment.StaffFunctionListener,
         CompanyInfo.CompanyUpdatedListener,
-        ManagerMessages.DisplayTenantMesssages {
+        ManagerMessages.DisplayTenantMesssages,
+        ManagerTenants.TenantStatusListener {
 
     // class variables
     FirebaseUser mUser;
@@ -375,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
 
     protected void callTenants() {
         clearBackStack();
+
         // start our Fragment Manager
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -534,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 // switch to the main add fragment task - bypass the tenant view
                 FragmentManager tenantManager = getSupportFragmentManager();
                 FragmentTransaction tenantTransaction = tenantManager.beginTransaction();
-                TenantsFragment at = new TenantsFragment().newInstance(false, new Tenant());
+                TenantsFragment at = new TenantsFragment().newInstance(false, new Tenant(), true);
                 tenantTransaction.replace(R.id.main_view_container, at);
                 tenantTransaction.addToBackStack("addtenant");
                 tenantTransaction.commit();
@@ -587,11 +590,11 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     }
 
     @Override
-    public void editTenant(Tenant tenant) {
+    public void editTenant(Tenant tenant, Boolean status) {
         // switch to the main add fragment task - bypass the tenant view
         FragmentManager tenantManager = getSupportFragmentManager();
         FragmentTransaction tenantTransaction = tenantManager.beginTransaction();
-        TenantsFragment at = new TenantsFragment().newInstance(true, tenant);
+        TenantsFragment at = new TenantsFragment().newInstance(true, tenant, status);
         tenantTransaction.replace(R.id.main_view_container, at);
         tenantTransaction.addToBackStack("addtenant");
         tenantTransaction.commit();
@@ -708,5 +711,15 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         messagesTransaction.replace(R.id.main_view_container, sf);
         messagesTransaction.addToBackStack("managermessages");
         messagesTransaction.commit();
+    }
+
+    @Override
+    public void callTenantsView(Boolean status) {
+        // start our Fragment Manager
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        TenantsView tv = new TenantsView().newInstance(status);
+        fragmentTransaction.replace(R.id.main_view_container, tv);
+        fragmentTransaction.commit();
     }
 }

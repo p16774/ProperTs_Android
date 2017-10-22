@@ -55,9 +55,7 @@ public class FirebaseDataHelper {
 
         // get Firebase Database instances
         DatabaseReference tenantDataRef = firebaseDatabase.getReference().child(companyCode).child("1").child("tenants");
-        DatabaseReference needAccountRef = firebaseDatabase.getReference("needAccount");
-        DatabaseReference unitTenantRef = firebaseDatabase.getReference().child(companyCode).child("1")
-                                                    .child("currentTenants").child(tenant.getTenantAddress());
+        DatabaseReference needAccountRef = firebaseDatabase.getReference("needsAccount");
 
         // concatenate tenant message
         String tenantMessage = "Tenant: " + tenant.getTenantFirstName() + " " + tenant.getTenantLastName() + " updated successfully!";
@@ -82,9 +80,6 @@ public class FirebaseDataHelper {
             // concatenate tenant message
             tenantMessage = "Tenant: " + tenant.getTenantFirstName() + " " + tenant.getTenantLastName() + " created successfully!";
         }
-
-        // create the currentTenant value
-        unitTenantRef.setValue(tenant.getTenantID());
 
         // validate for null on userID - this is a check should the manager update something in the account before the user
         // creates their user account and the tenant object gets updated
@@ -470,6 +465,28 @@ public class FirebaseDataHelper {
         DatabaseReference tenantMessageRef = firebaseDatabase.getReference().child(companyCode).child("1")
                 .child("messages").child(tenantID).child("" + message.getMessageDate());
         tenantMessageRef.setValue(message);
+    }
+
+    public void archiveTenant(Tenant tenant) {
+
+        // get Firebase Database instances
+        DatabaseReference tenantDataRef = firebaseDatabase.getReference().child(companyCode).child("1").child("tenants");
+
+        // concatenate tenant message
+        String tenantMessage = "Tenant: " + tenant.getTenantFirstName() + " " + tenant.getTenantLastName() + " archived successfully!";
+
+        // set tenantStatus to false to make them archived
+        tenant.setTenantStatus(false);
+
+        // create HashMap for updating tenants
+        HashMap<String, Object> newTenant = new HashMap<>();
+        newTenant.put(tenant.getTenantID(), tenant);
+
+        // save the tenant
+        tenantDataRef.updateChildren(newTenant);
+
+        // show success message
+        Snackbar.make(mActivity.findViewById(android.R.id.content), tenantMessage, Snackbar.LENGTH_SHORT).show();
     }
 
 }
