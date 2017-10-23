@@ -124,14 +124,14 @@ public class StaffView extends Fragment {
 
         // grab the reference to our RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(mActivity);
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
+        //layoutManager.setReverseLayout(true);
+        //layoutManager.setStackFromEnd(true);
 
         // setup our database references
         final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         Query tenantRequestsQuery = firebaseDatabase.getReference().child(companyCode).child("1").child("staff")
-                .child(staffFunction)
-                .orderByChild("staffName");
+                .orderByChild("staffStatus")
+                .equalTo(isCurrent);
 
         // setup our RecyclerView to display content
         FirebaseRecyclerOptions<Staff> staffOptions =

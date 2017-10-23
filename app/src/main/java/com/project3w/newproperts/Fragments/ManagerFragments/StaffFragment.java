@@ -2,6 +2,7 @@ package com.project3w.newproperts.Fragments.ManagerFragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.Objects.Staff;
 import com.project3w.newproperts.R;
@@ -61,7 +64,7 @@ public class StaffFragment extends Fragment {
 
         mActivity = getActivity();
         staffMember = (Staff) getArguments().getSerializable(STAFF_INFO);
-        isCurrent = getArguments().getBoolean(STAFF_STATUS, false);
+        isCurrent = getArguments().getBoolean(STAFF_STATUS, true);
         mHelper = new FirebaseDataHelper(mActivity);
 
         staffFullNameView = view.findViewById(R.id.staff_fullname);
@@ -85,13 +88,13 @@ public class StaffFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         // validate if we are updating a current staff member
-        if (isCurrent && staffMember != null) {
+        if (isCurrent && staffMember.getStaffName() != null) {
             staffFullNameView.setText(staffMember.getStaffName());
             staffPhoneNumberView.setText(staffMember.getStaffPhone());
             staffEmailAddressView.setText(staffMember.getStaffEmail());
             staffArchiveBtn.setVisibility(View.VISIBLE);
             staffAddBtn.setText("Update Staff Member");
-        } else if (!isCurrent && staffMember != null) {
+        } else if (!isCurrent && staffMember.getStaffName() != null) {
             staffFullNameView.setText(staffMember.getStaffName());
             staffPhoneNumberView.setText(staffMember.getStaffPhone());
             staffEmailAddressView.setText(staffMember.getStaffEmail());
@@ -111,12 +114,21 @@ public class StaffFragment extends Fragment {
                 staffPhone = staffPhoneNumberView.getText().toString().trim();
                 staffEmail = staffEmailAddressView.getText().toString().trim();
 
+                // update our new staffMember that was created or need to update
+                staffMember.setStaffName(staffName);
+                staffMember.setStaffPhone(staffPhone);
+                staffMember.setStaffEmail(staffEmail);
+
                 // validate data fields
                 if (staffName.isEmpty() || staffPhone.isEmpty() || staffEmail.isEmpty()) {
                     Snackbar.make(getActivity().findViewById(android.R.id.content),
                             "You must enter data into ALL fields for new Staff", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    mHelper.createStaffMember(staffMember);
+                    if(staffMember.getStaffID() != null) {
+                        mHelper.createStaffMember(staffMember, false);
+                    } else {
+                        mHelper.createStaffMember(staffMember, true);
+                    }
                     onStaffFunctionListener.dismissStaffFragment();
                 }
             }
@@ -125,8 +137,28 @@ public class StaffFragment extends Fragment {
         staffArchiveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mHelper.archiveStaff(staffMember);
-                //onStaffFunctionListener.dismissStaffFragment();
+                new MaterialDialog.Builder(getActivity())
+                        .title(staffMember.getStaffName())
+                        .content("Are you sure you want to archive \nStaff: " + staffMember.getStaffName() + "?")
+                        .positiveText("ARCHIVE")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                mHelper.archiveStaff(staffMember);
+                                onStaffFunctionListener.dismissStaffFragment();
+                            }
+                        })
+                        .positiveColorRes(R.color.colorBlack)
+                        .negativeText("CANCEL")
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .cancelable(true)
+                        .build()
+                        .show();
             }
         });
     }

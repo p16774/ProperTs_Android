@@ -20,6 +20,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.project3w.newproperts.Objects.Message;
+import com.project3w.newproperts.Objects.StaffVerification;
 import com.project3w.newproperts.Objects.TenantVerification;
 import com.project3w.newproperts.Objects.Company;
 import com.project3w.newproperts.Objects.Complaint;
@@ -421,14 +422,31 @@ public class FirebaseDataHelper {
 
     }
 
-    public void createStaffMember(Staff staffMember) {
-        DatabaseReference staffRef = firebaseDatabase.getReference().child(companyCode).child("1").child("staff").child("current");
-        DatabaseReference staffNeedsAccount = firebaseDatabase.getReference().child("needAccount");
-        String staffKey = staffMember.getStaffPhone();
-        staffMember.setStaffID(staffKey);
+    public void createStaffMember(Staff staffMember, Boolean isNew) {
+        DatabaseReference staffRef = firebaseDatabase.getReference().child(companyCode).child("1").child("staff");
 
-        staffRef.child(staffKey).setValue(staffMember);
-        staffNeedsAccount.child(staffKey).setValue(staffMember);
+        if(isNew) {
+            // create our key
+            String staffKey = staffMember.getStaffPhone();
+            staffMember.setStaffID(staffKey);
+            staffMember.setStaffStatus(true);
+
+            DatabaseReference staffNeedsAccount = firebaseDatabase.getReference().child("needsAccount");
+            StaffVerification staffVerification = new StaffVerification(staffMember.getStaffName(), staffKey, companyCode);
+            staffNeedsAccount.child(staffKey).setValue(staffVerification);
+        }
+
+        staffRef.child(staffMember.getStaffID()).setValue(staffMember);
+    }
+
+    public void archiveStaff(Staff staffMember) {
+        DatabaseReference staffRef = firebaseDatabase.getReference().child(companyCode).child("1").child("staff");
+
+        // set our status to false
+        staffMember.setStaffStatus(false);
+
+        // update our staff value
+        staffRef.child(staffMember.getStaffID()).setValue(staffMember);
     }
 
     public void sendTenantMessage(final Message message) {
