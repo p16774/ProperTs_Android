@@ -89,7 +89,7 @@ public class VerifyTenantFragment extends Fragment implements View.OnClickListen
 
         // method variables
         final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        final DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference().child("needAccount").child(tenantID);
+        final DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference().child("needsAccount").child(tenantID);
 
         // set our value listener to get the companyCode to assign the user and tenant correctly
         removedNeedAccountRef.addListenerForSingleValueEvent(new ValueEventListener() {

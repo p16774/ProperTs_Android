@@ -10,6 +10,7 @@ public class Staff implements Serializable {
 
     // class variables
     String staffID, staffName, staffEmail, staffPhone, staffAccess, userID;
+    Boolean staffStatus;
 
     public Staff() {
     }
@@ -20,6 +21,7 @@ public class Staff implements Serializable {
         this.staffEmail = staffEmail;
         this.staffPhone = staffPhone;
         this.staffAccess = "staff";
+        this.staffStatus = true;
         this.userID = "";
     }
 
@@ -61,6 +63,14 @@ public class Staff implements Serializable {
 
     public void setStaffAccess(String staffAccess) {
         this.staffAccess = staffAccess;
+    }
+
+    public Boolean getStaffStatus() {
+        return staffStatus;
+    }
+
+    public void setStaffStatus(Boolean staffStatus) {
+        this.staffStatus = staffStatus;
     }
 
     public String getUserID() {

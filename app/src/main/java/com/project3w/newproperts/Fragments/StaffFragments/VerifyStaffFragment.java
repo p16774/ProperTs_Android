@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project3w.newproperts.Helpers.FirebaseDataHelper;
 import com.project3w.newproperts.MainActivity;
+import com.project3w.newproperts.Objects.StaffVerification;
 import com.project3w.newproperts.Objects.TenantVerification;
 import com.project3w.newproperts.R;
 
@@ -78,7 +79,7 @@ public class VerifyStaffFragment extends Fragment {
 
                 // verify they have entered data into both fields
                 if(verifyCode.isEmpty()) {
-                    Snackbar.make(mActivity.findViewById(android.R.id.content), "You must have enter a valid code to continue", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(mActivity.findViewById(android.R.id.content), "You must enter a verification code to continue", Snackbar.LENGTH_SHORT).show();
                 } else {
                     // grab our current userID and assign our data points in FirebaseDataHelper
                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -96,13 +97,13 @@ public class VerifyStaffFragment extends Fragment {
 
         // method variables
         final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        final DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference().child("needAccount").child(staffID);
+        final DatabaseReference removedNeedAccountRef = firebaseDatabase.getReference().child("needsAccount").child(staffID);
 
         // set our value listener to get the companyCode to assign the user and staff correctly
         removedNeedAccountRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                TenantVerification userData = dataSnapshot.getValue(TenantVerification.class);
+                StaffVerification userData = dataSnapshot.getValue(StaffVerification.class);
                 if (userData != null) {
                     DatabaseReference linkStaffAccountRef = firebaseDatabase.getReference()
                             .child(userData.getCompanyCode())
@@ -144,8 +145,6 @@ public class VerifyStaffFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        // sign out the user
-        mAuth.signOut();
         // close this activity to force the user to login
         mActivity.finish();
     }

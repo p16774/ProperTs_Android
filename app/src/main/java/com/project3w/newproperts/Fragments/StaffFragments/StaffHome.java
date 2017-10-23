@@ -151,7 +151,7 @@ public class StaffHome extends Fragment {
 
                     // STUPID FIREBASE FOR NESTED DATA CALLS!!!!!!!!!!
                     DatabaseReference tenantInfoRef = firebaseDatabase.getReference().child(companyCode).child("1")
-                            .child("staff").child("current").child(tenantID);
+                            .child("staff").child(tenantID);
                     tenantInfoRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {

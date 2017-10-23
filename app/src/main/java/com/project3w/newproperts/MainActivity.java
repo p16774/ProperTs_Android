@@ -686,7 +686,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         // switch to the main add fragment task - bypass the tenant view
         FragmentManager newStaffManager = getSupportFragmentManager();
         FragmentTransaction newStaffTransaction = newStaffManager.beginTransaction();
-        StaffFragment sf = new StaffFragment();
+        StaffFragment sf = new StaffFragment().newInstance(new Staff(), true);
         newStaffTransaction.replace(R.id.main_view_container, sf);
         newStaffTransaction.addToBackStack("newstaff");
         newStaffTransaction.commit();
