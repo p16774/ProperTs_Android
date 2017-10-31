@@ -122,6 +122,10 @@ public class StaffView extends Fragment {
             }
         });
 
+        if (!isCurrent) {
+            fab.setVisibility(View.GONE);
+        }
+
         // grab the reference to our RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(mActivity);
         //layoutManager.setReverseLayout(true);

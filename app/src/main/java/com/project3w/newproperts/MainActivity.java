@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.project3w.newproperts.Fragments.EmptyFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.CompanyInfo;
 import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintFragment;
 import com.project3w.newproperts.Fragments.ManagerFragments.ComplaintsView;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
     String userType = "";
     String companyCode;
     FirebaseDataHelper mHelper;
+    int container = R.id.main_view_container;
 
     public static final String COMPANY_CODE = "com.project3w.properts.COMPANY_CODE";
     public static final String TENANT_ID = "com.project3w.properts.TENANT_ID";
@@ -101,9 +103,6 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // check bools.xml and set the proper screen orientation for device widths
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         mHelper = new FirebaseDataHelper(this);
 
         mUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -114,8 +113,6 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         // grab our company code from shared preferences
         SharedPreferences mPrefs = getSharedPreferences("com.project3w.properts", Context.MODE_PRIVATE);
         companyCode = mPrefs.getString(COMPANY_CODE, "");
-
-        System.out.println("HERE!!!!!!!!!!!!!!!!   " + companyCode);
 
         if(companyCode.isEmpty()) {
             Snackbar.make(findViewById(android.R.id.content), "Account Created. Please Login Again.", Snackbar.LENGTH_LONG).show();
@@ -157,6 +154,14 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                             // set our userType
                             userType = dataSnapshot.getValue().toString();
 
+                            // check userType to set the orientation and layout container
+                            if(getResources().getBoolean(R.bool.portrait_only)){
+                                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                            } else if (userType.equals("manager") && !getResources().getBoolean(R.bool.portrait_only)) {
+                                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                                container = R.id.side_view_container;
+                            }
+
                             // call in our bottom navigation library
                             bottomNavigation = findViewById(R.id.bottom_navigation);
                             bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
@@ -174,6 +179,15 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                     }
                 });
             } else {
+
+                // check userType to set the orientation and layout container
+                if(getResources().getBoolean(R.bool.portrait_only)){
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } else if (userType.equals("manager") && !getResources().getBoolean(R.bool.portrait_only)) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    container = R.id.side_view_container;
+                }
+
                 // call in our bottom navigation library
                 bottomNavigation = findViewById(R.id.bottom_navigation);
                 bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
@@ -270,7 +284,16 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 // add the ManagerHome fragment
                 ManagerHome mf = new ManagerHome();
                 fragmentTransaction.replace(R.id.main_view_container, mf);
+
+                // add our side view if system is landscape
+                if (container == R.id.side_view_container) {
+                    EmptyFragment ef = new EmptyFragment();
+                    fragmentTransaction.replace(R.id.side_view_container, ef);
+                }
+
                 fragmentTransaction.commit();
+
+
 
                 break;
             case "tenant":
@@ -370,6 +393,13 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 FragmentTransaction messagesTransaction = messagesManager.beginTransaction();
                 ManagerMessages mm = new ManagerMessages();
                 messagesTransaction.replace(R.id.main_view_container, mm);
+
+                // add our side view if system is landscape
+                if (container == R.id.side_view_container) {
+                    EmptyFragment ef = new EmptyFragment();
+                    messagesTransaction.replace(R.id.side_view_container, ef);
+                }
+
                 messagesTransaction.commit();
                 break;
         }
@@ -383,6 +413,13 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         ManagerTenants mt = new ManagerTenants();
         fragmentTransaction.replace(R.id.main_view_container, mt);
+
+        // add our side view if system is landscape
+        if (container == R.id.side_view_container) {
+            EmptyFragment ef = new EmptyFragment();
+            fragmentTransaction.replace(R.id.side_view_container, ef);
+        }
+
         fragmentTransaction.commit();
     }
 
@@ -401,6 +438,13 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 // add the ManagerHome fragment
                 ManagerRequests mm = new ManagerRequests();
                 fragmentTransaction.replace(R.id.main_view_container, mm);
+
+                // add our side view if system is landscape
+                if (container == R.id.side_view_container) {
+                    EmptyFragment ef = new EmptyFragment();
+                    fragmentTransaction.replace(R.id.side_view_container, ef);
+                }
+
                 fragmentTransaction.commit();
                 break;
             case "tenant":
@@ -440,6 +484,13 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 // add the ManagerHome fragment
                 ManagerComplaints mc = new ManagerComplaints();
                 fragmentTransaction.replace(R.id.main_view_container, mc);
+
+                // add our side view if system is landscape
+                if (container == R.id.side_view_container) {
+                    EmptyFragment ef = new EmptyFragment();
+                    fragmentTransaction.replace(R.id.side_view_container, ef);
+                }
+
                 fragmentTransaction.commit();
 
                 break;
@@ -522,6 +573,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
 
     @Override
     public void openMenuOption(String menuOption) {
+
         switch (menuOption) {
 
             case "units":
@@ -529,7 +581,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 FragmentManager unitManager = getSupportFragmentManager();
                 FragmentTransaction unitTransaction = unitManager.beginTransaction();
                 ManagerUnits mu = new ManagerUnits();
-                unitTransaction.replace(R.id.main_view_container, mu);
+                unitTransaction.replace(container, mu);
                 unitTransaction.addToBackStack("manageunits");
                 unitTransaction.commit();
                 break;
@@ -538,7 +590,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 FragmentManager tenantManager = getSupportFragmentManager();
                 FragmentTransaction tenantTransaction = tenantManager.beginTransaction();
                 TenantsFragment at = new TenantsFragment().newInstance(false, new Tenant(), true);
-                tenantTransaction.replace(R.id.main_view_container, at);
+                tenantTransaction.replace(container, at);
                 tenantTransaction.addToBackStack("addtenant");
                 tenantTransaction.commit();
                 break;
@@ -547,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 FragmentManager staffManager = getSupportFragmentManager();
                 FragmentTransaction staffTransaction = staffManager.beginTransaction();
                 ManagerStaff ms = new ManagerStaff();
-                staffTransaction.replace(R.id.main_view_container, ms);
+                staffTransaction.replace(container, ms);
                 staffTransaction.addToBackStack("managestaff");
                 staffTransaction.commit();
                 break;
@@ -556,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
                 FragmentManager companyManager = getSupportFragmentManager();
                 FragmentTransaction companyTransaction = companyManager.beginTransaction();
                 CompanyInfo ci = new CompanyInfo();
-                companyTransaction.replace(R.id.main_view_container, ci);
+                companyTransaction.replace(container, ci);
                 companyTransaction.addToBackStack("companydata");
                 companyTransaction.commit();
         }
@@ -568,7 +620,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         UnitsFragment au = new UnitsFragment().newInstance(false, new Unit());
-        fragmentTransaction.replace(R.id.main_view_container, au);
+        fragmentTransaction.replace(container, au);
         fragmentTransaction.addToBackStack("newunit");
         fragmentTransaction.commit();
     }
@@ -579,7 +631,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         UnitsFragment au = new UnitsFragment().newInstance(true, unit);
-        fragmentTransaction.replace(R.id.main_view_container, au);
+        fragmentTransaction.replace(container, au);
         fragmentTransaction.addToBackStack("editunit");
         fragmentTransaction.commit();
     }
@@ -595,7 +647,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentManager tenantManager = getSupportFragmentManager();
         FragmentTransaction tenantTransaction = tenantManager.beginTransaction();
         TenantsFragment at = new TenantsFragment().newInstance(true, tenant, status);
-        tenantTransaction.replace(R.id.main_view_container, at);
+        tenantTransaction.replace(container, at);
         tenantTransaction.addToBackStack("addtenant");
         tenantTransaction.commit();
     }
@@ -607,11 +659,10 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
 
     @Override
     public void displayComplaint(Complaint complaint, Tenant tenant, Boolean isClosed) {
-        // switch to the main add fragment task - bypass the tenant view
         FragmentManager complaintManager = getSupportFragmentManager();
         FragmentTransaction tenantTransaction = complaintManager.beginTransaction();
         ComplaintFragment at = new ComplaintFragment().newInstance(complaint, tenant, isClosed);
-        tenantTransaction.replace(R.id.main_view_container, at);
+        tenantTransaction.replace(container, at);
         tenantTransaction.addToBackStack("managercomplaints");
         tenantTransaction.commit();
     }
@@ -627,29 +678,27 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentManager complaintManager = getSupportFragmentManager();
         FragmentTransaction tenantTransaction = complaintManager.beginTransaction();
         ComplaintsView cv = new ComplaintsView().newInstance(complaintType);
-        tenantTransaction.replace(R.id.main_view_container, cv);
+        tenantTransaction.replace(container, cv);
         tenantTransaction.addToBackStack("complainttype");
         tenantTransaction.commit();
     }
 
     @Override
     public void callRequestFragment(String requestType) {
-        // switch to the main add fragment task - bypass the tenant view
         FragmentManager requestManager = getSupportFragmentManager();
         FragmentTransaction tenantTransaction = requestManager.beginTransaction();
         RequestsView rv = new RequestsView().newInstance(requestType);
-        tenantTransaction.replace(R.id.main_view_container, rv);
+        tenantTransaction.replace(container, rv);
         tenantTransaction.addToBackStack("requesttype");
         tenantTransaction.commit();
     }
 
     @Override
     public void displayRequest(Request request, Tenant tenant, String requestType, Boolean isClosed) {
-        // switch to the main add fragment task - bypass the tenant view
         FragmentManager requestManager = getSupportFragmentManager();
         FragmentTransaction tenantTransaction = requestManager.beginTransaction();
         RequestFragment rf = new RequestFragment().newInstance(request, tenant, requestType, isClosed);
-        tenantTransaction.replace(R.id.main_view_container, rf);
+        tenantTransaction.replace(container, rf);
         tenantTransaction.addToBackStack("managerrequest");
         tenantTransaction.commit();
     }
@@ -665,7 +714,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentManager staffManager = getSupportFragmentManager();
         FragmentTransaction staffTransaction = staffManager.beginTransaction();
         StaffView sv = new StaffView().newInstance(staffFunction);
-        staffTransaction.replace(R.id.main_view_container, sv);
+        staffTransaction.replace(container, sv);
         staffTransaction.addToBackStack("managerstaff");
         staffTransaction.commit();
     }
@@ -676,7 +725,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentManager staffManager = getSupportFragmentManager();
         FragmentTransaction staffTransaction = staffManager.beginTransaction();
         StaffFragment sf = new StaffFragment().newInstance(staff, isCurrent);
-        staffTransaction.replace(R.id.main_view_container, sf);
+        staffTransaction.replace(container, sf);
         staffTransaction.addToBackStack("viewstaff");
         staffTransaction.commit();
     }
@@ -687,7 +736,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentManager newStaffManager = getSupportFragmentManager();
         FragmentTransaction newStaffTransaction = newStaffManager.beginTransaction();
         StaffFragment sf = new StaffFragment().newInstance(new Staff(), true);
-        newStaffTransaction.replace(R.id.main_view_container, sf);
+        newStaffTransaction.replace(container, sf);
         newStaffTransaction.addToBackStack("newstaff");
         newStaffTransaction.commit();
     }
@@ -704,11 +753,10 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
 
     @Override
     public void displayMessages(Tenant tenant) {
-        // switch to the main add fragment task - bypass the tenant view
         FragmentManager messagesManager = getSupportFragmentManager();
         FragmentTransaction messagesTransaction = messagesManager.beginTransaction();
         MessagesView sf = new MessagesView().newInstance(tenant);
-        messagesTransaction.replace(R.id.main_view_container, sf);
+        messagesTransaction.replace(container, sf);
         messagesTransaction.addToBackStack("managermessages");
         messagesTransaction.commit();
     }
@@ -719,7 +767,7 @@ public class MainActivity extends AppCompatActivity implements TenantsFragment.D
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         TenantsView tv = new TenantsView().newInstance(status);
-        fragmentTransaction.replace(R.id.main_view_container, tv);
+        fragmentTransaction.replace(container, tv);
         fragmentTransaction.commit();
     }
 }

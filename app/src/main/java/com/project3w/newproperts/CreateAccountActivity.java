@@ -33,7 +33,11 @@ public class CreateAccountActivity extends AppCompatActivity implements ChooseAc
         setContentView(R.layout.activity_create);
 
         // check bools.xml and set the proper screen orientation for device widths
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if(getResources().getBoolean(R.bool.portrait_only)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
 
         // assign our Firebase Helper class
         firebaseDataHelper = new FirebaseDataHelper(this);
