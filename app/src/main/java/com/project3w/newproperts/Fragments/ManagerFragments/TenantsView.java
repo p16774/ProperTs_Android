@@ -127,6 +127,9 @@ public class TenantsView extends Fragment {
                 onMenuOptionSelectedListener.openMenuOption("tenants");
             }
         });
+        if(!tenantStatus) {
+            fab.setVisibility(View.GONE);
+        }
 
         // grab the reference to our RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
